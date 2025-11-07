@@ -1,0 +1,162 @@
+/* Auth (login/register/password) styles - complements Tailwind utilities
+   Keep small, focused styles that apply only to auth pages
+*/
+
+body {
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.auth-card {
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(15,23,42,0.03);
+}
+
+.auth-title {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.auth-subtitle {
+  color: #475569;
+  margin-top: .25rem;
+}
+
+.auth-footer {
+  margin-top: 1rem;
+  text-align: center;
+  color: #64748b;
+  font-size: .9rem;
+}
+
+.auth-cta {
+  display: inline-block;
+  padding: .6rem 1rem;
+  border-radius: .5rem;
+}
+
+/* Responsive two-column layout for auth pages */
+.auth-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .auth-container {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 2rem;
+    padding: 2rem;
+  }
+}
+
+.auth-left {
+  flex: 1 1 45%;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1 0%, #a78bfa 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 320px;
+}
+
+.auth-left h1 {
+  font-size: 1.6rem;
+  margin-bottom: .5rem;
+}
+
+.auth-left p {
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 1rem;
+}
+
+.auth-right {
+  flex: 1 1 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 8px 30px rgba(2,6,23,0.08);
+  border: 1px solid rgba(15,23,42,0.04);
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+/* Input focus and error styles */
+.auth-card input[type="email"],
+.auth-card input[type="password"],
+.auth-card input[type="text"] {
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+.auth-card input:focus {
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+  border-color: #6366f1;
+}
+
+.input-error-border {
+  border-color: #ef4444 !important; /* red-500 */
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.08) !important;
+}
+
+.auth-footer a { color: #6366f1; }
+
+/* Outer framed container like the sample */
+.auth-frame {
+  width: min(1100px, 96%);
+  margin: 2rem auto;
+  padding: 2rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+  border-radius: 18px;
+  box-shadow: 0 20px 60px rgba(99,102,241,0.12), 0 8px 20px rgba(2,6,23,0.06);
+  border: 1px solid rgba(99,102,241,0.06);
+}
+
+.auth-illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Google button */
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  padding: .6rem 1rem;
+  border-radius: .6rem;
+  background: white;
+  color: #0f172a;
+  border: 1px solid rgba(2,6,23,0.06);
+  box-shadow: 0 6px 14px rgba(2,6,23,0.04);
+  font-weight: 500;
+}
+
+.btn-google svg { width: 18px; height: 18px; }
+
+/* Small utility to align the left and right to look like the mock */
+.auth-inner {
+  display: flex;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+@media (max-width: 767px) {
+  .auth-frame { padding: 1rem; }
+  .auth-inner { flex-direction: column; }
+  .auth-left { display: none; }
+}
+
+
