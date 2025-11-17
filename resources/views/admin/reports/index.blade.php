@@ -1,7 +1,9 @@
 <x-app-layout>
+    @include('admin.partials.sidebar')
+    <div class="admin-content-area">
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b">
-            <h2 class="text-lg font-semibold text-gray-800">Infrastructure Reports</h2>
+            <h2 class="text-lg font-semibold text-gray-800">Laporan Infrastruktur</h2>
         </div>
         <div class="p-4">
             <div class="overflow-x-auto">
@@ -9,11 +11,11 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pengguna</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lokasi</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dibuat</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -23,7 +25,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $report->user->name ?? '-' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $report->category }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $report->location }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm"> <span class="inline-flex px-2 text-xs font-semibold leading-5 rounded-full {{ $report->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($report->status === 'resolved' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800') }}">{{ ucfirst($report->status) }}</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm"> <span class="inline-flex px-2 text-xs font-semibold leading-5 rounded-full {{ $report->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : ($report->status === 'resolved' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">{{ ucfirst($report->status) }}</span></td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $report->created_at->format('Y-m-d') }}</td>
                         </tr>
                         @endforeach
@@ -33,5 +35,6 @@
 
             <div class="mt-4">{{ $reports->links() }}</div>
         </div>
+    </div>
     </div>
 </x-app-layout>

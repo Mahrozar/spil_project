@@ -1,16 +1,16 @@
 <x-app-layout>
     <div class="container">
-        <h1>Your Letters</h1>
+        <h1>Surat Anda</h1>
 
-        <a href="{{ route('user.letters.create') }}" class="btn btn-primary mb-3">New Letter</a>
+        <a href="{{ route('user.letters.create') }}" class="btn btn-primary mb-3">Surat Baru</a>
 
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Type</th>
+                    <th>Jenis</th>
                     <th>Status</th>
-                    <th>Created</th>
+                    <th>Dibuat</th>
                 </tr>
             </thead>
             <tbody>

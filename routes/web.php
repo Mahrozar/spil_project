@@ -55,4 +55,31 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::post('/letters/bulk-delete', [AdminController::class, 'lettersBulkDestroy'])->name('letters.bulkDestroy');
 
     Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports');
+
+    // Residents management (RT/RW + residents)
+    Route::get('/residents', [\App\Http\Controllers\ResidentController::class, 'index'])->name('residents.index');
+    Route::get('/residents/create', [\App\Http\Controllers\ResidentController::class, 'create'])->name('residents.create');
+    Route::post('/residents', [\App\Http\Controllers\ResidentController::class, 'store'])->name('residents.store');
+    Route::get('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'show'])->name('residents.show');
+    Route::get('/residents/{resident}/edit', [\App\Http\Controllers\ResidentController::class, 'edit'])->name('residents.edit');
+    Route::put('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'update'])->name('residents.update');
+    Route::delete('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'destroy'])->name('residents.destroy');
+    
+    // RW (neighbourhood) CRUD
+    Route::get('/rws', [\App\Http\Controllers\RWController::class, 'index'])->name('rws.index');
+    Route::get('/rws/create', [\App\Http\Controllers\RWController::class, 'create'])->name('rws.create');
+    Route::post('/rws', [\App\Http\Controllers\RWController::class, 'store'])->name('rws.store');
+    Route::get('/rws/{rw}', [\App\Http\Controllers\RWController::class, 'show'])->name('rws.show');
+    Route::get('/rws/{rw}/edit', [\App\Http\Controllers\RWController::class, 'edit'])->name('rws.edit');
+    Route::put('/rws/{rw}', [\App\Http\Controllers\RWController::class, 'update'])->name('rws.update');
+    Route::delete('/rws/{rw}', [\App\Http\Controllers\RWController::class, 'destroy'])->name('rws.destroy');
+
+    // RT (neighbourhood block) CRUD
+    Route::get('/rts', [\App\Http\Controllers\RTController::class, 'index'])->name('rts.index');
+    Route::get('/rts/create', [\App\Http\Controllers\RTController::class, 'create'])->name('rts.create');
+    Route::post('/rts', [\App\Http\Controllers\RTController::class, 'store'])->name('rts.store');
+    Route::get('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'show'])->name('rts.show');
+    Route::get('/rts/{rt}/edit', [\App\Http\Controllers\RTController::class, 'edit'])->name('rts.edit');
+    Route::put('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'update'])->name('rts.update');
+    Route::delete('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'destroy'])->name('rts.destroy');
 });

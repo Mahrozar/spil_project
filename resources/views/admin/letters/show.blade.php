@@ -1,16 +1,18 @@
 <x-app-layout>
+    @include('admin.partials.sidebar')
+    <div class="admin-content-area">
     <div class="p-6">
         <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Letter #{{ $letter->id }}</h2>
+            <h2 class="text-xl font-semibold mb-4">Surat #{{ $letter->id }}</h2>
 
             <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <div class="text-sm text-gray-500">User</div>
+                    <div class="text-sm text-gray-500">Pengguna</div>
                     <div class="font-medium">{{ $letter->user->name ?? '-' }} &lt;{{ $letter->user->email ?? '' }}&gt;</div>
                 </div>
 
                 <div>
-                    <div class="text-sm text-gray-500">Type</div>
+                    <div class="text-sm text-gray-500">Jenis</div>
                     <div class="font-medium">{{ $letter->type }}</div>
                 </div>
 
@@ -20,20 +22,21 @@
                 </div>
 
                 <div>
-                    <div class="text-sm text-gray-500">Description</div>
+                    <div class="text-sm text-gray-500">Deskripsi</div>
                     <div class="mt-2 text-gray-700">{{ $letter->description }}</div>
                 </div>
 
                 <div>
-                    <div class="text-sm text-gray-500">Created at</div>
+                    <div class="text-sm text-gray-500">Dibuat pada</div>
                     <div class="font-medium">{{ $letter->created_at->toDayDateTimeString() }}</div>
                 </div>
             </div>
 
-            <div class="mt-6 flex items-center gap-2">
-                <a href="{{ route('admin.letters') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Back</a>
-                <a href="{{ route('admin.letters.edit', $letter) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded">Edit</a>
+                <div class="mt-6 flex items-center gap-2">
+                <a href="{{ route('admin.letters') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Kembali</a>
+                <a href="{{ route('admin.letters.edit', $letter) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded">Ubah</a>
             </div>
         </div>
+    </div>
     </div>
 </x-app-layout>

@@ -1,17 +1,17 @@
 <x-app-layout>
     <div class="container">
-        <h1>Your Reports</h1>
+        <h1>Laporan Anda</h1>
 
-        <a href="{{ route('user.reports.create') }}" class="btn btn-primary mb-3">New Report</a>
+        <a href="{{ route('user.reports.create') }}" class="btn btn-primary mb-3">Laporan Baru</a>
 
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Category</th>
-                    <th>Location</th>
+                    <th>Kategori</th>
+                    <th>Lokasi</th>
                     <th>Status</th>
-                    <th>Created</th>
+                    <th>Dibuat</th>
                 </tr>
             </thead>
             <tbody>

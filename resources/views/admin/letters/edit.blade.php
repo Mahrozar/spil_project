@@ -1,7 +1,9 @@
 <x-app-layout>
+    @include('admin.partials.sidebar')
+    <div class="admin-content-area">
     <div class="p-6">
         <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Edit Letter #{{ $letter->id }}</h2>
+            <h2 class="text-xl font-semibold mb-4">Ubah Surat #{{ $letter->id }}</h2>
 
             <form method="POST" action="{{ route('admin.letters.update', $letter) }}">
                 @csrf
@@ -11,23 +13,24 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Status</label>
                         <select name="status" class="mt-1 block w-full border rounded-md px-3 py-2">
-                            <option value="pending" {{ $letter->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="approved" {{ $letter->status === 'approved' ? 'selected' : '' }}>Approved</option>
-                            <option value="rejected" {{ $letter->status === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                <option value="pending" {{ $letter->status === 'pending' ? 'selected' : '' }}>Menunggu</option>
+                                <option value="approved" {{ $letter->status === 'approved' ? 'selected' : '' }}>Disetujui</option>
+                                <option value="rejected" {{ $letter->status === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <textarea class="mt-1 block w-full border rounded-md px-3 py-2" rows="4" disabled>{{ $letter->description }}</textarea>
+                    <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                    <textarea class="mt-1 block w-full border rounded-md px-3 py-2" rows="4" disabled>{{ $letter->description }}</textarea>
                     </div>
                 </div>
 
                 <div class="mt-6 flex items-center gap-2">
-                    <a href="{{ route('admin.letters') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Cancel</a>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
+                    <a href="{{ route('admin.letters') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Batal</a>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded">Simpan</button>
                 </div>
             </form>
         </div>
+    </div>
     </div>
 </x-app-layout>
