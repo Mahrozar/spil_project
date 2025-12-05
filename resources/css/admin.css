@@ -398,6 +398,51 @@ tbody td {
     padding: 12px 8px;
     color: #0f172a;
 }
+
+/* Form / content improvements for admin pages */
+.admin-content-area .max-w-3xl {
+    max-width: 980px;
+}
+.admin-content-area .card {
+    background: #ffffffcc;
+    padding: 18px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.04);
+    border: 1px solid rgba(2,6,23,0.03);
+}
+.admin-content-area label.block {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0f172a;
+}
+.admin-content-area input[type="text"],
+.admin-content-area input[type="email"],
+.admin-content-area input[type="date"],
+.admin-content-area select,
+.admin-content-area textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(15,23,42,0.08);
+    background: #fff;
+}
+.admin-content-area .grid.grid-cols-1 {
+    gap: 12px;
+}
+.admin-content-area .flex.gap-2 {
+    margin-top: 8px;
+}
+
+/* Ensure the left sidebar doesn't overlap on small viewports */
+@media (min-width: 1200px) {
+    .admin-sidebar { left: 20px; }
+    .admin-content-area { margin-left: 300px; padding: 28px 24px; }
+}
+@media (max-width: 1199px) {
+    .admin-sidebar { position: relative; width: 100%; left: 0; top: 0; bottom: 0; margin-bottom: 18px; }
+    .admin-content-area { margin-left: 0; padding: 18px; }
+}
 .search-input {
     padding: 8px 10px;
     border-radius: 8px;

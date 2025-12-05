@@ -83,3 +83,26 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'update'])->name('rts.update');
     Route::delete('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'destroy'])->name('rts.destroy');
 });
+
+// Development helper: auto-login as admin (only in local environment)
+if (app()->environment('local')) {
+    Route::get('/dev/login-as-admin', function () {
+        $admin = \App\Models\User::where('role', 'admin')->first();
+        if (! $admin) {
+            return response('No admin user found', 404);
+        }
+        \Illuminate\Support\Facades\Auth::loginUsingId($admin->id);
+        return redirect('/admin/residents');
+    });
+
+    // Debug route to inspect auth/session/cookies (local only)
+    Route::get('/_debug-user', function (\Illuminate\Http\Request $request) {
+        return response()->json([
+            'auth_check' => auth()->check(),
+            'user' => auth()->user() ? auth()->user()->only(['id','name','email','role']) : null,
+            'session_id' => session()->getId(),
+            'cookies' => $request->cookies->all(),
+            'app_url' => config('app.url'),
+        ]);
+    });
+}
