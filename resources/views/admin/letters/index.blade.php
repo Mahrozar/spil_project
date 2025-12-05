@@ -1,9 +1,8 @@
 @push('styles')
-    @vite(['resources/css/admin.css', 'resources/js/admin.js'])
+    @vite(['resources/css/app.css', 'resources/js/admin.js'])
 @endpush
 
 <x-app-layout>
-    @include('admin.partials.sidebar')
     <div class="admin-content-area">
     <div class="dashboard-frame">
         <div class="mb-4 flex items-center justify-between">
@@ -72,17 +71,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $letter->created_at->format('Y-m-d') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
                                     <a href="{{ route('admin.letters.show', $letter) }}" class="text-blue-600 hover:text-blue-900 mr-2" title="Lihat">
-                                        <!-- Eye icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor"><path d="M10 3C5 3 1.2 6.3.2 10c1 3.7 4.8 7 9.8 7s8.8-3.3 9.8-7C18.8 6.3 15 3 10 3zM10 15a5 5 0 110-10 5 5 0 010 10z"/></svg>
+                                        <x-icon name="eye" class="h-5 w-5 inline" />
                                     </a>
                                     <a href="{{ route('admin.letters.edit', $letter) }}" class="text-yellow-500 hover:text-yellow-700 mr-2" title="Ubah">
-                                        <!-- Pencil icon -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 010 2.828L8.828 14H6v-2.828l8.586-8.586a2 2 0 012.828 0z"/></svg>
+                                        <x-icon name="pencil" class="h-5 w-5 inline" />
                                     </a>
                                     <form action="{{ route('admin.letters.destroy', $letter) }}" method="POST" class="inline">@csrf @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
-                                            <!-- Trash icon -->
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H3a1 1 0 100 2h14a1 1 0 100-2h-2V3a1 1 0 00-1-1H6zm3 6a1 1 0 00-2 0v6a1 1 0 002 0V8zm4 0a1 1 0 10-2 0v6a1 1 0 102 0V8z" clip-rule="evenodd"/></svg>
+                                            <x-icon name="trash" class="h-5 w-5 inline" />
                                         </button>
                                     </form>
                                 </td>

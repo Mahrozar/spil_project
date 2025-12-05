@@ -1,5 +1,4 @@
 <x-app-layout>
-    @include('admin.partials.sidebar')
     <div class="admin-content-area">
     <div class="max-w-3xl mx-auto p-6">
         <h2 class="text-lg font-semibold mb-4">Detail RW</h2>

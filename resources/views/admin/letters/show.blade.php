@@ -1,5 +1,4 @@
 <x-app-layout>
-    @include('admin.partials.sidebar')
     <div class="admin-content-area">
     <div class="p-6">
         <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">

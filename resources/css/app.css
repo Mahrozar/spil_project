@@ -2,14 +2,160 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Additional sources (kept from original) */
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+/* Dashboard specific tweaks */
 
-:root {
-    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
-        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
-        "Noto Color Emoji";
+/* Design tokens */
+:root{
+    --sidebar-width:16rem;
+    --sidebar-gap: 1.5rem;
+    --brand: #06b6d4;
+    --brand-dark: #0f766e;
+    --muted-500: #6b7280;
 }
+
+/* Sidebar */
+.sidebar { position: fixed; left: 0; top: 0; height: 100vh; width: var(--sidebar-width); background: #0f1724; color: #fff; padding: 1.25rem; display: flex; flex-direction: column; }
+.sidebar a { display: block; font-size: 0.95rem; color: #f1f5f9; padding: 0.6rem 0.75rem; border-radius: 0.375rem; text-decoration: none; transition: background .15s ease, transform .12s ease; }
+.sidebar a:hover { background: #111827; transform: translateX(4px); }
+.sidebar .logo { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.25rem; }
+.sidebar .logo .mark { width:2.75rem; height:2.75rem; background:#fff; color:#0f1724; border-radius:9999px; display:flex; align-items:center; justify-content:center; font-weight:800; }
+
+/* Main area (account for sidebar) */
+.main { margin-left: var(--sidebar-width); flex: 1 1 0%; background: #f8fafc; min-height: 100vh; }
+.topbar { position: sticky; top: 0; z-index: 20; background: #fff; box-shadow: 0 2px 6px rgba(2,6,23,0.06); padding: 0.9rem 1.5rem; display:flex; align-items:center; justify-content:space-between; }
+
+/* Cards and layout */
+.card { background: #fff; border-radius: 0.75rem; box-shadow: 0 10px 30px rgba(2,6,23,0.06); padding: 1rem; }
+.stat-card { background: #fff; border-radius: 0.75rem; box-shadow: 0 8px 28px rgba(2,6,23,0.06); padding: 1.25rem; display:flex; align-items:center; gap:1.25rem; justify-content: space-between; }
+.stat-label { font-size: 0.875rem; color: var(--muted-500); letter-spacing: 0.01em; }
+.stat-value { font-size: 1.75rem; font-weight:800; }
+
+/* Dashboard specific */
+.dashboard-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+.header-topbar { display:flex; align-items:center; gap:0.75rem; }
+.search-box { border: 1px solid #e5e7eb; border-radius:0.5rem; padding: 0.35rem 0.85rem; font-size:0.9rem; }
+.btn-green { background: var(--brand); color: white; padding: .55rem .85rem; border-radius: 12rem; box-shadow: 0 6px 20px rgba(6,182,212,0.12); }
+.avatar { width:2.4rem; height:2.4rem; border-radius:9999px; background:linear-gradient(180deg,#06b6d4,#0f766e); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700 }
+
+/* Charts */
+.chart-card { background:#fff; border-radius:0.75rem; box-shadow: 0 12px 34px rgba(2,6,23,0.06); padding:1.25rem; }
+
+@media (max-width: 768px){
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+}
+
+/* Admin dark mode overrides when inside admin area */
+.main.admin { background: #0b1220; color: #e6eef2; }
+.main.admin .card { background: #071025; color: #e6eef2; box-shadow: 0 6px 18px rgba(2,6,23,0.6); }
+.main.admin .stat-card { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+.main.admin .topbar { background: #041024; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.main.admin .sidebar { background: #041021; }
+.main.admin a { color: #cfeefb; }
+.main.admin .search-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); color: #e6eef2; }
+.main.admin .btn-green { background: var(--brand); }
+.main.admin .chart-legend .legend-swatch.letters { background: #06b6d4; }
+.main.admin .chart-legend .legend-swatch.reports { background: #10b981; }
+
+/* Legend & icons */
+.chart-legend { display:flex; gap:0.75rem; align-items:center }
+.chart-legend .legend-item { display:flex; gap:0.5rem; align-items:center; color: #758590; font-size: .95rem }
+.legend-swatch { width: 12px; height: 8px; border-radius: 3px; display:inline-block }
+
+.stat-icon svg { width: 28px; height: 28px; color: var(--brand); }
+.main.admin .stat-icon svg { color: #9feaf1 }
+
+/* Admin tables: ensure high contrast when table uses white background inside dark admin layout */
+/* Admin tables: ensure high contrast when table uses white background inside dark admin layout */
+/* Use broad selectors so tables using utility classes (bg-white, shadow) get readable dark text */
+.main.admin table,
+.main.admin .bg-white table,
+.main.admin .card table {
+    color: #111827 !important; /* dark text for readability on white table surfaces */
+}
+.main.admin table thead th,
+.main.admin .bg-white table thead th,
+.main.admin .card table thead th {
+    color: #111827 !important; /* stronger heading color */
+    font-weight: 600 !important;
+}
+.main.admin table tbody td,
+.main.admin .bg-white table tbody td,
+.main.admin .card table tbody td {
+    color: #111827 !important;
+    opacity: 1 !important;
+}
+.main.admin .bg-white,
+.main.admin .card .bg-white {
+    background-color: #ffffff !important;
+    color: inherit !important;
+}
+.main.admin a,
+.main.admin .bg-white a,
+.main.admin table a {
+    color: #2563eb !important; /* visible blue for action links */
+}
+.main.admin .text-red-600,
+.main.admin .bg-white .text-red-600 {
+    color: #dc2626 !important; /* ensure delete links remain red */
+}
+.main.admin .text-yellow-500,
+.main.admin .bg-white .text-yellow-500 {
+    color: #d97706 !important; /* ensure edit/warning links visible */
+}
+.main.admin table tr:hover td,
+.main.admin .bg-white table tr:hover td {
+    background: #fbfbfb !important; /* subtle hover within the white table */
+}
+
+/* Ensure white cards/panels inside the dark admin layout use dark, readable text */
+.main.admin .card,
+.main.admin .bg-white,
+.main.admin .card .bg-white {
+    background-color: #ffffff !important;
+    color: #0f1724 !important;
+}
+
+/* Headings and strong labels inside white cards */
+.main.admin .card h1,
+.main.admin .card h2,
+.main.admin .card h3,
+.main.admin .card h4,
+.main.admin .card h5,
+.main.admin .card h6,
+.main.admin .card .font-medium,
+.main.admin .card .font-semibold,
+.main.admin .card .font-bold,
+.main.admin .card .text-sm,
+.main.admin .card .text-xs {
+    color: #0f1724 !important;
+    opacity: 1 !important;
+}
+
+/* Body copy, descriptions, metadata */
+.main.admin .card p,
+.main.admin .card span,
+.main.admin .card div,
+.main.admin .card small,
+.main.admin .card label {
+    color: #374151 !important; /* slightly muted but readable */
+    opacity: 1 !important;
+}
+
+/* Buttons and action links inside cards */
+.main.admin .card a,
+.main.admin .card button {
+    color: #2563eb !important;
+}
+.main.admin .card .text-red-600 { color: #dc2626 !important; }
+.main.admin .card .text-yellow-500 { color: #d97706 !important; }
+
+/* Fix very light utility classes that may be applied inside cards */
+.main.admin .card .text-gray-200,
+.main.admin .card .text-gray-300,
+.main.admin .card .text-slate-200,
+.main.admin .card .text-slate-300 {
+    color: #6b7280 !important;
+}
+
+/* Debug styles removed. Temporary admin outlines were previously here for diagnostics. */

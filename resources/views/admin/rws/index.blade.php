@@ -1,5 +1,4 @@
 <x-app-layout>
-    @include('admin.partials.sidebar')
     <div class="admin-content-area">
     <div class="max-w-4xl mx-auto p-6">
         <div class="flex items-center justify-between mb-4">

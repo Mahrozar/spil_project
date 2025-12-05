@@ -1,46 +1,25 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-        {{-- additional per-page styles/scripts --}}
-        @stack('styles')
-    </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-            @include('layouts.navigation')
-
-            <!-- Flash / Alerts -->
-            @includeIf('components.alert')
-
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <!-- Page Content -->
-            <main>
-                <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <div class="px-4 py-6 sm:px-0">
-                        {{ $slot }}
-                    </div>
-                </div>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'SPIL') }}</title>
+    @vite(['resources/css/app.css','resources/js/app.js'])
+    {{-- Fallback for when Vite is not running (useful in production or when dev server not active) --}}
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
+    @stack('head')
+</head>
+@php $isAdmin = request()->is('admin/*'); @endphp
+<body class="font-sans antialiased {{ $isAdmin ? 'bg-slate-900 text-slate-100' : '' }}">
+    <div class="flex">
+        <x-sidebar />
+        <div class="main {{ $isAdmin ? 'admin' : '' }}">
+            <x-topbar />
+            <main class="p-6">
+                {{ $slot ?? '' }}
             </main>
         </div>
-        @stack('scripts')
-    </body>
+    </div>
+    @stack('scripts')
+</body>
 </html>

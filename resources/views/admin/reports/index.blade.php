@@ -1,5 +1,4 @@
 <x-app-layout>
-    @include('admin.partials.sidebar')
     <div class="admin-content-area">
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b">
