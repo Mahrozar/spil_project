@@ -4,10 +4,24 @@
     <h2 class="text-lg font-semibold mb-4">Detail Penduduk</h2>
 
         <div class="bg-white shadow rounded p-4">
+            @php
+                $dobDisplay = '-';
+                $dob = $resident->dob ?? null;
+                if ($dob instanceof \Carbon\Carbon) {
+                    $dobDisplay = $dob->toDateString();
+                } elseif (!empty($dob)) {
+                    try {
+                        $dobDisplay = \Carbon\Carbon::parse($dob)->toDateString();
+                    } catch (\Exception $e) {
+                        $dobDisplay = '-';
+                    }
+                }
+            @endphp
+
             <div class="grid grid-cols-1 gap-2">
                 <div><strong>NIK:</strong> {{ $resident->nik ?? '-' }}</div>
                 <div><strong>Nama:</strong> {{ $resident->name }}</div>
-                <div><strong>Tanggal Lahir:</strong> {{ $resident->dob?->toDateString() ?? '-' }}</div>
+                <div><strong>Tanggal Lahir:</strong> {{ $dobDisplay }}</div>
                 <div><strong>RT / RW:</strong> {{ $resident->rt->name ?? '-' }} / {{ $resident->rw->name ?? '-' }}</div>
                 <div><strong>Telepon:</strong> {{ $resident->phone ?? '-' }}</div>
                 <div><strong>Alamat:</strong> {{ $resident->address ?? '-' }}</div>

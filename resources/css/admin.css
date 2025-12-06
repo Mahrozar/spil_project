@@ -165,10 +165,29 @@ body {
 /* Chart canvas sizing fallback */
 #activityChart {
     width: 100%;
-    height: 320px;
+    max-height: 240px;
+    height: 200px;
     display: block;
 }
 
+@media (max-width: 640px) {
+    /* Smaller height on narrow viewports */
+    #activityChart { height: 160px; max-height: 180px; }
+}
+
+/* Specific admin dashboard chart limit to prevent oversized doughnuts */
+#adminChart {
+    width: 100%;
+    max-width: 360px !important; /* stricter cap */
+    height: auto !important;    /* allow height to follow aspect ratio */
+    max-height: 360px !important; /* cap height */
+    display: block;
+    margin: 0 auto; /* center inside column */
+}
+
+@media (min-width: 1024px) {
+    #adminChart { max-width: 360px !important; max-height: 360px !important; }
+}
 /* Table and letters page fallbacks */
 .main-card,
 .widget,

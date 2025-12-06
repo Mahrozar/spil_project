@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Letter;
 use App\Models\Report;
+use App\Models\Resident;
+use App\Models\RT;
+use App\Models\RW;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -52,6 +55,81 @@ class AdminController extends Controller
             'lettersData',
             'reportsData'
         ));
+    }
+
+    /**
+     * Return JSON data for dashboard charts for a given date range.
+     * Accepts `from` and `to` as YYYY-MM-DD. If not provided, returns last 12 months.
+     */
+    public function dashboardData(Request $request)
+    {
+        $user = auth()->user();
+        if (! $user || ($user->role ?? 'user') !== 'admin') {
+            return response()->json(['error' => 'Forbidden'], 403);
+        }
+
+        // parse from/to or default to last 12 months
+        $from = $request->query('from');
+        $to = $request->query('to');
+
+        if ($from && $to) {
+            try {
+                $start = \Carbon\Carbon::createFromFormat('Y-m-d', $from)->startOfMonth();
+                $end = \Carbon\Carbon::createFromFormat('Y-m-d', $to)->endOfMonth();
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid date format'], 422);
+            }
+        } else {
+            $end = now()->endOfMonth();
+            $start = now()->subMonths(11)->startOfMonth();
+        }
+
+        // Build months sequence between start and end (inclusive) grouped by month
+        $months = [];
+        $labels = [];
+        $cursor = $start->copy();
+        while ($cursor->lte($end)) {
+            $key = $cursor->format('Y-m');
+            $months[] = $key;
+            $labels[] = $cursor->format('M Y');
+            $cursor->addMonth();
+        }
+
+        $lettersByMonth = Letter::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
+            ->whereBetween('created_at', [$start->toDateString(), $end->toDateString()])
+            ->groupBy('ym')
+            ->orderBy('ym')
+            ->pluck('count', 'ym')
+            ->toArray();
+
+        $reportsByMonth = Report::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
+            ->whereBetween('created_at', [$start->toDateString(), $end->toDateString()])
+            ->groupBy('ym')
+            ->orderBy('ym')
+            ->pluck('count', 'ym')
+            ->toArray();
+
+        $lettersData = array_map(fn($m) => $lettersByMonth[$m] ?? 0, $months);
+        $reportsData = array_map(fn($m) => $reportsByMonth[$m] ?? 0, $months);
+
+        $lettersCount = Letter::whereBetween('created_at', [$start->toDateString(), $end->toDateString()])->count();
+        $reportsCount = Report::whereBetween('created_at', [$start->toDateString(), $end->toDateString()])->count();
+
+        $residentsCount = Resident::whereBetween('created_at', [$start->toDateString(), $end->toDateString()])->count();
+        $rtCount = RT::whereBetween('created_at', [$start->toDateString(), $end->toDateString()])->count();
+        $rwCount = RW::whereBetween('created_at', [$start->toDateString(), $end->toDateString()])->count();
+
+        return response()->json([
+            'labels' => $labels,
+            'months' => $months,
+            'lettersData' => $lettersData,
+            'reportsData' => $reportsData,
+            'lettersCount' => $lettersCount,
+            'reportsCount' => $reportsCount,
+            'residentsCount' => $residentsCount,
+            'rtCount' => $rtCount,
+            'rwCount' => $rwCount,
+        ]);
     }
 
     public function lettersIndex()

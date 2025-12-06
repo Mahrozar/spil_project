@@ -3,7 +3,8 @@
 */
 
 body {
-    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    /* Use soft violet background to match app's purple/welcome palette */
+    background: linear-gradient(180deg, #f3e8ff 0%, #eef2ff 100%);
 }
 
 .auth-card {
@@ -131,6 +132,22 @@ body {
     width: 100%;
     height: auto;
     border-radius: 10px;
+}
+
+/* Prevent the left illustration from overflowing and becoming huge on wide screens */
+.auth-left {
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-left .auth-illustration {
+    display: block;
+    max-width: 420px;
+    max-height: 320px;
+    width: 100%;
+    height: auto;
+    margin: 0 auto;
+    object-fit: contain;
 }
 
 /* Google button */

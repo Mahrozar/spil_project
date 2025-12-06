@@ -4,7 +4,7 @@
             <div class="auth-left">
                 <h1>Welcome to SPIL</h1>
                 <p>Manage letters, track reports, and stay on top of your organization's communications. Secure and simple.</p>
-                <img src="{{ asset('images/auth-illustration.svg') }}" alt="illustration" class="auth-illustration" />
+                <img src="{{ asset('images/auth-illustration.svg') }}" alt="illustration" class="auth-illustration" style="max-width:420px;max-height:320px;width:100%;height:auto;display:block;margin:0 auto;object-fit:contain;" />
             </div>
 
             <div class="auth-right">
@@ -78,4 +78,3 @@
         </div>
     </div>
 </x-guest-layout>
-                        <div class="auth-footer mt-6">

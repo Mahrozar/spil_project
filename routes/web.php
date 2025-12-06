@@ -6,7 +6,16 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminController;
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        $user = auth()->user();
+        if (($user->role ?? null) === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('dashboard');
+    }
+
+    return redirect()->route('login');
 });
 
 // Include authentication routes provided by Breeze (login, register, etc.)
@@ -14,12 +23,6 @@ require __DIR__.'/auth.php';
 
 // Default dashboard route used by Breeze after login.
 Route::middleware('auth')->get('/dashboard', function () {
-    $user = auth()->user();
-    // If user has role 'admin' redirect to admin dashboard
-    if (($user->role ?? null) === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-
     return view('dashboard');
 })->name('dashboard');
 
@@ -46,6 +49,7 @@ Route::middleware('auth')->group(function () {
 // Admin routes (dashboard + management views)
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard/data', [AdminController::class, 'dashboardData'])->name('dashboard.data');
     // management pages
     Route::get('/letters', [AdminController::class, 'lettersIndex'])->name('letters');
     Route::get('/letters/{letter}', [AdminController::class, 'letterShow'])->name('letters.show');

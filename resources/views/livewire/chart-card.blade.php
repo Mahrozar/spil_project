@@ -1,4 +1,4 @@
-@props(['title' => '', 'labels' => [], 'letters' => [], 'reports' => []])
+@props(['title' => '', 'labels' => [], 'letters' => [], 'reports' => [], 'height' => 'h-36 md:h-44'])
 
 <div class="chart-card">
     <div class="flex items-center justify-between mb-4">
@@ -13,5 +13,5 @@
         <div class="legend-item"><span class="legend-swatch reports"></span> Laporan</div>
     </div>
 
-    <canvas id="activityChart" data-labels='{{ json_encode($labels) }}' data-letters='{{ json_encode($letters) }}' data-reports='{{ json_encode($reports) }}'></canvas>
+    <canvas id="activityChart" class="w-full {{ $height }}" data-labels='{{ json_encode($labels) }}' data-letters='{{ json_encode($letters) }}' data-reports='{{ json_encode($reports) }}'></canvas>
 </div>
