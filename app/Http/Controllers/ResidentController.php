@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Resident;
 use App\Models\RT;
 use App\Models\RW;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ResidentsImport;
+use App\Exports\ResidentsExport;
 use Illuminate\Http\Request;
 
 class ResidentController extends Controller
@@ -93,5 +98,99 @@ class ResidentController extends Controller
         $this->authorize('delete', $resident);
         $resident->delete();
         return redirect()->route('admin.residents.index')->with('success', 'Resident deleted.');
+    }
+
+    /**
+     * Import residents from uploaded CSV/XLSX
+     */
+    public function import(Request $request)
+    {
+        $this->authorize('create', Resident::class);
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx,xls',
+        ]);
+
+        // Use maatwebsite/excel import and collect summary from importer
+        $import = new ResidentsImport();
+        Excel::import($import, $request->file('file'));
+
+        $msg = sprintf("Import selesai. Dibuat: %d, Diperbarui: %d, Dilewati: %d", $import->created, $import->updated, $import->skipped);
+
+        // Save a JSON summary file for audit in storage/app/imports
+        try {
+            $summary = [
+                'user_id' => auth()->id(),
+                'file' => $request->file('file')->getClientOriginalName(),
+                'created' => $import->created,
+                'updated' => $import->updated,
+                'skipped' => $import->skipped,
+                'timestamp' => now()->toDateTimeString(),
+            ];
+            $filename = 'imports/import-' . now()->format('Ymd-His') . '.json';
+            Storage::put($filename, json_encode($summary, JSON_PRETTY_PRINT));
+            Log::info('Residents import completed', $summary);
+        } catch (\Exception $e) {
+            Log::error('Failed to write import summary: ' . $e->getMessage());
+        }
+
+        // Flash a persistent import_summary and a brief success message
+        return redirect()->route('admin.residents.index')->with([
+            'success' => $msg,
+            'import_summary' => $summary ?? null,
+        ]);
+    }
+
+    /**
+     * Export residents to XLSX
+     */
+    public function export()
+    {
+        $this->authorize('viewAny', Resident::class);
+        return Excel::download(new ResidentsExport, 'residents.xlsx');
+    }
+
+    /**
+     * Show list of import summary files (storage/app/imports)
+     */
+    public function importsIndex()
+    {
+        $this->authorize('viewAny', Resident::class);
+
+        $files = Storage::files('imports');
+        // Build list of summaries
+        $summaries = [];
+        foreach ($files as $f) {
+            try {
+                $content = Storage::get($f);
+                $json = json_decode($content, true);
+            } catch (\Exception $e) {
+                $json = null;
+            }
+            $summaries[] = [
+                'path' => $f,
+                'file' => basename($f),
+                'summary' => $json,
+                'timestamp' => Storage::lastModified($f),
+            ];
+        }
+
+        // sort by timestamp desc
+        usort($summaries, fn($a,$b) => $b['timestamp'] <=> $a['timestamp']);
+
+        return view('admin.imports.index', compact('summaries'));
+    }
+
+    /**
+     * Download a specific import summary JSON file
+     */
+    public function downloadImport($file)
+    {
+        $this->authorize('viewAny', Resident::class);
+        $safe = basename($file);
+        $path = 'imports/' . $safe;
+        if (! Storage::exists($path)) {
+            abort(404);
+        }
+        return Storage::download($path);
     }
 }

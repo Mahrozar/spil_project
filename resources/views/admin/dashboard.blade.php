@@ -44,7 +44,7 @@
                         </select>
                         <input type="date" id="fromDate" class="text-sm border rounded px-2 py-1 hidden" />
                         <input type="date" id="toDate" class="text-sm border rounded px-2 py-1 hidden" />
-                        <button id="applyRange" class="ml-2 px-3 py-1 bg-violet-600 text-white rounded text-sm">Terapkan</button>
+                        <button id="applyRange" aria-label="Terapkan" class="ml-2 px-3 py-1 bg-violet-600 text-white rounded text-sm"><span class="text-white">Terapkan</span></button>
                     </div>
                     <!-- Legend on top to save horizontal space -->
                     <div class="w-full">
@@ -69,6 +69,8 @@
     </div>
 
     <!-- Summary cards underneath the chart -->
+    @include('admin._kpi_cards')
+
     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-4">
         <x-stat-card title="Surat" :value="$lettersCount" :icon="view('components.icon', ['name' => 'eye', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
 
@@ -80,6 +82,8 @@
 
         <x-stat-card title="RW" :value="\App\Models\RW::count()" :icon="view('components.icon', ['name' => 'users', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
     </div>
+
+    @include('admin._recent_activity')
 
     <div class="card">
         <h3 class="font-semibold mb-3">Aktivitas Bulanan</h3>

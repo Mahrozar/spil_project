@@ -7,6 +7,8 @@ use App\Models\Report;
 use App\Models\Resident;
 use App\Models\RT;
 use App\Models\RW;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -18,8 +20,47 @@ class AdminController extends Controller
             abort(403);
         }
 
+        // Totals (overall)
         $lettersCount = Letter::count();
         $reportsCount = Report::count();
+        $residentsTotal = Resident::count();
+        $rtTotal = RT::count();
+        $rwTotal = RW::count();
+
+        // Compare last 30 days vs previous 30 days for simple percent change
+        $now = now();
+        $curStart = $now->copy()->subDays(29)->startOfDay();
+        $curEnd = $now->copy()->endOfDay();
+        $prevStart = $now->copy()->subDays(59)->startOfDay();
+        $prevEnd = $now->copy()->subDays(30)->endOfDay();
+
+        $lettersCur = Letter::whereBetween('created_at', [$curStart, $curEnd])->count();
+        $lettersPrev = Letter::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+
+        $reportsCur = Report::whereBetween('created_at', [$curStart, $curEnd])->count();
+        $reportsPrev = Report::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+
+        $residentsCur = Resident::whereBetween('created_at', [$curStart, $curEnd])->count();
+        $residentsPrev = Resident::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+
+        $rtCur = RT::whereBetween('created_at', [$curStart, $curEnd])->count();
+        $rtPrev = RT::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+
+        $rwCur = RW::whereBetween('created_at', [$curStart, $curEnd])->count();
+        $rwPrev = RW::whereBetween('created_at', [$prevStart, $prevEnd])->count();
+
+        $percent = function($cur, $prev) {
+            if ($prev <= 0) return $cur > 0 ? 100 : 0;
+            return round((($cur - $prev) / max(1, $prev)) * 100, 1);
+        };
+
+        $kpis = [
+            'surat' => ['total' => $lettersCount, 'period' => $lettersCur, 'change' => $percent($lettersCur, $lettersPrev), 'delta' => $lettersCur - $lettersPrev],
+            'laporan' => ['total' => $reportsCount, 'period' => $reportsCur, 'change' => $percent($reportsCur, $reportsPrev), 'delta' => $reportsCur - $reportsPrev],
+            'penduduk' => ['total' => $residentsTotal, 'period' => $residentsCur, 'change' => $percent($residentsCur, $residentsPrev), 'delta' => $residentsCur - $residentsPrev],
+            'rt' => ['total' => $rtTotal, 'period' => $rtCur, 'change' => $percent($rtCur, $rtPrev), 'delta' => $rtCur - $rtPrev],
+            'rw' => ['total' => $rwTotal, 'period' => $rwCur, 'change' => $percent($rwCur, $rwPrev), 'delta' => $rwCur - $rwPrev],
+        ];
 
         // Monthly counts for the last 12 months
         $lettersByMonth = Letter::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
@@ -48,12 +89,78 @@ class AdminController extends Controller
         $lettersData = array_map(fn($m) => $lettersByMonth[$m] ?? 0, $months);
         $reportsData = array_map(fn($m) => $reportsByMonth[$m] ?? 0, $months);
 
+        // Recent activity: merge latest entries from letters, reports, residents
+        $lettersRecent = Letter::latest()->take(10)->get();
+        $reportsRecent = Report::latest()->take(10)->get();
+        $residentsRecent = Resident::latest()->take(10)->get();
+
+        $events = [];
+        foreach ($lettersRecent as $l) {
+            $events[] = [
+                'time' => $l->created_at,
+                'message' => "Surat (#{$l->id}) dibuat",
+                'type' => 'surat',
+                'link' => Route::has('admin.letters.show') ? route('admin.letters.show', $l) : null,
+            ];
+        }
+        foreach ($reportsRecent as $r) {
+            $events[] = [
+                'time' => $r->created_at,
+                'message' => "Laporan (#{$r->id}) dibuat",
+                'type' => 'laporan',
+                'link' => Route::has('admin.reports.show') ? route('admin.reports.show', $r) : null,
+            ];
+        }
+        foreach ($residentsRecent as $p) {
+            $events[] = [
+                'time' => $p->created_at,
+                'message' => "Penduduk ditambahkan: {$p->name}",
+                'type' => 'penduduk',
+                'link' => Route::has('admin.residents.show') ? route('admin.residents.show', $p) : null,
+            ];
+        }
+
+        // Include recent import summaries stored in storage/app/imports
+        try {
+            $importFiles = Storage::files('imports');
+            rsort($importFiles); // newest first
+            $count = 0;
+            foreach ($importFiles as $f) {
+                if ($count >= 5) break;
+                try {
+                    $raw = Storage::get($f);
+                    $json = json_decode($raw, true);
+                    if ($json) {
+                        $events[] = [
+                            'time' => !empty($json['timestamp']) ? \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $json['timestamp']) : now(),
+                            'message' => sprintf("Import: %s — Dibuat: %d, Diperbarui: %d, Dilewati: %d", $json['file'] ?? basename($f), $json['created'] ?? 0, $json['updated'] ?? 0, $json['skipped'] ?? 0),
+                            'type' => 'import',
+                            'link' => Route::has('admin.imports.download') ? route('admin.imports.download', basename($f)) : null,
+                        ];
+                    }
+                } catch (\Exception $e) {
+                    // ignore unreadable file
+                }
+                $count++;
+            }
+        } catch (\Exception $e) {
+            // storage may not be available; ignore
+        }
+
+        // sort by time desc and take top 10
+        usort($events, function($a, $b){
+            return $b['time']->getTimestamp() <=> $a['time']->getTimestamp();
+        });
+        $recentActivities = array_slice($events, 0, 10);
+
         return view('admin.dashboard', compact(
             'lettersCount',
             'reportsCount',
             'labels',
             'lettersData',
-            'reportsData'
+            'reportsData',
+            'kpis',
+            'recentActivities'
         ));
     }
 

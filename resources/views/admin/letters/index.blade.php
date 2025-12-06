@@ -121,12 +121,6 @@
                         }
                     })();
                 </script>
-                </div>
-
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="text-sm text-gray-600">Menampilkan {{ $letters->firstItem() ?? 0 }} - {{ $letters->lastItem() ?? 0 }} dari {{ $letters->total() ?? 0 }}</div>
-                    <div>{{ $letters->withQueryString()->links() }}</div>
-                </div>
             </div>
         </div>
     </div>

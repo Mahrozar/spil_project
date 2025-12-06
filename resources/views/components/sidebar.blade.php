@@ -6,12 +6,13 @@
         </a>
     </div>
     <nav class="flex-1">
-        <a href="{{ route('dashboard') }}" class="block py-2 px-2 rounded {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+        <a href="{{ request()->is('admin/*') ? route('admin.dashboard') : route('dashboard') }}" class="block py-2 px-2 rounded {{ request()->routeIs('dashboard') || request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a>
         <a href="{{ route('admin.letters') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.letters*') ? 'active' : '' }}">Letters</a>
         <a href="{{ route('admin.reports') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.reports*') ? 'active' : '' }}">Reports</a>
         <a href="{{ route('admin.rws.index') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.rws*') ? 'active' : '' }}">RW</a>
         <a href="{{ route('admin.rts.index') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.rts*') ? 'active' : '' }}">RT</a>
         <a href="{{ route('admin.residents.index') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.residents*') ? 'active' : '' }}">Residents</a>
+        <a href="{{ route('admin.imports.index') }}" class="block py-2 px-2 rounded {{ request()->routeIs('admin.imports*') ? 'active' : '' }}">Riwayat Import</a>
     </nav>
     <div class="mt-6">
         <a href="{{ route('dashboard') }}" class="block py-2 px-2 rounded text-xs text-white">View site</a>

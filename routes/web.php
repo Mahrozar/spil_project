@@ -68,6 +68,12 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/residents/{resident}/edit', [\App\Http\Controllers\ResidentController::class, 'edit'])->name('residents.edit');
     Route::put('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'update'])->name('residents.update');
     Route::delete('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'destroy'])->name('residents.destroy');
+    // Import / Export residents
+    Route::post('/residents/import', [\App\Http\Controllers\ResidentController::class, 'import'])->name('residents.import');
+    Route::get('/residents/export', [\App\Http\Controllers\ResidentController::class, 'export'])->name('residents.export');
+    // Import logs listing / download
+    Route::get('/imports', [\App\Http\Controllers\ResidentController::class, 'importsIndex'])->name('imports.index');
+    Route::get('/imports/download/{file}', [\App\Http\Controllers\ResidentController::class, 'downloadImport'])->name('imports.download');
     
     // RW (neighbourhood) CRUD
     Route::get('/rws', [\App\Http\Controllers\RWController::class, 'index'])->name('rws.index');
