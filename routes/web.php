@@ -4,19 +4,43 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LetterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProfilDesaController;
+use App\Http\Controllers\LayananDesaController;
+use App\Http\Controllers\LandingPageController;
 
+// Public landing page (accessible without authentication)
 Route::get('/', function () {
-    if (auth()->check()) {
-        $user = auth()->user();
-        if (($user->role ?? null) === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-
-        return redirect()->route('dashboard');
-    }
-
-    return redirect()->route('login');
+    return view('frontend.home');
+})->name('landing-page');
+// Route untuk Profil Desa
+Route::prefix('profil')->group(function () {
+    Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
+    Route::get('/sejarah', [ProfilDesaController::class, 'sejarah'])->name('profil.sejarah');
+    Route::get('/struktur', [ProfilDesaController::class, 'struktur'])->name('profil.struktur');
 });
+
+// Route untuk Layanan Desa
+Route::prefix('layanan')->group(function () {
+    Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
+    Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
+    Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
+    Route::post('/surat-online', [LayananDesaController::class, 'submitSurat'])->name('layanan.submit-surat');
+});
+Route::get('/demo', [LandingPageController::class, 'demo'])->name('demo');
+Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kontak.kirim'); 
+
+// Route::get('/', function () {
+//     if (auth()->check()) {
+//         $user = auth()->user();
+//         if (($user->role ?? null) === 'admin') {
+//             return redirect()->route('admin.dashboard');
+//         }
+
+//         return redirect()->route('dashboard');
+//     }
+
+//     return redirect()->route('login');
+// });
 
 // Include authentication routes provided by Breeze (login, register, etc.)
 require __DIR__.'/auth.php';

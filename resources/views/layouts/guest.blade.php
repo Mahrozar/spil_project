@@ -5,23 +5,62 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>@yield('title', 'SIDeKa - Desa Cicangkang Hilir')</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Scripts & page-specific styles -->
-    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/css/auth.css'])
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: '#1e40af',
+                            secondary: '#3b82f6',
+                            accent: '#10b981',
+                            dark: '#1f2937',
+                            light: '#f8fafc'
+                        },
+                        fontFamily: {
+                            'poppins': ['Poppins', 'sans-serif'],
+                        }
+                    }
+                }
+            }
+        </script>
+
+        <!-- Custom styles -->
+        <style>
+            body {
+                font-family: 'Poppins', sans-serif;
+                background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+                min-height: 100vh;
+            }
+            
+            .auth-card {
+                animation: slideUp 0.5s ease-out;
+            }
+            
+            @keyframes slideUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+        
+        @stack('styles')
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex items-center justify-center pt-6 sm:pt-0">
-            <div class="w-full">
-                {{-- Application logo removed for a cleaner auth page --}}
-
-                {{-- render slot; auth pages provide their own framed container --}}
-                {{ $slot }}
-            </div>
-        </div>
+    <body class="font-poppins antialiased">
+        @yield('content')
+        
+        @stack('scripts')
     </body>
 </html>
