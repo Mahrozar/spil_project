@@ -4,8 +4,14 @@
     <div class="max-w-7xl mx-auto p-6">
         <div class="flex items-center justify-between mb-4">
             <div>
-                <h2 class="text-xl font-semibold">Penduduk</h2>
-                <p class="text-sm text-gray-500">Kelola data penduduk (RT/RW).</p>
+                @if(!empty($kkNumber))
+                    <h2 class="text-xl font-semibold">Anggota Kartu Keluarga</h2>
+                    <p class="text-sm text-gray-500">Daftar anggota untuk No. KK: <strong>{{ $kkNumber }}</strong></p>
+                    <p class="text-sm text-gray-500 mt-1"><a href="{{ route('admin.households.index') }}" class="text-blue-600">&larr; Kembali ke daftar Kartu Keluarga</a></p>
+                @else
+                    <h2 class="text-xl font-semibold">Penduduk</h2>
+                    <p class="text-sm text-gray-500">Kelola data penduduk (RT/RW).</p>
+                @endif
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('admin.residents.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700">Penduduk Baru</a>
@@ -59,9 +65,16 @@
                     </thead>
                     <tbody class="bg-white divide-y">
                         @foreach($residents as $r)
-                        <tr>
+                        <tr class="{{ (!empty($kkNumber) && $r->is_head) ? 'bg-yellow-50' : '' }}">
                             <td class="px-4 py-2 text-sm">{{ $r->nik }}</td>
-                            <td class="px-4 py-2 text-sm">{{ $r->name }}</td>
+                            <td class="px-4 py-2 text-sm">
+                                <div class="flex items-center gap-2">
+                                    <div>{{ $r->name }}</div>
+                                    @if(!empty($kkNumber) && $r->is_head)
+                                        <span class="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-800 text-xs">Kepala</span>
+                                    @endif
+                                </div>
+                            </td>
                             <td class="px-4 py-2 text-sm">{{ $r->rt->name ?? '-' }} / {{ $r->rw->name ?? '-' }}</td>
                             <td class="px-4 py-2 text-sm">{{ $r->phone }}</td>
                             <td class="px-4 py-2 text-right text-sm">

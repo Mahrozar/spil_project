@@ -14,10 +14,32 @@ use Illuminate\Http\Request;
 
 class ResidentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Resident::class);
-        $q = request('q');
+
+        $q = $request->query('q');
+        $filter = $request->query('filter');
+        $kkNumber = $request->query('kk_number');
+
+        // If viewing members of a specific Kartu Keluarga (KK)
+        if ($filter === 'kk' && $kkNumber) {
+            $query = Resident::with(['rt', 'rw'])
+                ->where('kk_number', $kkNumber)
+                ->orderBy('name');
+
+            if ($q) {
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('name', 'like', "%{$q}%")
+                        ->orWhere('nik', 'like', "%{$q}%");
+                });
+            }
+
+            $residents = $query->paginate(25)->withQueryString();
+            return view('admin.residents.index', compact('residents', 'kkNumber'));
+        }
+
+        // Default residents listing
         $query = Resident::with(['rt', 'rw'])->latest();
         if ($q) {
             $query->where('name', 'like', "%{$q}%")

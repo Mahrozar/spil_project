@@ -9,9 +9,7 @@ use App\Http\Controllers\LayananDesaController;
 use App\Http\Controllers\LandingPageController;
 
 // Public landing page (accessible without authentication)
-Route::get('/', function () {
-    return view('frontend.home');
-})->name('landing-page');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
 // Route untuk Profil Desa
 Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
@@ -98,6 +96,11 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Import logs listing / download
     Route::get('/imports', [\App\Http\Controllers\ResidentController::class, 'importsIndex'])->name('imports.index');
     Route::get('/imports/download/{file}', [\App\Http\Controllers\ResidentController::class, 'downloadImport'])->name('imports.download');
+
+    // Households / Kartu Keluarga listing
+    Route::get('/households', [\App\Http\Controllers\Admin\HouseholdController::class, 'index'])->name('households.index');
+    Route::post('/households/assign-head', [\App\Http\Controllers\Admin\HouseholdController::class, 'assignHead'])->name('households.assignHead');
+    Route::post('/households/update-kk', [\App\Http\Controllers\Admin\HouseholdController::class, 'updateKk'])->name('households.updateKk');
     
     // RW (neighbourhood) CRUD
     Route::get('/rws', [\App\Http\Controllers\RWController::class, 'index'])->name('rws.index');
@@ -116,6 +119,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/rts/{rt}/edit', [\App\Http\Controllers\RTController::class, 'edit'])->name('rts.edit');
     Route::put('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'update'])->name('rts.update');
     Route::delete('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'destroy'])->name('rts.destroy');
+
+    // Admin-editable landing/home content
+    Route::get('/settings/home', [\App\Http\Controllers\Admin\SettingController::class, 'editHome'])->name('settings.home.edit');
+    Route::post('/settings/home', [\App\Http\Controllers\Admin\SettingController::class, 'updateHome'])->name('settings.home.update');
+    // Simple media manager for uploaded home gallery
+    Route::get('/settings/media', [\App\Http\Controllers\Admin\SettingController::class, 'mediaIndex'])->name('settings.media.index');
+    Route::delete('/settings/media', [\App\Http\Controllers\Admin\SettingController::class, 'mediaDelete'])->name('settings.media.delete');
 });
 
 // Development helper: auto-login as admin (only in local environment)

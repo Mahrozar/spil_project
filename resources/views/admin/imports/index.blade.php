@@ -26,7 +26,7 @@
                                 <td class="px-4 py-2 text-sm">{{ $s['summary']['timestamp'] ?? '-' }}</td>
                                 <td class="px-4 py-2 text-sm">Created: {{ $s['summary']['created'] ?? '-' }} / Updated: {{ $s['summary']['updated'] ?? '-' }} / Skipped: {{ $s['summary']['skipped'] ?? '-' }}</td>
                                 <td class="px-4 py-2 text-right text-sm">
-                                    <a href="{{ route('imports.download', ['file' => $s['file']]) }}" class="px-3 py-2 bg-blue-600 text-white rounded">Download</a>
+                                    <a href="{{ route('admin.imports.download', ['file' => $s['file']]) }}" class="px-3 py-2 bg-blue-600 text-white rounded">Download</a>
                                 </td>
                             </tr>
                             @endforeach

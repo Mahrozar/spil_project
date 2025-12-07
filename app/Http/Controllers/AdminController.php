@@ -156,6 +156,9 @@ class AdminController extends Controller
         return view('admin.dashboard', compact(
             'lettersCount',
             'reportsCount',
+            'residentsTotal',
+            'rtTotal',
+            'rwTotal',
             'labels',
             'lettersData',
             'reportsData',

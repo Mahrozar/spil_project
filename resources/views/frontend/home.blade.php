@@ -32,12 +32,12 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col md:flex-row items-center">
                 <div class="md:w-1/2 text-white mb-10 md:mb-0">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Selamat Datang di</h1>
-                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-yellow-300">Desa Cicangkang Hilir</h2>
-                    <p class="text-xl mb-8 opacity-90">Desa yang maju, mandiri, dan sejahtera berbasis teknologi informasi. Kecamatan Cipongkor, Kabupaten Bandung Barat.</p>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">{{ \App\Models\Setting::get('home.hero_title', 'Selamat Datang di') }}</h1>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-6 text-yellow-300">{{ \App\Models\Setting::get('home.hero_subtitle', 'Desa Cicangkang Hilir') }}</h2>
+                    <p class="text-xl mb-8 opacity-90">{{ \App\Models\Setting::get('home.hero_lead', 'Desa yang maju, mandiri, dan sejahtera berbasis teknologi informasi. Kecamatan Cipongkor, Kabupaten Bandung Barat.') }}</p>
                     <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <a href="#layanan" class="bg-white text-primary font-bold py-3 px-8 rounded-lg hover:bg-gray-100 text-center transition duration-300 shadow-lg">Layanan Desa</a>
-                        <a href="#profil" class="bg-transparent border-2 border-white text-white py-3 px-8 rounded-lg hover:bg-white hover:text-primary text-center transition duration-300">Profil Desa</a>
+                        <a href="#layanan" class="bg-white text-primary font-bold py-3 px-8 rounded-lg hover:bg-gray-100 text-center transition duration-300 shadow-lg">{{ \App\Models\Setting::get('home.cta_primary', 'Layanan Desa') }}</a>
+                        <a href="#profil" class="bg-transparent border-2 border-white text-white py-3 px-8 rounded-lg hover:bg-white hover:text-primary text-center transition duration-300">{{ \App\Models\Setting::get('home.cta_secondary', 'Profil Desa') }}</a>
                     </div>
                 </div>
                 <div class="md:w-1/2">
@@ -52,19 +52,19 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="bg-white p-3 rounded shadow">
                                     <div class="text-sm text-gray-600">Jumlah Penduduk</div>
-                                    <div class="text-xl font-bold text-primary">3,250</div>
+                                                        <div class="text-xl font-bold text-primary">{{ number_format($population) }}</div>
                                 </div>
                                 <div class="bg-white p-3 rounded shadow">
                                     <div class="text-sm text-gray-600">Kartu Keluarga</div>
-                                    <div class="text-xl font-bold text-accent">950</div>
+                                                <div class="text-xl font-bold text-accent">{{ number_format($kk) }}</div>
                                 </div>
                                 <div class="bg-white p-3 rounded shadow">
                                     <div class="text-sm text-gray-600">Luas Wilayah</div>
-                                    <div class="text-xl font-bold text-secondary">245 Ha</div>
+                                                <div class="text-xl font-bold text-secondary">{{ $stat_area }}</div>
                                 </div>
                                 <div class="bg-white p-3 rounded shadow">
-                                    <div class="text-sm text-gray-600">Dusun</div>
-                                    <div class="text-xl font-bold text-yellow-600">4</div>
+                                    <div class="text-sm text-gray-600">RT</div>
+                                                <div class="text-xl font-bold text-yellow-600">{{ number_format($rtCount) }}</div>
                                 </div>
                             </div>
                         </div>
@@ -154,57 +154,57 @@
                 <p class="text-gray-600 max-w-2xl mx-auto">Berbagai layanan administrasi dan publik yang tersedia untuk masyarakat Desa Cicangkang Hilir</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Layanan 1 -->
-                <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                    <div class="bg-blue-100 text-primary w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                @if(!empty($layanan) && count($layanan) > 0)
+                    @foreach($layanan as $item)
+                        <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                            <div class="bg-blue-100 text-primary w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <h3 class="text-xl font-bold text-dark mb-3">{{ $item['title'] ?? 'Layanan' }}</h3>
+                            <p class="text-gray-600 mb-4">{{ $item['description'] ?? '' }}</p>
+                            @if(!empty($item['link']))
+                                <a href="{{ $item['link'] }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Lihat detail</a>
+                            @endif
+                        </div>
+                    @endforeach
+                @else
+                    <!-- fallback static cards -->
+                    <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <div class="bg-blue-100 text-primary w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-dark mb-3">Administrasi Kependudukan</h3>
+                        <p class="text-gray-600 mb-4">Pelayanan pembuatan KTP, KK, akta kelahiran, akta kematian, dan dokumen kependudukan lainnya.</p>
+                        <a href="{{ route('layanan.prosedur') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Lihat prosedur</a>
                     </div>
-                    <h3 class="text-xl font-bold text-dark mb-3">Administrasi Kependudukan</h3>
-                    <p class="text-gray-600 mb-4">Pelayanan pembuatan KTP, KK, akta kelahiran, akta kematian, dan dokumen kependudukan lainnya.</p>
-                    <a href="{{ route('layanan.prosedur') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">
-                        Lihat prosedur
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </a>
-                </div>
-                
-                <!-- Layanan 2 -->
-                <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                    <div class="bg-green-100 text-accent w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
+
+                    <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <div class="bg-green-100 text-accent w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-dark mb-3">Surat Menyurat</h3>
+                        <p class="text-gray-600 mb-4">Pembuatan surat keterangan, pengantar, rekomendasi, dan surat resmi desa lainnya.</p>
+                        <a href="{{ route('layanan.surat-online') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Ajukan online</a>
                     </div>
-                    <h3 class="text-xl font-bold text-dark mb-3">Surat Menyurat</h3>
-                    <p class="text-gray-600 mb-4">Pembuatan surat keterangan, pengantar, rekomendasi, dan surat resmi desa lainnya.</p>
-                    <a href="{{ route('layanan.surat-online') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">
-                        Ajukan online
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </a>
-                </div>
-                
-                <!-- Layanan 3 -->
-                <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                    <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
+
+                    <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+                        <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mb-6">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold text-dark mb-3">UMKM & Ekonomi</h3>
+                        <p class="text-gray-600 mb-4">Pendaftaran usaha, perizinan, bantuan, dan pengembangan ekonomi masyarakat desa.</p>
+                        <a href="{{ route('layanan.dokumen') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Dokumen persyaratan</a>
                     </div>
-                    <h3 class="text-xl font-bold text-dark mb-3">UMKM & Ekonomi</h3>
-                    <p class="text-gray-600 mb-4">Pendaftaran usaha, perizinan, bantuan, dan pengembangan ekonomi masyarakat desa.</p>
-                    <a href="{{ route('layanan.dokumen') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">
-                        Dokumen persyaratan
-                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-                        </svg>
-                    </a>
-                </div>
+                @endif
             </div>
         </div>
     </section>
@@ -218,38 +218,52 @@
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Berita 1 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                    <div class="h-48 bg-blue-100"></div>
-                    <div class="p-6">
-                        <div class="text-sm text-gray-500 mb-2">15 Maret 2024</div>
-                        <h3 class="text-xl font-bold text-dark mb-3">Program Bantuan Sosial Tahap II</h3>
-                        <p class="text-gray-600 mb-4">Pendistribusian bantuan sosial untuk masyarakat terdampak akan dilaksanakan mulai minggu depan.</p>
-                        <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+                @if(!empty($berita) && count($berita) > 0)
+                    @foreach($berita as $b)
+                        <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                            <div class="h-48 bg-gray-100"></div>
+                            <div class="p-6">
+                                <div class="text-sm text-gray-500 mb-2">{{ !empty($b['date']) ? \Carbon\Carbon::parse($b['date'])->format('d F Y') : '' }}</div>
+                                <h3 class="text-xl font-bold text-dark mb-3">{{ $b['title'] ?? '' }}</h3>
+                                <p class="text-gray-600 mb-4">{{ $b['excerpt'] ?? '' }}</p>
+                                @if(!empty($b['link']))
+                                    <a href="{{ $b['link'] }}" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                @else
+                    <!-- fallback static berita -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <div class="h-48 bg-blue-100"></div>
+                        <div class="p-6">
+                            <div class="text-sm text-gray-500 mb-2">15 Maret 2024</div>
+                            <h3 class="text-xl font-bold text-dark mb-3">Program Bantuan Sosial Tahap II</h3>
+                            <p class="text-gray-600 mb-4">Pendistribusian bantuan sosial untuk masyarakat terdampak akan dilaksanakan mulai minggu depan.</p>
+                            <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Berita 2 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                    <div class="h-48 bg-green-100"></div>
-                    <div class="p-6">
-                        <div class="text-sm text-gray-500 mb-2">10 Maret 2024</div>
-                        <h3 class="text-xl font-bold text-dark mb-3">Gotong Royong Perbaikan Jalan Dusun</h3>
-                        <p class="text-gray-600 mb-4">Ayo ramaikan kegiatan gotong royong perbaikan jalan dusun pada hari Sabtu, 18 Maret 2024.</p>
-                        <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <div class="h-48 bg-green-100"></div>
+                        <div class="p-6">
+                            <div class="text-sm text-gray-500 mb-2">10 Maret 2024</div>
+                            <h3 class="text-xl font-bold text-dark mb-3">Gotong Royong Perbaikan Jalan Dusun</h3>
+                            <p class="text-gray-600 mb-4">Ayo ramaikan kegiatan gotong royong perbaikan jalan dusun pada hari Sabtu, 18 Maret 2024.</p>
+                            <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+                        </div>
                     </div>
-                </div>
-                
-                <!-- Berita 3 -->
-                <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
-                    <div class="h-48 bg-yellow-100"></div>
-                    <div class="p-6">
-                        <div class="text-sm text-gray-500 mb-2">5 Maret 2024</div>
-                        <h3 class="text-xl font-bold text-dark mb-3">Pelatihan Digital Marketing UMKM</h3>
-                        <p class="text-gray-600 mb-4">Pelatihan gratis untuk pelaku UMKM desa dalam memanfaatkan digital untuk pemasaran produk.</p>
-                        <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
+                        <div class="h-48 bg-yellow-100"></div>
+                        <div class="p-6">
+                            <div class="text-sm text-gray-500 mb-2">5 Maret 2024</div>
+                            <h3 class="text-xl font-bold text-dark mb-3">Pelatihan Digital Marketing UMKM</h3>
+                            <p class="text-gray-600 mb-4">Pelatihan gratis untuk pelaku UMKM desa dalam memanfaatkan digital untuk pemasaran produk.</p>
+                            <a href="#" class="text-primary hover:text-secondary font-medium">Baca selengkapnya →</a>
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
             
             <div class="text-center mt-12">
@@ -272,10 +286,18 @@
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="h-48 bg-blue-200 rounded-lg"></div>
-                <div class="h-48 bg-green-200 rounded-lg"></div>
-                <div class="h-48 bg-yellow-200 rounded-lg"></div>
-                <div class="h-48 bg-purple-200 rounded-lg"></div>
+                @if(!empty($galeri) && count($galeri) > 0)
+                    @foreach($galeri as $g)
+                        <div class="h-48 bg-gray-100 rounded-lg overflow-hidden">
+                            <img src="{{ $g }}" alt="Galeri" class="w-full h-full object-cover" />
+                        </div>
+                    @endforeach
+                @else
+                    <div class="h-48 bg-blue-200 rounded-lg"></div>
+                    <div class="h-48 bg-green-200 rounded-lg"></div>
+                    <div class="h-48 bg-yellow-200 rounded-lg"></div>
+                    <div class="h-48 bg-purple-200 rounded-lg"></div>
+                @endif
             </div>
             
             <div class="text-center mt-8">
@@ -297,22 +319,26 @@
                 <p class="text-blue-100 max-w-2xl mx-auto">Data statistik terkini yang menggambarkan perkembangan desa</p>
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-8">
                 <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">3,250</div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2">{{ number_format($population) }}</div>
                     <div class="text-blue-200">Jiwa Penduduk</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">950</div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2">{{ number_format($kk) }}</div>
                     <div class="text-blue-200">Kartu Keluarga</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">245</div>
-                    <div class="text-blue-200">Hektar Luas Wilayah</div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2">{{ number_format($rtCount) }}</div>
+                    <div class="text-blue-200">RT</div>
                 </div>
                 <div class="text-center">
-                    <div class="text-4xl md:text-5xl font-bold mb-2">4</div>
-                    <div class="text-blue-200">Dusun</div>
+                    <div class="text-4xl md:text-5xl font-bold mb-2">{{ number_format($rwCount) }}</div>
+                    <div class="text-blue-200">RW</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold mb-2">{{ $stat_area }}</div>
+                    <div class="text-blue-200">Hektar Luas Wilayah</div>
                 </div>
             </div>
         </div>
