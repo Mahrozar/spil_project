@@ -1,7 +1,7 @@
 <div class="mb-4">
     <div class="flex items-center justify-between mb-2 px-1">
         <h3 class="font-semibold text-sm text-slate-900">Aktivitas Terbaru</h3>
-        <a href="{{ route('admin.letters') }}" class="text-xs text-slate-500">Lihat semua</a>
+        <a href="{{ route('admin.submissions.index') }}" class="text-xs text-slate-500">Lihat semua</a>
     </div>
 
     @php

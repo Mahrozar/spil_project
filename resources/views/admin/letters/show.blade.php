@@ -17,7 +17,7 @@
 
                 <div>
                     <div class="text-sm text-gray-500">Status</div>
-                    <div class="font-medium">{{ ucfirst($letter->status) }}</div>
+                    <div class="font-medium"><span class="{{ $letter->badgeClass() }}">{{ $letter->statusLabel() }}</span></div>
                 </div>
 
                 <div>
@@ -32,8 +32,8 @@
             </div>
 
                 <div class="mt-6 flex items-center gap-2">
-                <a href="{{ route('admin.letters') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Kembali</a>
-                <a href="{{ route('admin.letters.edit', $letter) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded">Ubah</a>
+                <a href="{{ route('admin.submissions.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Kembali</a>
+                <a href="{{ route('admin.submissions.edit', $submission ?? $letter) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded">Ubah</a>
             </div>
         </div>
     </div>

@@ -21,7 +21,7 @@
         <a href="{{ route('admin.residents.index', ['filter' => 'kk']) }}" class="block py-2 px-3 rounded text-white hover:bg-white/10 {{ request()->is('admin/residents') && request()->query('filter') === 'kk' ? 'bg-white/10' : '' }}">Kartu Keluarga</a>
 
         <div class="mt-4 mb-1 px-3 py-1 text-xs bg-white text-black rounded tracking-wide uppercase">Data Administrasi</div>
-        <a href="{{ route('admin.letters') }}" class="block py-2 px-3 rounded text-white hover:bg-white/10 {{ request()->routeIs('admin.letters*') ? 'bg-white/10' : '' }}">Surat</a>
+        <a href="{{ route('admin.submissions.index') }}" class="block py-2 px-3 rounded text-white hover:bg-white/10 {{ request()->routeIs('admin.submissions*') ? 'bg-white/10' : '' }}">Surat</a>
         <a href="{{ route('admin.reports') }}" class="block py-2 px-3 rounded text-white hover:bg-white/10 {{ request()->routeIs('admin.reports*') ? 'bg-white/10' : '' }}">Laporan</a>
 
         <a href="{{ route('admin.imports.index') }}" class="block py-2 px-3 rounded text-white hover:bg-white/10 {{ request()->routeIs('admin.imports*') ? 'bg-white/10' : '' }}">Riwayat Import</a>

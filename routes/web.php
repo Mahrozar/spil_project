@@ -19,6 +19,11 @@ Route::prefix('profil')->group(function () {
 
 // Route untuk Layanan Desa
 Route::prefix('layanan')->group(function () {
+    // Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
+    // Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
+    // Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
+    // Route::post('/surat-online', [LayananDesaController::class, 'submitSurat'])->name('layanan.submit-surat');
+    
     Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
     Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
     Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
@@ -73,12 +78,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/data', [AdminController::class, 'dashboardData'])->name('dashboard.data');
     // management pages
-    Route::get('/letters', [AdminController::class, 'lettersIndex'])->name('letters');
-    Route::get('/letters/{letter}', [AdminController::class, 'letterShow'])->name('letters.show');
-    Route::get('/letters/{letter}/edit', [AdminController::class, 'letterEdit'])->name('letters.edit');
-    Route::put('/letters/{letter}', [AdminController::class, 'letterUpdate'])->name('letters.update');
-    Route::delete('/letters/{letter}', [AdminController::class, 'letterDestroy'])->name('letters.destroy');
-    Route::post('/letters/bulk-delete', [AdminController::class, 'lettersBulkDestroy'])->name('letters.bulkDestroy');
+
+    // Letter submissions (public online submissions)
+    Route::get('/submissions', [AdminController::class, 'submissionsIndex'])->name('submissions.index');
+    Route::get('/submissions/{submission}', [AdminController::class, 'submissionShow'])->name('submissions.show');
+    Route::get('/submissions/{submission}/edit', [AdminController::class, 'submissionEdit'])->name('submissions.edit');
+    Route::put('/submissions/{submission}', [AdminController::class, 'submissionUpdate'])->name('submissions.update');
+    Route::delete('/submissions/{submission}', [AdminController::class, 'submissionDestroy'])->name('submissions.destroy');
 
     Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports');
 
@@ -149,4 +155,5 @@ if (app()->environment('local')) {
             'app_url' => config('app.url'),
         ]);
     });
+    
 }

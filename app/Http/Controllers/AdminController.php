@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Letter;
+use App\Models\LetterSubmission;
 use App\Models\Report;
 use App\Models\Resident;
 use App\Models\RT;
@@ -100,7 +101,7 @@ class AdminController extends Controller
                 'time' => $l->created_at,
                 'message' => "Surat (#{$l->id}) dibuat",
                 'type' => 'surat',
-                'link' => Route::has('admin.letters.show') ? route('admin.letters.show', $l) : null,
+                'link' => Route::has('admin.submissions.show') ? route('admin.submissions.show', $l) : null,
             ];
         }
         foreach ($reportsRecent as $r) {
@@ -244,59 +245,56 @@ class AdminController extends Controller
 
     public function lettersIndex()
     {
+        // Delegate to submissions listing so admin "Surat" shows online submissions
+        return $this->submissionsIndex();
+    }
+
+    /**
+     * List online submissions
+     */
+    public function submissionsIndex()
+    {
         $user = auth()->user();
         if (! $user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
-        $query = Letter::with('user')->latest();
-
-        // search by q: matches id, type, status, user name or email
+        $query = LetterSubmission::latest();
         $q = request('q');
         if ($q) {
             $query->where(function ($w) use ($q) {
-                $w->where('id', $q)
-                    ->orWhere('type', 'like', "%{$q}%")
-                    ->orWhere('status', 'like', "%{$q}%")
-                    ->orWhereHas('user', function ($u) use ($q) {
-                        $u->where('name', 'like', "%{$q}%")
-                        ->orWhere('email', 'like', "%{$q}%");
-                    });
+                $w->where('submission_number', 'like', "%{$q}%")
+                    ->orWhere('nama', 'like', "%{$q}%")
+                    ->orWhere('nik', 'like', "%{$q}%")
+                    ->orWhere('jenis_surat', 'like', "%{$q}%");
             });
         }
 
-        $letters = $query->paginate(20)->withQueryString();
-        return view('admin.letters.index', compact('letters'));
+        $submissions = $query->paginate(20)->withQueryString();
+        return view('admin.submissions.index', compact('submissions'));
     }
 
-    /**
-     * Show a single letter details
-     */
-    public function letterShow(Letter $letter)
+    public function submissionShow(LetterSubmission $submission)
     {
         $user = auth()->user();
         if (! $user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
-        $letter->load('user');
-        return view('admin.letters.show', compact('letter'));
+        return view('admin.submissions.show', compact('submission'));
     }
 
-    /**
-     * Edit letter (admin) - allow status update
-     */
-    public function letterEdit(Letter $letter)
+    public function submissionEdit(LetterSubmission $submission)
     {
         $user = auth()->user();
         if (! $user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
-        return view('admin.letters.edit', compact('letter'));
+        return view('admin.submissions.edit', compact('submission'));
     }
 
-    public function letterUpdate(Request $request, Letter $letter)
+    public function submissionUpdate(Request $request, LetterSubmission $submission)
     {
         $user = auth()->user();
         if (! $user || ($user->role ?? 'user') !== 'admin') {
@@ -304,22 +302,78 @@ class AdminController extends Controller
         }
 
         $data = $request->validate([
-            'status' => 'required|string|in:pending,approved,rejected',
+            'status' => 'required|string|in:pending,approve,on progres,rejected',
         ]);
 
-        $letter->update($data);
-        return redirect()->route('admin.letters')->with('success', 'Letter updated.');
+        $submission->update($data);
+        return redirect()->route('admin.submissions.index')->with('success', 'Submission updated.');
     }
 
-    public function letterDestroy(Letter $letter)
+    public function submissionDestroy(LetterSubmission $submission)
     {
         $user = auth()->user();
         if (! $user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
-        $letter->delete();
-        return redirect()->route('admin.letters')->with('success', 'Letter deleted.');
+        $submission->delete();
+        return redirect()->route('admin.submissions.index')->with('success', 'Submission deleted.');
+    }
+
+    /**
+     * Show a single letter details
+     */
+    public function letterShow($letter)
+    {
+        $user = auth()->user();
+        if (! $user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $submission = LetterSubmission::findOrFail($letter);
+        return view('admin.submissions.show', compact('submission'));
+    }
+
+    /**
+     * Edit letter (admin) - allow status update
+     */
+    public function letterEdit($letter)
+    {
+        $user = auth()->user();
+        if (! $user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $submission = LetterSubmission::findOrFail($letter);
+        return view('admin.submissions.edit', compact('submission'));
+    }
+
+    public function letterUpdate(Request $request, $letter)
+    {
+        $user = auth()->user();
+        if (! $user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $data = $request->validate([
+            'status' => 'required|string|in:pending,approve,on progres,rejected',
+        ]);
+
+        $submission = LetterSubmission::findOrFail($letter);
+        $submission->update($data);
+        return redirect()->route('admin.submissions.index')->with('success', 'Submission updated.');
+    }
+
+    public function letterDestroy($letter)
+    {
+        $user = auth()->user();
+        if (! $user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $submission = LetterSubmission::findOrFail($letter);
+        $submission->delete();
+        return redirect()->route('admin.submissions.index')->with('success', 'Submission deleted.');
     }
 
     /**
@@ -334,11 +388,12 @@ class AdminController extends Controller
 
         $ids = $request->input('ids', []);
         if (! is_array($ids) || empty($ids)) {
-            return redirect()->route('admin.letters')->with('error', 'No letters selected.');
+            return redirect()->route('admin.submissions.index')->with('error', 'No submissions selected.');
         }
 
-        Letter::whereIn('id', $ids)->delete();
-        return redirect()->route('admin.letters')->with('success', 'Selected letters deleted.');
+        // Delete from LetterSubmission to operate on online submissions
+        LetterSubmission::whereIn('id', $ids)->delete();
+        return redirect()->route('admin.submissions.index')->with('success', 'Selected submissions deleted.');
     }
 
     public function reportsIndex()

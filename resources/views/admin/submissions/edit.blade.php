@@ -1,10 +1,9 @@
 <x-app-layout>
-    <div class="admin-content-area">
     <div class="p-6">
         <div class="max-w-3xl mx-auto bg-white shadow rounded-lg p-6">
-            <h2 class="text-xl font-semibold mb-4">Ubah Surat #{{ $letter->id }}</h2>
+            <h2 class="text-xl font-semibold mb-4">Ubah Pengajuan {{ $submission->submission_number }}</h2>
 
-            <form method="POST" action="{{ route('admin.submissions.update', $submission ?? $letter) }}">
+            <form method="POST" action="{{ route('admin.submissions.update', $submission) }}">
                 @csrf
                 @method('PUT')
 
@@ -12,15 +11,15 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Status</label>
                         <select name="status" class="mt-1 block w-full border rounded-md px-3 py-2">
-                            @foreach(\App\Models\Letter::allowedStatuses() as $st)
-                                <option value="{{ $st }}" {{ $letter->status === $st ? 'selected' : '' }}>{{ \App\Models\Letter::labelFor($st) }}</option>
+                            @foreach(\App\Models\LetterSubmission::allowedStatuses() as $st)
+                                <option value="{{ $st }}" {{ $submission->status === $st ? 'selected' : '' }}>{{ $st }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
-                    <label class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                    <textarea class="mt-1 block w-full border rounded-md px-3 py-2" rows="4" disabled>{{ $letter->description }}</textarea>
+                        <label class="block text-sm font-medium text-gray-700">Keperluan</label>
+                        <textarea class="mt-1 block w-full border rounded-md px-3 py-2" rows="4" disabled>{{ $submission->keperluan }}</textarea>
                     </div>
                 </div>
 
@@ -30,6 +29,5 @@
                 </div>
             </form>
         </div>
-    </div>
     </div>
 </x-app-layout>
