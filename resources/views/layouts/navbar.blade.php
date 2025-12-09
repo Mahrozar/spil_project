@@ -149,7 +149,7 @@
                              x-transition:leave-end="opacity-0 transform -translate-y-2"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100"
                              @click.away="open = false">
-                            <a href="{{ route('home') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Dashboard Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Dashboard Admin</a>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Profil Admin</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -236,7 +236,7 @@
             @auth
                 <div class="border-t border-gray-200 pt-3 mt-3">
                     <div class="font-medium text-gray-700 mb-2">Admin</div>
-                    <a href="{{ route('home') }}" class="block text-gray-600 hover:text-primary pl-2">
+                    <a href="{{ route('admin.dashboard') }}" class="block text-gray-600 hover:text-primary pl-2">
                         • Dashboard
                     </a>
                     <a href="{{ route('profile.edit') }}" class="block text-gray-600 hover:text-primary pl-2">

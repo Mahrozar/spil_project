@@ -7,6 +7,7 @@ use App\Models\Resident;
 use App\Models\RT;
 use App\Models\RW;
 use App\Models\Setting;
+use App\Models\LetterSubmission;
 
 class LandingPageController extends Controller
 {
@@ -30,6 +31,9 @@ class LandingPageController extends Controller
         $berita = json_decode(Setting::get('home.berita', '[]'), true) ?: [];
         $galeri = json_decode(Setting::get('home.galeri', '[]'), true) ?: [];
 
+        // Load all recent submissions (public) so Statistik Pengajuan dapat digulir dan melihat seluruh data
+        $mySubmissions = LetterSubmission::orderBy('created_at', 'desc')->get();
+
         return view('frontend.home', compact(
             'population',
             'kk',
@@ -43,6 +47,7 @@ class LandingPageController extends Controller
             'layanan' => $layanan,
             'berita' => $berita,
             'galeri' => $galeri,
+            'mySubmissions' => $mySubmissions,
         ]);
     }
 }

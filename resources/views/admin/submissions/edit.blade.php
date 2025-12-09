@@ -10,11 +10,25 @@
                 <div class="grid grid-cols-1 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="status" class="mt-1 block w-full border rounded-md px-3 py-2">
-                            @foreach(\App\Models\LetterSubmission::allowedStatuses() as $st)
-                                <option value="{{ $st }}" {{ $submission->status === $st ? 'selected' : '' }}>{{ $st }}</option>
-                            @endforeach
-                        </select>
+                        @php
+                            if($submission->isApproved()) {
+                                $dot = 'bg-emerald-500';
+                            } elseif($submission->isInProgress()) {
+                                $dot = 'bg-yellow-400';
+                            } elseif($submission->isRejected()) {
+                                $dot = 'bg-rose-500';
+                            } else {
+                                $dot = 'bg-gray-400';
+                            }
+                        @endphp
+                        <div class="mt-1 flex items-center gap-3">
+                            <select name="status" class="block w-full border rounded-md px-3 py-2">
+                                @foreach(\App\Models\LetterSubmission::allowedStatuses() as $st)
+                                    <option value="{{ $st }}" {{ $submission->status === $st ? 'selected' : '' }}>{{ $st }}</option>
+                                @endforeach
+                            </select>
+                            <span class="w-3 h-3 rounded-full {{ $dot }}"></span>
+                        </div>
                     </div>
 
                     <div>
@@ -23,9 +37,16 @@
                     </div>
                 </div>
 
-                <div class="mt-6 flex items-center gap-2">
-                    <a href="{{ route('admin.submissions.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 rounded">Batal</a>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded">Simpan</button>
+                <div class="mt-6 flex items-center gap-3">
+                    <a href="{{ route('admin.submissions.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg hover:bg-slate-50 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        Batal
+                    </a>
+
+                    <button id="btn-save" aria-label="Simpan perubahan" type="submit" class="ml-auto inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg shadow-md hover:bg-secondary transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Simpan
+                    </button>
                 </div>
             </form>
         </div>
