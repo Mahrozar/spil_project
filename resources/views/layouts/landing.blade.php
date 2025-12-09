@@ -7,44 +7,54 @@
     @vite(['resources/css/app.css','resources/js/app.js'])
     <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
     @stack('head')
+    <style>
+        /* Minor visual polish to help emulate the requested aesthetic */
+        .hero-shape { opacity: .15; }
+    </style>
 </head>
-<body class="antialiased font-sans bg-gray-50 text-slate-900">
-    <header class="bg-white shadow-sm">
+<body class="antialiased font-sans bg-white text-slate-900">
+    <div class="shadow-sm">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
             <a href="{{ route('landing') }}" class="flex items-center space-x-3">
-                <span class="inline-block w-10 h-10 rounded-md bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold">S</span>
-                <span class="text-lg font-semibold">{{ config('app.name', 'SPIL') }}</span>
+                <span class="inline-block w-11 h-11 rounded-md bg-gradient-to-r from-emerald-500 to-teal-500 flex items-center justify-center text-white font-bold">{{ strtoupper(substr(config('app.name', 'SPIL'),0,1)) }}</span>
+                <div>
+                    <div class="text-lg font-semibold">{{ config('app.name', 'SPIL') }}</div>
+                    <div class="text-xs text-slate-500">Sistem Informasi Desa</div>
+                </div>
             </a>
-            <nav class="space-x-4 text-sm">
-                <a href="{{ route('landing') }}" class="text-slate-700 hover:text-slate-900">Home</a>
+            <nav class="space-x-6 text-sm flex items-center">
+                <a href="#features" class="text-slate-700 hover:text-slate-900">Fitur</a>
+                <a href="#about" class="text-slate-700 hover:text-slate-900">Tentang</a>
+                <a href="#contact" class="text-slate-700 hover:text-slate-900">Kontak</a>
                 @guest
-                    <a href="{{ route('login') }}" class="text-slate-700 hover:text-slate-900">Login</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="ml-2 px-3 py-1 rounded-md bg-indigo-600 text-white text-sm">Register</a>
-                    @endif
+                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-md text-slate-700 border">Masuk</a>
                 @else
-                    <a href="{{ route('dashboard') }}" class="text-slate-700 hover:text-slate-900">Dashboard</a>
+                    <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-md bg-emerald-600 text-white">Dashboard</a>
                 @endguest
             </nav>
         </div>
-    </header>
+    </div>
 
-    <main class="min-h-screen">
+    <main>
         @yield('content')
     </main>
 
-    <footer class="bg-white border-t">
-        <div class="max-w-7xl mx-auto px-6 py-8 text-sm text-slate-600">
-            <div class="flex items-center justify-between">
-                <div>
-                    © {{ date('Y') }} {{ config('app.name', 'SPIL') }}. All rights reserved.
-                </div>
-                <div class="space-x-4">
-                    <a href="mailto:info@example.com" class="hover:underline">Contact</a>
-                    <a href="#" class="hover:underline">Privacy</a>
-                </div>
+    <footer class="bg-slate-900 text-slate-300 mt-12">
+        <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <div class="text-white font-semibold">{{ config('app.name', 'SPIL') }}</div>
+                <p class="mt-2 text-sm">Meningkatkan layanan desa melalui sistem digital yang mudah digunakan.</p>
+            </div>
+            <div>
+                <div class="font-semibold">Alamat</div>
+                <div class="mt-2 text-sm">Kantor Desa — Jalan Contoh No.1</div>
+            </div>
+            <div>
+                <div class="font-semibold">Kontak</div>
+                <div class="mt-2 text-sm">Email: info@example.com<br>Telp: (021) 000-000</div>
             </div>
         </div>
+        <div class="border-t border-slate-800 text-center text-xs py-4">© {{ date('Y') }} {{ config('app.name', 'SPIL') }} — Semua hak dilindungi.</div>
     </footer>
 
     @stack('scripts')
