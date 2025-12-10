@@ -13,9 +13,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'role',
         'password',
         'phone',
-        'user_type',
         'can_manage_reports',
         'can_assign_reports',
         'assigned_reports_count',
@@ -69,10 +69,7 @@ class User extends Authenticatable
     }
 
     // Scopes
-    public function scopePetugas($query)
-    {
-        return $query->where('user_type', self::TYPE_PETUGAS);
-    }
+ 
 
     public function scopeCanManageReports($query)
     {
@@ -85,20 +82,16 @@ class User extends Authenticatable
     }
 
     // Methods
-    public function isSuperAdmin()
-    {
-        return $this->user_type === self::TYPE_SUPER_ADMIN;
-    }
 
-    public function isAdmin()
-    {
-        return $this->user_type === self::TYPE_ADMIN || $this->isSuperAdmin();
-    }
+    // public function isAdmin()
+    // {
+    //     return $this->user_type === self::TYPE_ADMIN || $this->isSuperAdmin();
+    // }
 
-    public function isPetugas()
-    {
-        return $this->user_type === self::TYPE_PETUGAS;
-    }
+    // public function isPetugas()
+    // {
+    //     return $this->user_type === self::TYPE_PETUGAS;
+    // }
 
     public function canManageReports()
     {

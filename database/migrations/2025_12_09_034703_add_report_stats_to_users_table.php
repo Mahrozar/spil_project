@@ -14,7 +14,6 @@ return new class extends Migration
             $table->integer('completed_reports_count')->default(0);
             $table->integer('pending_reports_count')->default(0);
             $table->string('phone')->nullable(); // untuk notifikasi
-            $table->enum('user_type', ['admin', 'petugas', 'super_admin'])->default('admin');
             $table->boolean('can_manage_reports')->default(false);
             $table->boolean('can_assign_reports')->default(false);
         });
@@ -28,7 +27,6 @@ return new class extends Migration
                 'completed_reports_count',
                 'pending_reports_count',
                 'phone',
-                'user_type',
                 'can_manage_reports',
                 'can_assign_reports'
             ]);

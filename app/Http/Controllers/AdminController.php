@@ -48,7 +48,7 @@ class AdminController extends Controller
         $lettersData = array_map(fn($m) => $lettersByMonth[$m] ?? 0, $months);
         $reportsData = array_map(fn($m) => $reportsByMonth[$m] ?? 0, $months);
 
-        return view('frontend.home', compact(
+        return view('dashboard', compact(
             'lettersCount',
             'reportsCount',
             'labels',

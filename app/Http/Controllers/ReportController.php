@@ -118,6 +118,7 @@ class ReportController extends Controller
             'facility_type' => 'required',
             'latitude' => 'required|numeric|between:-90,90',
             'longitude' => 'required|numeric|between:-180,180',
+            'address' => 'nullable|string|max:500',
             'description' => 'nullable|string|max:1000',
             'reporter_name' => 'nullable|string|max:100',
             'reporter_phone' => 'nullable|string|max:20',
@@ -150,6 +151,7 @@ class ReportController extends Controller
                 'facility_type' => $request->facility_type,
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
+                'address' => $request->address,
                 'description' => $request->description,
                 'reporter_name' => $request->is_anonymous ? null : $request->reporter_name,
                 'reporter_phone' => $request->is_anonymous ? null : $request->reporter_phone,
@@ -183,9 +185,6 @@ class ReportController extends Controller
             ]);
 
             DB::commit();
-
-            // HAPUS dd("test") - ini yang menyebabkan masalah!
-            // dd("test");
 
             // Response berdasarkan tipe request
             if ($isAjax) {
