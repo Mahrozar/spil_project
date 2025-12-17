@@ -210,12 +210,9 @@
                      - spans both columns and has larger card + taller scroll area -->
                  <div class="feature-card bg-white p-10 rounded-xl shadow-lg border border-gray-100 md:col-span-2">
                     <div class="text-center mb-6">
-                        <div class="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-full mb-3 bg-gradient-to-br from-blue-50 to-indigo-100 shadow-md ring-1 ring-indigo-50">
-                            <!-- document + check icon (Heroicons style) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-indigo-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                                <path d="M14 2v6h6" />
-                                <path d="M9 13l2 2 4-4" class="text-green-600" />
+                        <div class="mx-auto inline-flex items-center justify-center bg-indigo-100 text-indigo-600 w-12 h-12 rounded-full mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m1 7a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <h3 class="text-lg font-semibold text-primary mb-1">Daftar Pengajuan Surat</h3>
@@ -230,7 +227,7 @@
                             </div>
 
                             <div class="max-h-56 md:max-h-56 overflow-y-auto rounded shadow-sm">
-                                <table id="submissions-table" class="w-full table-auto text-sm">
+                                <table class="w-full table-auto text-sm">
                                     <thead>
                                         <tr class="text-left text-gray-600 bg-gray-50">
                                             <th class="px-4 py-3 sticky top-0 bg-gray-50">Nama</th>
@@ -542,41 +539,5 @@
         alert('Terima kasih! Pesan/pengaduan Anda telah berhasil dikirim. Kami akan menghubungi Anda segera.');
         this.reset();
     });
-</script>
-<script>
-    // Submissions table search/filter
-    (function(){
-        const input = document.getElementById('submission-search');
-        if (!input) return;
-        const table = document.getElementById('submissions-table');
-        if (!table) return;
-        const tbody = table.querySelector('tbody');
-
-        const filterRows = () => {
-            const q = input.value.trim().toLowerCase();
-            let any = false;
-            Array.from(tbody.rows).forEach(row => {
-                const name = (row.cells[0]?.innerText || '').toLowerCase();
-                const jenis = (row.cells[1]?.innerText || '').toLowerCase();
-                const status = (row.cells[2]?.innerText || '').toLowerCase();
-                const match = q === '' || name.includes(q) || jenis.includes(q) || status.includes(q);
-                row.style.display = match ? '' : 'none';
-                if (match) any = true;
-            });
-
-            // optional: show a 'no results' row
-            let noRow = document.getElementById('submissions-no-results');
-            if (!noRow) {
-                noRow = document.createElement('tr');
-                noRow.id = 'submissions-no-results';
-                noRow.innerHTML = '<td class="px-4 py-6 text-center text-gray-500" colspan="3">Tidak ada hasil pencarian.</td>';
-                noRow.style.display = 'none';
-                tbody.appendChild(noRow);
-            }
-            noRow.style.display = any ? 'none' : '';
-        };
-
-        input.addEventListener('input', filterRows);
-    })();
 </script>
 @endpush
