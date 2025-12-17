@@ -53,5 +53,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             });
         });
+
+        // Create some import summary files and sample error reports for dashboard preview
+        $this->call(\Database\Seeders\DummyDataSeeder::class);
     }
 }

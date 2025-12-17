@@ -4,7 +4,7 @@
         <div class="flex justify-between items-center">
             <!-- Logo & Nama Desa -->
             <div class="flex items-center">
-                <a href="{{ route('landing-page') }}" class="flex items-center">
+                <a href="{{ auth()->check() ? route('admin.dashboard') : route('landing-page') }}" class="flex items-center">
                     <!-- Logo Desa (placeholder - ganti dengan logo asli) -->
                     <div class="bg-primary text-white p-2 rounded-lg mr-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,7 +21,7 @@
             <!-- Desktop Menu -->
             <div class="hidden md:flex items-center space-x-1">
                 <!-- Beranda -->
-                <a href="{{ route('landing-page') }}#home" class="px-4 py-2 text-gray-700 hover:text-primary font-medium {{ Request::route()->getName() == 'landing-page' ? 'text-primary' : '' }}">
+                <a href="{{ auth()->check() ? route('admin.dashboard') : route('landing-page').'#home' }}" class="px-4 py-2 text-gray-700 hover:text-primary font-medium {{ Request::route()->getName() == 'landing-page' ? 'text-primary' : '' }}">
                     Beranda
                 </a>
                 
@@ -149,7 +149,7 @@
                              x-transition:leave-end="opacity-0 transform -translate-y-2"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100"
                              @click.away="open = false">
-                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Dashboard Admin</a>
+                            <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Dashboard Admin</a>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">Profil Admin</a>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -175,7 +175,7 @@
         
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-3 pb-4 border-t border-gray-200 pt-4">
-            <a href="{{ route('landing-page') }}#home" class="block text-gray-700 hover:text-primary {{ Request::route()->getName() == 'landing-page' ? 'text-primary font-medium' : '' }}">
+            <a href="{{ auth()->check() ? route('admin.dashboard') : route('landing-page').'#home' }}" class="block text-gray-700 hover:text-primary {{ Request::route()->getName() == 'landing-page' ? 'text-primary font-medium' : '' }}">
                 Beranda
             </a>
             
@@ -236,7 +236,7 @@
             @auth
                 <div class="border-t border-gray-200 pt-3 mt-3">
                     <div class="font-medium text-gray-700 mb-2">Admin</div>
-                    <a href="{{ route('dashboard') }}" class="block text-gray-600 hover:text-primary pl-2">
+                    <a href="{{ route('admin.dashboard') }}" class="block text-gray-600 hover:text-primary pl-2">
                         • Dashboard
                     </a>
                     <a href="{{ route('profile.edit') }}" class="block text-gray-600 hover:text-primary pl-2">

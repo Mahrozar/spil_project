@@ -11,9 +11,7 @@ use App\Http\Controllers\PublicReportController;
 
 
 // Public landing page (accessible without authentication)
-Route::get('/', function () {
-    return view('frontend.home');
-})->name('landing-page');
+Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
 // Route untuk Profil Desa
 Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
@@ -23,6 +21,11 @@ Route::prefix('profil')->group(function () {
 
 // Route untuk Layanan Desa
 Route::prefix('layanan')->group(function () {
+    // Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
+    // Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
+    // Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
+    // Route::post('/surat-online', [LayananDesaController::class, 'submitSurat'])->name('layanan.submit-surat');
+    
     Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
     Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
     Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
@@ -96,12 +99,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/data', [AdminController::class, 'dashboardData'])->name('dashboard.data');
     // management pages
-    Route::get('/letters', [AdminController::class, 'lettersIndex'])->name('letters');
-    Route::get('/letters/{letter}', [AdminController::class, 'letterShow'])->name('letters.show');
-    Route::get('/letters/{letter}/edit', [AdminController::class, 'letterEdit'])->name('letters.edit');
-    Route::put('/letters/{letter}', [AdminController::class, 'letterUpdate'])->name('letters.update');
-    Route::delete('/letters/{letter}', [AdminController::class, 'letterDestroy'])->name('letters.destroy');
-    Route::post('/letters/bulk-delete', [AdminController::class, 'lettersBulkDestroy'])->name('letters.bulkDestroy');
+
+    // Letter submissions (public online submissions)
+    Route::get('/submissions', [AdminController::class, 'submissionsIndex'])->name('submissions.index');
+    Route::get('/submissions/{submission}', [AdminController::class, 'submissionShow'])->name('submissions.show');
+    Route::get('/submissions/{submission}/edit', [AdminController::class, 'submissionEdit'])->name('submissions.edit');
+    Route::put('/submissions/{submission}', [AdminController::class, 'submissionUpdate'])->name('submissions.update');
+    Route::delete('/submissions/{submission}', [AdminController::class, 'submissionDestroy'])->name('submissions.destroy');
 
     Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports');
 
@@ -113,6 +117,17 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/residents/{resident}/edit', [\App\Http\Controllers\ResidentController::class, 'edit'])->name('residents.edit');
     Route::put('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'update'])->name('residents.update');
     Route::delete('/residents/{resident}', [\App\Http\Controllers\ResidentController::class, 'destroy'])->name('residents.destroy');
+    // Import / Export residents
+    Route::post('/residents/import', [\App\Http\Controllers\ResidentController::class, 'import'])->name('residents.import');
+    Route::get('/residents/export', [\App\Http\Controllers\ResidentController::class, 'export'])->name('residents.export');
+    // Import logs listing / download
+    Route::get('/imports', [\App\Http\Controllers\ResidentController::class, 'importsIndex'])->name('imports.index');
+    Route::get('/imports/download/{file}', [\App\Http\Controllers\ResidentController::class, 'downloadImport'])->name('imports.download');
+
+    // Households / Kartu Keluarga listing
+    Route::get('/households', [\App\Http\Controllers\Admin\HouseholdController::class, 'index'])->name('households.index');
+    Route::post('/households/assign-head', [\App\Http\Controllers\Admin\HouseholdController::class, 'assignHead'])->name('households.assignHead');
+    Route::post('/households/update-kk', [\App\Http\Controllers\Admin\HouseholdController::class, 'updateKk'])->name('households.updateKk');
     
     // RW (neighbourhood) CRUD
     Route::get('/rws', [\App\Http\Controllers\RWController::class, 'index'])->name('rws.index');
@@ -131,6 +146,13 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/rts/{rt}/edit', [\App\Http\Controllers\RTController::class, 'edit'])->name('rts.edit');
     Route::put('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'update'])->name('rts.update');
     Route::delete('/rts/{rt}', [\App\Http\Controllers\RTController::class, 'destroy'])->name('rts.destroy');
+
+    // Admin-editable landing/home content
+    Route::get('/settings/home', [\App\Http\Controllers\Admin\SettingController::class, 'editHome'])->name('settings.home.edit');
+    Route::post('/settings/home', [\App\Http\Controllers\Admin\SettingController::class, 'updateHome'])->name('settings.home.update');
+    // Simple media manager for uploaded home gallery
+    Route::get('/settings/media', [\App\Http\Controllers\Admin\SettingController::class, 'mediaIndex'])->name('settings.media.index');
+    Route::delete('/settings/media', [\App\Http\Controllers\Admin\SettingController::class, 'mediaDelete'])->name('settings.media.delete');
 });
 
 // Development helper: auto-login as admin (only in local environment)
@@ -154,4 +176,5 @@ if (app()->environment('local')) {
             'app_url' => config('app.url'),
         ]);
     });
+    
 }

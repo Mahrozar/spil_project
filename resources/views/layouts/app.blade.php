@@ -9,14 +9,27 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}" />
     @stack('head')
 </head>
-    {{-- Inline theme overrides (temporary) to ensure violet branding appears immediately without rebuilding public CSS --}}
+    {{-- Inline theme overrides to align admin colors with the public site --}}
     <style>
-        :root{ --brand: #8b5cf6; --brand-dark: #6d28d9; }
-        .main.admin { background: linear-gradient(180deg,#f3e8ff 0%,#eef2ff 100%) !important; }
-        .main.admin .topbar { background: linear-gradient(90deg,var(--brand-dark),var(--brand)) !important; }
-        .main.admin .sidebar { background: #2b0b4a !important; }
-        .main.admin .card, .main.admin .chart-card, .main.admin .stat-card { background: #ffffff !important; color: #0b1220 !important; }
-        .main.admin .stat-icon svg { color: var(--brand) !important; }
+        :root{
+            --sidebar: #16346A;
+            --topbar-from: #1E3A8A;
+            --topbar-to: #1E40AF;
+            --primary: var(--topbar-to);
+            --secondary: #3b82f6;
+            --accent: #06b6d4;
+            --dark: #1f2937;
+            --light: #f8fafc;
+        }
+
+        /* Admin-specific adjustments */
+        .main.admin { background: linear-gradient(135deg, var(--light) 0%, #e0f2fe 100%) !important; }
+        .main.admin .topbar { background: linear-gradient(90deg, var(--topbar-from), var(--topbar-to)) !important; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .main.admin .sidebar { background: var(--sidebar) !important; }
+        .main.admin .sidebar a { color: #ffffff !important; }
+        .main.admin .logo .mark { background: var(--secondary) !important; }
+        .main.admin .card, .main.admin .chart-card, .main.admin .stat-card { background: #ffffff !important; color: var(--dark) !important; }
+        .main.admin .stat-icon svg { color: var(--primary) !important; }
     </style>
     
 @php $isAdmin = request()->is('admin/*'); @endphp

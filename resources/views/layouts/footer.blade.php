@@ -29,7 +29,7 @@
                     <li><a href="{{ route('landing-page') }}#kontak" class="text-gray-400 hover:text-white">Kontak</a></li>
                     
                     @auth
-                        <li><a href="{{ route('dashboard') }}" class="text-gray-400 hover:text-white">Dashboard</a></li>
+                        <li><a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-white">Dashboard</a></li>
                     @else
                         <li><a href="{{ route('login') }}" class="text-gray-400 hover:text-white">Masuk</a></li>
                         <li><a href="{{ route('register') }}" class="text-gray-400 hover:text-white">Daftar</a></li>

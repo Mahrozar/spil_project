@@ -12,7 +12,7 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <form method="GET" action="{{ route('admin.letters') }}" class="flex items-center">
+                <form method="GET" action="{{ route('admin.submissions.index') }}" class="flex items-center">
                     <input type="search" name="q" value="{{ request('q') }}" placeholder="Cari berdasarkan pengguna atau jenis" class="border rounded-md px-3 py-2 text-sm" />
                     <button type="submit" class="ml-2 inline-flex items-center px-3 py-2 bg-blue-600 text-white rounded-md text-sm">Cari</button>
                 </form>
@@ -30,7 +30,7 @@
                     </div>
                 </div>
 
-                <form id="bulkForm" method="POST" action="{{ route('admin.letters.bulkDestroy') }}">
+                <form id="bulkForm" method="POST" action="{{ route('admin.submissions.bulkDestroy') }}">
                     @csrf
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
@@ -63,20 +63,17 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $letter->type }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    @php
-                                        $statusClass = $letter->status === 'pending' ? 'bg-yellow-50 text-yellow-800' : ($letter->status === 'approved' ? 'bg-blue-50 text-blue-800' : 'bg-gray-50 text-gray-800');
-                                    @endphp
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $statusClass }}">{{ ucfirst($letter->status) }}</span>
+                                    <span class="{{ $letter->badgeClass() }}">{{ $letter->statusLabel() }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $letter->created_at->format('Y-m-d') }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-                                    <a href="{{ route('admin.letters.show', $letter) }}" class="text-blue-600 hover:text-blue-900 mr-2" title="Lihat">
+                                    <a href="{{ route('admin.submissions.show', $letter) }}" class="text-blue-600 hover:text-blue-900 mr-2" title="Lihat">
                                         <x-icon name="eye" class="h-5 w-5 inline" />
                                     </a>
-                                    <a href="{{ route('admin.letters.edit', $letter) }}" class="text-yellow-500 hover:text-yellow-700 mr-2" title="Ubah">
+                                    <a href="{{ route('admin.submissions.edit', $letter) }}" class="text-yellow-500 hover:text-yellow-700 mr-2" title="Ubah">
                                         <x-icon name="pencil" class="h-5 w-5 inline" />
                                     </a>
-                                    <form action="{{ route('admin.letters.destroy', $letter) }}" method="POST" class="inline">@csrf @method('DELETE')
+                                    <form action="{{ route('admin.submissions.destroy', $letter) }}" method="POST" class="inline">@csrf @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-800" title="Hapus">
                                             <x-icon name="trash" class="h-5 w-5 inline" />
                                         </button>
@@ -121,12 +118,6 @@
                         }
                     })();
                 </script>
-                </div>
-
-                <div class="mt-4 flex items-center justify-between">
-                    <div class="text-sm text-gray-600">Menampilkan {{ $letters->firstItem() ?? 0 }} - {{ $letters->lastItem() ?? 0 }} dari {{ $letters->total() ?? 0 }}</div>
-                    <div>{{ $letters->withQueryString()->links() }}</div>
-                </div>
             </div>
         </div>
     </div>
