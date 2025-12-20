@@ -15,6 +15,7 @@ Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
     Route::get('/sejarah', [ProfilDesaController::class, 'sejarah'])->name('profil.sejarah');
     Route::get('/struktur', [ProfilDesaController::class, 'struktur'])->name('profil.struktur');
+    Route::get('/gambaran', function () { return view('profileDesa.gambaran'); })->name('profil.gambaran');
 });
 
 // Route untuk Layanan Desa

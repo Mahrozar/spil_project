@@ -59,6 +59,14 @@
                                 Sejarah Desa
                             </div>
                         </a>
+                        <a href="{{ route('profil.gambaran') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3M3 21h18M3 7h18" />
+                                </svg>
+                                Gambaran Umum Desa
+                            </div>
+                        </a>
                         <a href="{{ route('profil.struktur') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-primary transition-colors duration-150">
                             <div class="flex items-center">
                                 <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,6 +202,9 @@
                     <a href="{{ route('profil.sejarah') }}" class="block text-gray-600 hover:text-primary py-1">
                         • Sejarah Desa
                     </a>
+                        <a href="{{ route('profil.gambaran') }}" class="block text-gray-600 hover:text-primary py-1">
+                            • Gambaran Umum Desa
+                        </a>
                     <a href="{{ route('profil.struktur') }}" class="block text-gray-600 hover:text-primary py-1">
                         • Struktur Pemerintahan
                     </a>

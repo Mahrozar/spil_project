@@ -139,19 +139,23 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 <div>
                     <p class="text-gray-600 mb-4">
-                        Desa Cicangkang Hilir memiliki sejarah panjang yang bermula dari masa penjajahan Belanda. 
-                        Nama "Cicangkang" berasal dari bahasa Sunda yang terdiri dari dua kata: "Ci" yang berarti air 
-                        atau sungai, dan "Cangkang" yang berarti cangkang atau kulit keras.
+                        Desa Cicangkanghilir secara resmi berdiri pada tanggal <strong>02 Agustus 1932</strong>. 
+                        Penamaan desa ini dilatarbelakangi oleh adanya kesamaan nama dengan Desa Cicangkanggirang, 
+                        sehingga sering menimbulkan kekeliruan di masyarakat.
                     </p>
+
                     <p class="text-gray-600 mb-4">
-                        Konon, pada zaman dahulu di daerah ini terdapat banyak pohon yang memiliki buah berkulit keras 
-                        yang disebut "cangkang". Daerah ini juga dialiri oleh sungai kecil yang menjadi sumber kehidupan 
-                        masyarakat sekitar.
+                        Untuk menghindari kekeliruan tersebut, para tokoh masyarakat Desa Cicangkang 
+                        mengadakan musyawarah pada tanggal 02-08-1932 dan menghasilkan kesepakatan 
+                        penamaan <strong>Desa Cicangkanghilir</strong>.
                     </p>
+
                     <p class="text-gray-600">
-                        Kata "Hilir" menunjukkan posisi geografis desa ini yang berada di bagian hilir dari aliran sungai 
-                        utama di wilayah tersebut. Sehingga nama Cicangkang Hilir dapat diartikan sebagai "daerah hilir 
-                        sungai yang banyak pohon cangkang".
+                        Secara etimologis, kata <strong>"Ci"</strong> berasal dari kata <em>Cai</em> yang berarti air. 
+                        <strong>"Cangkang"</strong> menurut sesepuh desa bermakna banyaknya kulit buah atau cangkang 
+                        yang hanyut terbawa arus sungai menuju muara. 
+                        Sedangkan kata <strong>"Hilir"</strong> menunjukkan letak desa yang berada di bagian hilir 
+                        dari aliran sungai besar (wahangan/kali) yang bermuara di wilayah ini.
                     </p>
                 </div>
                 <div class="bg-gray-100 rounded-lg p-6 text-center">
@@ -161,88 +165,81 @@
                         </svg>
                     </div>
                     <h3 class="font-bold text-lg mb-2">Arti Nama Desa</h3>
-                    <p class="text-gray-600 italic">"Cicangkang Hilir: Daerah hilir sungai yang banyak pohon cangkang"</p>
+                    <p class="text-gray-600 italic">
+                        "Cicangkanghilir: Wilayah hilir sungai yang dialiri air dan dilewati cangkang-cangkang 
+                        buah yang hanyut menuju muara"
+                    </p>
                 </div>
             </div>
         </div>
 
         <!-- Timeline Sejarah -->
-        <div class="bg-white rounded-xl shadow-md p-8">
-            <div class="flex items-center mb-8">
-                <div class="bg-accent text-white p-3 rounded-full mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-bold text-primary">Linimasa Perkembangan Desa</h2>
-            </div>
-
+        <div class="bg-white rounded-xl shadow-md p-8 mb-12">
+            <h3 class="text-2xl font-bold text-primary mb-6">Timeline Sejarah</h3>
             <div class="timeline-container">
-                <!-- Tahun 1800-an -->
                 <div class="timeline-item">
-                    <div class="timeline-year">Abad 19</div>
+                    <div class="timeline-year">1932</div>
                     <div class="timeline-content bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h3 class="font-bold text-lg mb-2 text-primary">Masa Penjajahan Belanda</h3>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Berdirinya Desa Cicangkang Hilir</h3>
                         <p class="text-gray-600">
-                            Desa Cicangkang Hilir mulai dikenal sebagai permukiman masyarakat Sunda yang hidup dari bertani 
-                            dan berkebun. Pada masa ini, sistem pemerintahan masih sangat sederhana dengan dipimpin oleh 
-                            sesepuh adat.
+                            Desa Cicangkang Hilir resmi berdiri pada tanggal 02 Agustus 1932.
+                            Pada awal berdirinya, wilayah desa ini mencakup dua wilayah yang
+                            kini menjadi Desa Cicangkang Hilir dan Desa Sukamulya.
                         </p>
                     </div>
                 </div>
 
-                <!-- Tahun 1945 -->
                 <div class="timeline-item">
-                    <div class="timeline-year">1945</div>
+                    <div class="timeline-year">1965</div>
                     <div class="timeline-content bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h3 class="font-bold text-lg mb-2 text-primary">Masa Kemerdekaan</h3>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Awal Pemerintahan Desa</h3>
                         <p class="text-gray-600">
-                            Setelah kemerdekaan Indonesia, Desa Cicangkang Hilir mulai membentuk struktur pemerintahan 
-                            desa yang lebih formal. Masyarakat mulai mengembangkan pertanian dan perkebunan sebagai 
-                            mata pencaharian utama.
+                            Sejarah kepemimpinan Desa Cicangkang Hilir mulai tercatat sejak tahun 1965,
+                            dengan dipimpin oleh pejabat kepala desa dan selanjutnya kepala desa definitif
+                            sesuai dengan struktur pemerintahan desa.
                         </p>
                     </div>
                 </div>
 
-                <!-- Tahun 1970 -->
                 <div class="timeline-item">
-                    <div class="timeline-year">1970</div>
+                    <div class="timeline-year">1983</div>
                     <div class="timeline-content bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h3 class="font-bold text-lg mb-2 text-primary">Pembentukan Desa Definitif</h3>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Pemekaran Desa</h3>
                         <p class="text-gray-600">
-                            Desa Cicangkang Hilir secara resmi ditetapkan sebagai desa definitif dalam struktur 
-                            pemerintahan Kecamatan Cipongkor, Kabupaten Bandung Barat. Pembangunan infrastruktur dasar 
-                            seperti jalan dan jembatan mulai dilakukan.
+                            Karena luas wilayah yang cukup besar, pada tahun 1983 dilakukan pemekaran desa
+                            menjadi dua wilayah administratif, yaitu Desa Cicangkang Hilir dan Desa Sukamulya.
+                            Penetapan batas desa dilakukan berdasarkan kondisi alam dan letak geografis.
                         </p>
                     </div>
                 </div>
 
-                <!-- Tahun 2000 -->
                 <div class="timeline-item">
-                    <div class="timeline-year">2000</div>
+                    <div class="timeline-year">2000-an</div>
                     <div class="timeline-content bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h3 class="font-bold text-lg mb-2 text-primary">Era Reformasi</h3>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Penguatan Pemerintahan Desa</h3>
                         <p class="text-gray-600">
-                            Dengan adanya otonomi daerah, Desa Cicangkang Hilir mendapatkan kewenangan yang lebih besar 
-                            dalam mengelola pemerintahan dan pembangunan. Program-program pemberdayaan masyarakat mulai 
-                            digalakkan.
+                            Desa Cicangkang Hilir mulai mengalami perkembangan dalam tata kelola pemerintahan,
+                            pembangunan infrastruktur desa, serta peningkatan pelayanan publik dan partisipasi masyarakat.
                         </p>
                     </div>
                 </div>
 
-                <!-- Tahun 2020 -->
                 <div class="timeline-item">
                     <div class="timeline-year">2020 - Sekarang</div>
                     <div class="timeline-content bg-gray-50 p-6 rounded-lg border border-gray-200">
-                        <h3 class="font-bold text-lg mb-2 text-primary">Digitalisasi Desa</h3>
+                        <h3 class="font-bold text-lg mb-2 text-primary">Cicangkang Hilir Digital</h3>
                         <p class="text-gray-600">
-                            Desa Cicangkang Hilir mulai mengadopsi teknologi dalam pelayanan publik. Sistem Informasi 
-                            Desa (SIDeKa) diluncurkan untuk meningkatkan efisiensi dan transparansi pemerintahan desa. 
-                            Pembangunan berkelanjutan menjadi fokus utama.
+                            Pemerintahan Desa Cicangkang Hilir mengusung visi pembangunan berkelanjutan,
+                            transparan, dan berbasis digital melalui penguatan sistem informasi desa
+                            serta peningkatan kualitas pelayanan masyarakat.
                         </p>
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <div class="text-center mb-8">
+            <a href="{{ route('profil.gambaran') }}" class="inline-block bg-primary text-white px-5 py-2 rounded-lg">Lihat Gambaran Umum Desa</a>
         </div>
 
         <!-- Potensi & Budaya -->
@@ -303,6 +300,157 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Silsilah Kepala Desa -->
+    <div class="container mx-auto px-6 mt-12">
+        <div class="max-w-6xl mx-auto bg-white rounded-xl shadow-md p-6">
+            <div class="flex items-center mb-6">
+                <div class="bg-primary text-white p-3 rounded-full mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2
+                              c0-.656-.126-1.283-.356-1.857M7 20H2v-2
+                              a3 3 0 015.356-1.857M7 20v-2
+                              c0-.656.126-1.283.356-1.857m0 0
+                              a5.002 5.002 0 019.288 0M15 7
+                              a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-bold text-primary">
+                    Silsilah Kepala Desa Cicangkang Hilir
+                </h2>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full table-fixed border border-gray-200 rounded-lg overflow-hidden">
+                    <colgroup>
+                        <col style="width:5%" />
+                        <col style="width:30%" />
+                        <col style="width:15%" />
+                        <col style="width:20%" />
+                        <col style="width:30%" />
+                    </colgroup>
+                    <thead class="bg-primary text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">No</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Nama Kepala Desa</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Status</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Masa Jabatan</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Keterangan / Motto</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200 text-sm text-gray-700">
+                        <tr>
+                            <td class="px-4 py-3">1</td>
+                            <td class="px-4 py-3">Asturi</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">1965</td>
+                            <td class="px-4 py-3">Awal pemerintahan desa</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">2</td>
+                            <td class="px-4 py-3">Atang Suryana</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">1966 – 1968</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">3</td>
+                            <td class="px-4 py-3">E. Kartawiria</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">1969 – 1980</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">4</td>
+                            <td class="px-4 py-3">Kasan</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">1981 – 1983</td>
+                            <td class="px-4 py-3">Masa pemekaran desa</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">5</td>
+                            <td class="px-4 py-3">H. T. Apipudin</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">1984 – 1992</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">6</td>
+                            <td class="px-4 py-3">A. Nurdin</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">1992 – 1993</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">7</td>
+                            <td class="px-4 py-3">H. T. Apipudin</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">1993 – 2001</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">8</td>
+                            <td class="px-4 py-3">Ai Hadiyati</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">2002 – 2004</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">9</td>
+                            <td class="px-4 py-3">Anda Ansori</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">2005 – 2006</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">10</td>
+                            <td class="px-4 py-3">Ajat</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">2006 – 2012</td>
+                            <td class="px-4 py-3">Cicangkanghilir “BERWACANA”</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">11</td>
+                            <td class="px-4 py-3">Taufik Darmawan</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">2012 – 2013</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">12</td>
+                            <td class="px-4 py-3">Suherman</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">2013 – 2019</td>
+                            <td class="px-4 py-3">Cicangkanghilir “JADI”</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">13</td>
+                            <td class="px-4 py-3">Agus Hermawan</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">2019</td>
+                            <td class="px-4 py-3">—</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">14</td>
+                            <td class="px-4 py-3">Suherman</td>
+                            <td class="px-4 py-3">Definitif</td>
+                            <td class="px-4 py-3">2020 – 2026</td>
+                            <td class="px-4 py-3">“Cicangkanghilir Jadi Hebat – NGACIR”</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-3">15</td>
+                            <td class="px-4 py-3">Wawan, S.Sos</td>
+                            <td class="px-4 py-3">Penjabat</td>
+                            <td class="px-4 py-3">2023 – 2024</td>
+                            <td class="px-4 py-3">Kepala Desa Penjabat</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

@@ -4,23 +4,24 @@
 
 @push('styles')
 <style>
+    /* Organization chart styles (consolidated) */
     .org-chart {
         display: flex;
         flex-direction: column;
         align-items: center;
         position: relative;
     }
-    .level-1 {
-        margin-bottom: 50px;
-    }
+    .top-row { width: 100%; }
+    .level-1 { margin-bottom: 50px; }
     .level-2 {
-        display: flex;
-        justify-content: center;
-        gap: 100px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 40px;
         margin-bottom: 50px;
         position: relative;
     }
-    .level-2:before {
+    .level-2:before,
+    .level-3:before {
         content: '';
         position: absolute;
         top: -30px;
@@ -36,129 +37,49 @@
         gap: 60px;
         flex-wrap: wrap;
         position: relative;
+        margin-left: -33%;
     }
-    .level-3-group {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 30px;
-    }
-    .level-3:before {
-        content: '';
-        position: absolute;
-        top: -30px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 2px;
-        height: 30px;
-        background: #1e40af;
-    }
-    .connector {
-        position: absolute;
-        background: #1e40af;
-    }
-    .connector-horizontal {
-        height: 2px;
-        width: 100%;
-        top: -30px;
-    }
-    .connector-vertical {
-        width: 2px;
-        height: 30px;
-        top: -30px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+    .level-3-group { display: flex; flex-direction: column; align-items: center; gap: 30px; }
+
+    .connector { position: absolute; background: #1e40af; }
+    .connector-horizontal { height: 2px; width: 100%; top: -30px; }
+    .connector-vertical { width: 2px; height: 30px; top: -30px; left: 50%; transform: translateX(-50%); }
+
     .person-card {
         width: 200px;
         background: white;
         border-radius: 12px;
         padding: 20px;
         text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         transition: all 0.3s ease;
         border: 2px solid #e5e7eb;
         position: relative;
         z-index: 1;
     }
-    .person-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-        border-color: #1e40af;
+    .person-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.15); border-color: #1e40af; }
+    .person-card.kepala-desa { border-color: #1e40af; border-width: 3px; }
+    .person-card.sekretaris, .person-card.kasi { border-color: #3b82f6; }
+    .person-card.kadus, .person-card.staff { border-color: #10b981; }
+
+    .photo-placeholder { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:24px; }
+    .position-badge { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700; margin-bottom:10px; }
+    .badge-kepala { background:#1e40af; color:#fff; }
+    .badge-sekretaris { background:#3b82f6; color:#fff; }
+    .badge-kasi { background:#8b5cf6; color:#fff; }
+    .badge-kadus { background:#10b981; color:#fff; }
+    .badge-staff { background:#6b7280; color:#fff; }
+
+    .org-lines { position:absolute; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
+    @media (max-width:768px) {
+        .level-2 { display:flex; flex-direction:column; gap:40px; align-items:center; }
+        .level-3 { flex-direction:column; gap:30px; align-items:center; margin-left:0; }
+        .level-3-group { width:100%; }
+        .person-card { width:100%; max-width:300px; }
     }
-    .person-card.kepala-desa {
-        border-color: #1e40af;
-        border-width: 3px;
-    }
-    .person-card.sekretaris, .person-card.kasi {
-        border-color: #3b82f6;
-    }
-    .person-card.kadus, .person-card.staff {
-        border-color: #10b981;
-    }
-    .photo-placeholder {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        margin: 0 auto 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-        font-size: 24px;
-    }
-    .position-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: bold;
-        margin-bottom: 10px;
-    }
-    .badge-kepala {
-        background: #1e40af;
-        color: white;
-    }
-    .badge-sekretaris {
-        background: #3b82f6;
-        color: white;
-    }
-    .badge-kasi {
-        background: #8b5cf6;
-        color: white;
-    }
-    .badge-kadus {
-        background: #10b981;
-        color: white;
-    }
-    .badge-staff {
-        background: #6b7280;
-        color: white;
-    }
-    @media (max-width: 768px) {
-        .level-2 {
-            flex-direction: column;
-            gap: 40px;
-            align-items: center;
-        }
-        .level-3 {
-            flex-direction: column;
-            gap: 30px;
-            align-items: center;
-        }
-        .level-3-group {
-            width: 100%;
-        }
-        .person-card {
-            width: 100%;
-            max-width: 300px;
-        }
-    }
-    .section-bg {
-        background: linear-gradient(rgba(30, 64, 175, 0.05), rgba(30, 64, 175, 0.05));
-    }
+
+    .section-bg { background: linear-gradient(rgba(30,64,175,0.05), rgba(30,64,175,0.05)); }
 </style>
 @endpush
 
@@ -258,113 +179,136 @@
                 <h3 class="text-xl font-bold text-primary mb-4">Diagram Struktur Organisasi</h3>
                 
                 <div class="org-chart">
-                    <!-- Level 1: Kepala Desa -->
-                    <div class="level-1">
-                        <div class="person-card kepala-desa">
-                            <div class="position-badge badge-kepala">KEPALA DESA</div>
-                            <div class="photo-placeholder">KD</div>
-                            <h4 class="font-bold text-lg">H. DADAN DARMADI, S.IP.</h4>
-                            <p class="text-gray-600 text-sm">Kepala Desa Cicangkang Hilir</p>
-                            <div class="mt-3 text-xs text-gray-500">
-                                <p>Periode: 2020-2025</p>
+                    <svg class="org-lines" viewBox="0 0 1000 420" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- top horizontal between BPD and KD -->
+                        <line x1="15%" y1="12%" x2="50%" y2="12%" stroke="#1e40af" stroke-width="2" />
+                        <!-- KD to Kasi vertical -->
+                        <line x1="50%" y1="12%" x2="50%" y2="36%" stroke="#1e40af" stroke-width="2" />
+                        <!-- horizontal to Kasi row -->
+                        <line x1="25%" y1="36%" x2="75%" y2="36%" stroke="#1e40af" stroke-width="2" />
+                        <!-- Sek to Kaur vertical -->
+                        <line x1="85%" y1="12%" x2="85%" y2="28%" stroke="#1e40af" stroke-width="2" />
+                        <!-- Kaur horizontal -->
+                        <line x1="70%" y1="28%" x2="95%" y2="28%" stroke="#1e40af" stroke-width="2" />
+                    </svg>
+
+                    <!-- Top row: BPD - Kepala Desa - Sekretaris -->
+                    <div class="top-row grid grid-cols-3 items-start gap-8 mb-8" style="width:100%;">
+                        <div class="flex justify-center">
+                            <div class="person-card staff">
+                                <div class="position-badge badge-staff">Ketua BPD</div>
+                                <div class="photo-placeholder">B</div>
+                                <h4 class="font-bold text-lg">ASEP SETIAWAN</h4>
+                                <p class="text-gray-600 text-sm">Badan Permusyawaratan Desa</p>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center">
+                            <div class="person-card kepala-desa">
+                                <div class="position-badge badge-kepala">KEPALA DESA</div>
+                                <div class="photo-placeholder">KD</div>
+                                <h4 class="font-bold text-lg">WAWAN, S. Sos</h4>
+                                <p class="text-gray-600 text-sm">Kepala Desa Cicangkang Hilir</p>
+                                <div class="mt-3 text-xs text-gray-500"><p>Periode: 2020-2025</p></div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center">
+                            <div class="person-card sekretaris">
+                                <div class="position-badge badge-sekretaris">SEKRETARIS DESA</div>
+                                <div class="photo-placeholder">SD</div>
+                                <h4 class="font-bold text-lg">AGUS SUPRIATNA</h4>
+                                <p class="text-gray-600 text-sm">Sekretaris Desa</p>
+                            </div>
+
+                            <div class="kaur-group flex gap-4 mt-4">
+                                <div class="person-card kasi">
+                                    <div class="position-badge badge-kasi">Kaur T.U & Umum</div>
+                                    <div class="photo-placeholder">TU</div>
+                                    <h4 class="font-bold text-lg">HOERUDIN</h4>
+                                </div>
+                                <div class="person-card kasi">
+                                    <div class="position-badge badge-kasi">Kaur Perencanaan</div>
+                                    <div class="photo-placeholder">KP</div>
+                                    <h4 class="font-bold text-lg">AGUNG SUPRIYADI</h4>
+                                </div>
+                                <div class="person-card kasi">
+                                    <div class="position-badge badge-kasi">Kaur Keuangan</div>
+                                    <div class="photo-placeholder">KK</div>
+                                    <h4 class="font-bold text-lg">AJID JAENUDIN</h4>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Level 2: Sekretaris Desa & Kasi -->
-                    <div class="level-2">
-                        <!-- Sekretaris Desa -->
-                        <div class="person-card sekretaris">
-                            <div class="position-badge badge-sekretaris">SEKRETARIS DESA</div>
-                            <div class="photo-placeholder">SD</div>
-                            <h4 class="font-bold text-lg">Drs. ASEP SURYANA</h4>
-                            <p class="text-gray-600 text-sm">Sekretaris Desa</p>
+                    <!-- Kasi row under Kepala Desa -->
+                    <div class="kasi-row grid grid-cols-3 gap-8 justify-center">
+                        <div class="flex justify-center">
+                            <div class="person-card kasi">
+                                <div class="position-badge badge-kasi">KASI PEMERINTAHAN</div>
+                                <div class="photo-placeholder">KP</div>
+                                <h4 class="font-bold text-lg">TAUFIK DARMAWAN</h4>
+                                <p class="text-gray-600 text-sm">Bidang Pemerintahan</p>
+                            </div>
                         </div>
-
-                        <!-- Kasi Pemerintahan -->
-                        <div class="person-card kasi">
-                            <div class="position-badge badge-kasi">KASI PEMERINTAHAN</div>
-                            <div class="photo-placeholder">KP</div>
-                            <h4 class="font-bold text-lg">ANDRI SETIAWAN, S.Sos.</h4>
-                            <p class="text-gray-600 text-sm">Kepala Seksi Pemerintahan</p>
+                        <div class="flex justify-center">
+                            <div class="person-card kasi">
+                                <div class="position-badge badge-kasi">KASI KESRA</div>
+                                <div class="photo-placeholder">KK</div>
+                                <h4 class="font-bold text-lg">ASEP NURJAMAN</h4>
+                                <p class="text-gray-600 text-sm">Kesejahteraan</p>
+                            </div>
                         </div>
-
-                        <!-- Kasi Kesejahteraan -->
-                        <div class="person-card kasi">
-                            <div class="position-badge badge-kasi">KASI KESEJAHTERAAN</div>
-                            <div class="photo-placeholder">KK</div>
-                            <h4 class="font-bold text-lg">NENENG MARYANI, S.Pd.</h4>
-                            <p class="text-gray-600 text-sm">Kepala Seksi Kesejahteraan</p>
+                        <div class="flex justify-center">
+                            <div class="person-card kasi">
+                                <div class="position-badge badge-kasi">KASI PELAYANAN</div>
+                                <div class="photo-placeholder">KP</div>
+                                <h4 class="font-bold text-lg">GUNAWAN SAPUTRA</h4>
+                                <p class="text-gray-600 text-sm">Pelayanan Publik</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Level 3: Kepala Dusun & Staff -->
-                    <div class="level-3">
-                        <!-- Dusun 1 -->
-                        <div class="level-3-group">
-                            <div class="person-card kadus">
-                                <div class="position-badge badge-kadus">KADUS I</div>
-                                <div class="photo-placeholder">K1</div>
-                                <h4 class="font-bold text-lg">DEDE KOSASIH</h4>
-                                <p class="text-gray-600 text-sm">Kepala Dusun Cicangkang</p>
-                            </div>
-                            
-                            <div class="person-card staff">
-                                <div class="position-badge badge-staff">STAFF</div>
-                                <div class="photo-placeholder">S1</div>
-                                <h4 class="font-bold text-lg">SITI AMINAH</h4>
-                                <p class="text-gray-600 text-sm">Staff Administrasi</p>
+                    <!-- Kadus row (aligned under Kasi Pemerintahan) -->
+                    <div class="kadus-row flex gap-8 mt-8" style="justify-content:flex-start; width:100%;">
+                        <div style="width:33.333%; display:flex; justify-content:center;">
+                            <div class="level-3-group">
+                                <div class="person-card kadus">
+                                    <div class="position-badge badge-kadus">KADUS I</div>
+                                    <div class="photo-placeholder">K1</div>
+                                    <h4 class="font-bold text-lg">SARIPUDIN</h4>
+                                    <p class="text-gray-600 text-sm">Kepala Dusun Cicangkang</p>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Dusun 2 -->
-                        <div class="level-3-group">
-                            <div class="person-card kadus">
-                                <div class="position-badge badge-kadus">KADUS II</div>
-                                <div class="photo-placeholder">K2</div>
-                                <h4 class="font-bold text-lg">AJAT SUDRAJAT</h4>
-                                <p class="text-gray-600 text-sm">Kepala Dusun Pasirhuni</p>
-                            </div>
-                            
-                            <div class="person-card staff">
-                                <div class="position-badge badge-staff">STAFF</div>
-                                <div class="photo-placeholder">S2</div>
-                                <h4 class="font-bold text-lg">BUDI SANTOSO</h4>
-                                <p class="text-gray-600 text-sm">Staff Keuangan</p>
+                        <div style="width:33.333%; display:flex; justify-content:center;">
+                            <div class="level-3-group">
+                                <div class="person-card kadus">
+                                    <div class="position-badge badge-kadus">KADUS II</div>
+                                    <div class="photo-placeholder">K2</div>
+                                    <h4 class="font-bold text-lg">DEDEN MURDANI</h4>
+                                    <p class="text-gray-600 text-sm">Kepala Dusun Pasirhuni</p>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Dusun 3 -->
-                        <div class="level-3-group">
-                            <div class="person-card kadus">
-                                <div class="position-badge badge-kadus">KADUS III</div>
-                                <div class="photo-placeholder">K3</div>
-                                <h4 class="font-bold text-lg">UJANG HERMAWAN</h4>
-                                <p class="text-gray-600 text-sm">Kepala Dusun Cibodas</p>
-                            </div>
-                            
-                            <div class="person-card staff">
-                                <div class="position-badge badge-staff">STAFF</div>
-                                <div class="photo-placeholder">S3</div>
-                                <h4 class="font-bold text-lg">RINI WULANDARI</h4>
-                                <p class="text-gray-600 text-sm">Staff Kesejahteraan</p>
+                        <div style="width:33.333%; display:flex; justify-content:center;">
+                            <div class="level-3-group">
+                                <div class="person-card kadus">
+                                    <div class="position-badge badge-kadus">KADUS III</div>
+                                    <div class="photo-placeholder">K3</div>
+                                    <h4 class="font-bold text-lg">ADE KOSASIH</h4>
+                                    <p class="text-gray-600 text-sm">Kepala Dusun Cibodas</p>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Dusun 4 -->
-                        <div class="level-3-group">
-                            <div class="person-card kadus">
-                                <div class="position-badge badge-kadus">KADUS IV</div>
-                                <div class="photo-placeholder">K4</div>
-                                <h4 class="font-bold text-lg">ADE MULYANA</h4>
-                                <p class="text-gray-600 text-sm">Kepala Dusun Sukamulya</p>
-                            </div>
-                            
-                            <div class="person-card staff">
-                                <div class="position-badge badge-staff">STAFF</div>
-                                <div class="photo-placeholder">S4</div>
-                                <h4 class="font-bold text-lg">AGUS SALIM</h4>
-                                <p class="text-gray-600 text-sm">Staff Pembangunan</p>
+                        <div style="width:33.333%; display:flex; justify-content:center;">
+                            <div class="level-3-group">
+                                <div class="person-card kadus">
+                                    <div class="position-badge badge-kadus">KADUS IV</div>
+                                    <div class="photo-placeholder">K4</div>
+                                    <h4 class="font-bold text-lg">UNANG R</h4>
+                                    <p class="text-gray-600 text-sm">Kepala Dusun Sukamulya</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -372,48 +316,65 @@
             </div>
         </div>
 
-        <!-- Tugas & Fungsi -->
+        <!-- Tugas & Fungsi (disesuaikan dengan struktur organisasi) -->
         <div class="bg-white rounded-xl shadow-md p-8 mb-8">
             <h2 class="text-2xl font-bold text-primary mb-6">Tugas dan Fungsi Perangkat Desa</h2>
-            
+
             <div class="space-y-6">
+                <div class="border-l-4 border-primary pl-6 py-2">
+                    <h3 class="font-bold text-lg mb-2">BPD (Badan Permusyawaratan Desa)</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li>Menampung dan menyampaikan aspirasi masyarakat</li>
+                        <li>Mengawasi pelaksanaan kebijakan dan program desa</li>
+                        <li>Memberi persetujuan terhadap RKPDes dan peraturan desa</li>
+                    </ul>
+                </div>
+
                 <div class="border-l-4 border-primary pl-6 py-2">
                     <h3 class="font-bold text-lg mb-2">Kepala Desa</h3>
                     <ul class="list-disc pl-5 space-y-1 text-gray-600">
                         <li>Memimpin penyelenggaraan pemerintahan desa</li>
-                        <li>Mengkoordinasikan pembangunan desa</li>
-                        <li>Mewakili desa di dalam dan di luar pengadilan</li>
-                        <li>Melaksanakan wewenang yang diberikan oleh Bupati</li>
+                        <li>Mengkoordinasikan perencanaan, pelaksanaan, dan evaluasi pembangunan desa</li>
+                        <li>Mengambil keputusan administratif dan memimpin rapat pemerintahan desa</li>
+                        <li>Menandatangani dokumen resmi dan mewakili desa secara hukum</li>
                     </ul>
                 </div>
-                
+
                 <div class="border-l-4 border-secondary pl-6 py-2">
                     <h3 class="font-bold text-lg mb-2">Sekretaris Desa</h3>
                     <ul class="list-disc pl-5 space-y-1 text-gray-600">
-                        <li>Membantu kepala desa dalam bidang administrasi</li>
-                        <li>Mengelola administrasi kependudukan</li>
-                        <li>Menyusun program kerja dan laporan</li>
-                        <li>Mengelola keuangan dan aset desa</li>
+                        <li>Mengelola administrasi pemerintahan dan dokumentasi desa</li>
+                        <li>Menyusun program kerja, koordinasi antar seksi, dan penyusunan laporan</li>
+                        <li>Mengawasi pelaksanaan administrasi kependudukan dan kearsipan</li>
+                        <li>Mendukung pengelolaan keuangan dan aset bersama kepala urusan</li>
                     </ul>
                 </div>
-                
+
                 <div class="border-l-4 border-accent pl-6 py-2">
-                    <h3 class="font-bold text-lg mb-2">Kepala Seksi</h3>
+                    <h3 class="font-bold text-lg mb-2">Kaur (T.U., Perencanaan, Keuangan)</h3>
                     <ul class="list-disc pl-5 space-y-1 text-gray-600">
-                        <li>Melaksanakan kegiatan bidang pemerintahan dan kesejahteraan</li>
-                        <li>Membina dan mengkoordinasikan LPMD dan karang taruna</li>
-                        <li>Melaksanakan urusan pelayanan umum</li>
-                        <li>Melaksanakan tugas lain yang diberikan kepala desa</li>
+                        <li><strong>Kaur T.U. & Umum:</strong> Menangani tata usaha, pelayanan administrasi, dan urusan umum</li>
+                        <li><strong>Kaur Perencanaan:</strong> Menyusun RKPDes, koordinasi data, dan monitoring program pembangunan</li>
+                        <li><strong>Kaur Keuangan:</strong> Mengelola anggaran desa, pencatatan keuangan, dan pelaporan keuangan</li>
                     </ul>
                 </div>
-                
+
+                <div class="border-l-4 border-accent pl-6 py-2">
+                    <h3 class="font-bold text-lg mb-2">Kepala Seksi (Kasi)</h3>
+                    <ul class="list-disc pl-5 space-y-1 text-gray-600">
+                        <li><strong>Kasi Pemerintahan:</strong> Menangani urusan pemerintahan, penertiban administrasi, dan koordinasi RT/RW</li>
+                        <li><strong>Kasi Kesra:</strong> Menangani kesejahteraan rakyat, pendidikan, kesehatan, dan sosial</li>
+                        <li><strong>Kasi Pelayanan:</strong> Menangani pelayanan publik, perizinan, dan administrasi kependudukan</li>
+                    </ul>
+                </div>
+
                 <div class="border-l-4 border-green-500 pl-6 py-2">
                     <h3 class="font-bold text-lg mb-2">Kepala Dusun</h3>
                     <ul class="list-disc pl-5 space-y-1 text-gray-600">
                         <li>Melaksanakan kegiatan pemerintahan di tingkat dusun</li>
-                        <li>Membina RT/RW di wilayahnya</li>
-                        <li>Mengkoordinasikan pembangunan di dusun</li>
-                        <li>Menyampaikan laporan kepada kepala desa</li>
+                        <li>Membina dan mengawasi RT/RW dalam wilayahnya</li>
+                        <li>Mengkoordinasikan pelaksanaan pembangunan dan kegiatan masyarakat dusun</li>
+                        <li>Melaporkan perkembangan kepada Kepala Desa</li>
                     </ul>
                 </div>
             </div>
