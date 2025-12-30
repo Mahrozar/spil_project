@@ -8,10 +8,14 @@ use App\Http\Controllers\ProfilDesaController;
 use App\Http\Controllers\LayananDesaController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PublicReportController;
+use App\Http\Controllers\VisitorController;
 
 
 // Public landing page (accessible without authentication)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
+// Rute untuk buku tamu (hanya 2 input)
+Route::get('/visitor/form', [VisitorController::class, 'showForm'])->name('visitor.form');
+Route::post('/visitor/store', [VisitorController::class, 'store'])->name('visitor.store');
 // Route untuk Profil Desa
 Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');

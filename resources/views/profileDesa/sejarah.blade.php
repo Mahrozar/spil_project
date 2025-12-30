@@ -82,16 +82,6 @@
 
 @section('content')
 <div class="pt-24 pb-12">
-    <!-- Hero Section -->
-    <div class="section-bg">
-        <div class="container mx-auto px-6 py-12">
-            <div class="text-center">
-                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Sejarah Desa Cicangkang Hilir</h1>
-                <p class="text-gray-600 max-w-2xl mx-auto">Mengenal perjalanan panjang Desa Cicangkang Hilir dari masa ke masa</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Breadcrumb -->
     <div class="container mx-auto px-6 py-4">
         <nav class="flex" aria-label="Breadcrumb">
@@ -123,6 +113,17 @@
             </ol>
         </nav>
     </div>
+    <!-- Hero Section -->
+    <div class="section-bg">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Sejarah Desa Cicangkang Hilir</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">Mengenal perjalanan panjang Desa Cicangkang Hilir dari masa ke masa</p>
+            </div>
+        </div>
+    </div>
+
+    
 
     <!-- Sejarah Utama -->
     <div class="container mx-auto px-6 py-8">
