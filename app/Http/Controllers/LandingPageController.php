@@ -16,6 +16,13 @@ class LandingPageController extends Controller
      */
     public function index(Request $request)
     {
+        $visitorController = new VisitorController();
+        
+        // Cek apakah pengunjung sudah mengisi form
+        if (!$visitorController->checkVisitor()) {
+            // Redirect ke form buku tamu
+            return redirect()->route('visitor.form');
+        }
         $population = Resident::count();
         $kk = Resident::select('kk_number')->distinct()->count();
         $rtCount = RT::count();

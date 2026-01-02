@@ -32,16 +32,6 @@
 
 @section('content')
 <div class="pt-24 pb-12">
-    <!-- Hero Section -->
-    <div class="section-bg">
-        <div class="container mx-auto px-6 py-12">
-            <div class="text-center">
-                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Visi & Misi Desa</h1>
-                <p class="text-gray-600 max-w-2xl mx-auto">Arah dan tujuan pembangunan Desa Cicangkang Hilir menuju masyarakat yang sejahtera dan mandiri</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Breadcrumb -->
     <div class="container mx-auto px-6 py-4">
         <nav class="flex" aria-label="Breadcrumb">
@@ -72,6 +62,15 @@
                 </li>
             </ol>
         </nav>
+    </div>
+    <!-- Hero Section -->
+    <div class="section-bg">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center">
+                <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4">Visi & Misi Desa</h1>
+                <p class="text-gray-600 max-w-2xl mx-auto">Arah dan tujuan pembangunan Desa Cicangkang Hilir menuju masyarakat yang sejahtera dan mandiri</p>
+            </div>
+        </div>
     </div>
 
     <!-- Visi Section -->

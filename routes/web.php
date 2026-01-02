@@ -7,9 +7,15 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfilDesaController;
 use App\Http\Controllers\LayananDesaController;
 use App\Http\Controllers\LandingPageController;
+use App\Http\Controllers\PublicReportController;
+use App\Http\Controllers\VisitorController;
+
 
 // Public landing page (accessible without authentication)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
+// Rute untuk buku tamu (hanya 2 input)
+Route::get('/visitor/form', [VisitorController::class, 'showForm'])->name('visitor.form');
+Route::post('/visitor/store', [VisitorController::class, 'store'])->name('visitor.store');
 // Route untuk Profil Desa
 Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
@@ -32,6 +38,25 @@ Route::prefix('layanan')->group(function () {
 });
 Route::get('/demo', [LandingPageController::class, 'demo'])->name('demo');
 Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kontak.kirim'); 
+
+// Public Report Routes
+Route::prefix('lapor')->name('reports.')->group(function () {
+    Route::get('/buat', [PublicReportController::class, 'create'])->name('create');
+    Route::post('/buat', [ReportController::class, 'store'])->name('store');
+    Route::get('/status', [PublicReportController::class, 'checkStatus'])->name('check-status');
+    Route::post('/status', [PublicReportController::class, 'checkStatus'])->name('check-status.post');
+    Route::get('/{code}', [PublicReportController::class, 'show'])->name('show');
+    Route::get('/', [PublicReportController::class, 'index'])->name('index');
+});
+
+// Admin Report Routes
+Route::middleware(['auth', 'can:manage-reports'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('reports', ReportController::class)->except(['create', 'store']);
+    Route::post('reports/{report}/comment', [ReportController::class, 'addComment'])->name('reports.comment');
+    Route::post('reports/{report}/photos', [ReportController::class, 'uploadPhotos'])->name('reports.photos');
+    Route::get('reports/statistics', [ReportController::class, 'statistics'])->name('reports.statistics');
+    Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+});
 
 // Route::get('/', function () {
 //     if (auth()->check()) {
