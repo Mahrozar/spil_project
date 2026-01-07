@@ -41,6 +41,9 @@ class LandingPageController extends Controller
         // Load all recent submissions (public) so Statistik Pengajuan dapat digulir dan melihat seluruh data
         $mySubmissions = LetterSubmission::orderBy('created_at', 'desc')->get();
 
+        // Also load recent facility reports for the public landing (to show pelaporan list)
+        $myReports = \App\Models\Report::orderBy('created_at', 'desc')->take(100)->get();
+
         return view('frontend.home', compact(
             'population',
             'kk',
@@ -55,6 +58,7 @@ class LandingPageController extends Controller
             'berita' => $berita,
             'galeri' => $galeri,
             'mySubmissions' => $mySubmissions,
+            'myReports' => $myReports,
         ]);
     }
 }

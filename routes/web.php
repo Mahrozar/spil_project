@@ -13,6 +13,8 @@ use App\Http\Controllers\VisitorController;
 
 // Public landing page (accessible without authentication)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
+// Redirect legacy/shortcut URL to layanan pelaporan
+Route::redirect('/pelaporan-fasilitas', '/layanan/pelaporan-fasilitas');
 // Rute untuk buku tamu (hanya 2 input)
 Route::get('/visitor/form', [VisitorController::class, 'showForm'])->name('visitor.form');
 Route::post('/visitor/store', [VisitorController::class, 'store'])->name('visitor.store');
@@ -35,6 +37,12 @@ Route::prefix('layanan')->group(function () {
     Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
     Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
     Route::post('/surat-online', [LayananDesaController::class, 'submitSurat'])->name('layanan.submit-surat');
+    // Pelaporan fasilitas (landing page + simple submit handler)
+    Route::get('/pelaporan-fasilitas', function () {
+        return view('layanan.pelaporan-fasilitas');
+    })->name('layanan.pelaporan-fasilitas');
+
+    Route::post('/pelaporan-fasilitas', [ReportController::class, 'store'])->name('layanan.pelaporan-fasilitas.submit');
 });
 Route::get('/demo', [LandingPageController::class, 'demo'])->name('demo');
 Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kontak.kirim'); 

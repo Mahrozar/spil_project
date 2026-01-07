@@ -166,12 +166,34 @@ class Report extends Model
     public function getFacilityLabelAttribute()
     {
         $types = self::getFacilityTypes();
-        return $types[$this->facility_category][$this->facility_type] ?? $this->facility_type;
+
+        // New schema: facility_category + facility_type
+        if (!empty($this->facility_category) && !empty($this->facility_type)) {
+            return $types[$this->facility_category][$this->facility_type] ?? $this->facility_type;
+        }
+
+        // Older/legacy schema: single 'category' column
+        if (!empty($this->facility_category)) {
+            return $this->facility_category;
+        }
+
+        if (!empty($this->category)) {
+            return $this->category;
+        }
+
+        // Fallback to any available type or empty
+        return $this->facility_type ?? $this->category ?? '';
     }
 
     public function getStatusLabelAttribute()
     {
-        return self::getStatusLabels()[$this->status] ?? $this->status;
+        $labels = self::getStatusLabels();
+        if (!empty($labels[$this->status])) {
+            return $labels[$this->status];
+        }
+
+        // Fallback: prettify raw status (e.g., 'open' -> 'Open')
+        return ucfirst(str_replace(['_', '-'], ' ', $this->status));
     }
 
     public function getPriorityLabelAttribute()
@@ -181,7 +203,27 @@ class Report extends Model
 
     public function getStatusColorAttribute()
     {
-        return self::getStatusColors()[$this->status] ?? 'bg-gray-100 text-gray-800';
+        $colors = self::getStatusColors();
+        if (!empty($colors[$this->status])) {
+            return $colors[$this->status];
+        }
+
+        // Fallback mappings for legacy statuses
+        $legacy = [
+            'open' => 'bg-gray-100 text-gray-800',
+            'investigating' => 'bg-yellow-100 text-yellow-800',
+            'closed' => 'bg-green-100 text-green-800',
+        ];
+
+        return $legacy[$this->status] ?? 'bg-gray-100 text-gray-800';
+    }
+
+    /**
+     * Relation to the user that created the report (legacy schema uses user_id).
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     public function getPriorityColorAttribute()

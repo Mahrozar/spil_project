@@ -126,7 +126,7 @@
 
                 <!-- Actions -->
                 <div class="flex flex-wrap gap-3 pt-6 border-t">
-                    <a href="{{ route('reports.create') }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
+                    <a href="{{ route('layanan.pelaporan-fasilitas') }}" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-secondary">
                         Buat Laporan Baru
                     </a>
                     <button onclick="window.print()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">

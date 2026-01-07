@@ -2,7 +2,7 @@
     <div class="container">
         <h1>Laporan Anda</h1>
 
-        <a href="{{ route('user.reports.create') }}" class="btn btn-primary mb-3">Laporan Baru</a>
+        <a href="{{ route('layanan.pelaporan-fasilitas') }}" class="btn btn-primary mb-3">Laporan Baru</a>
 
         <table class="table">
             <thead>

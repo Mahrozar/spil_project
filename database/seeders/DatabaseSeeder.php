@@ -32,8 +32,13 @@ class DatabaseSeeder extends Seeder
             // each user gets between 2 and 6 letters
             \App\Models\Letter::factory(rand(2, 6))->for($user)->create();
 
-            // each user gets between 0 and 4 reports
-            \App\Models\Report::factory(rand(0, 4))->for($user)->create();
+            // each user gets between 0 and 4 reports (simple factory data)
+            $count = rand(0, 4);
+            if ($count > 0) {
+                \App\Models\Report::factory($count)->create([
+                    'user_id' => $user->id,
+                ]);
+            }
         });
 
         // Create hierarchical RW -> RT -> Residents
@@ -56,5 +61,7 @@ class DatabaseSeeder extends Seeder
 
         // Create some import summary files and sample error reports for dashboard preview
         $this->call(\Database\Seeders\DummyDataSeeder::class);
+        // Create dummy facility reports for monitoring/demo
+        $this->call(\Database\Seeders\ReportsDummySeeder::class);
     }
 }

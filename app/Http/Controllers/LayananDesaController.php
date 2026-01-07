@@ -14,9 +14,8 @@ class LayananDesaController extends Controller
      */
     public function prosedur()
     {
-        return view('layanan.prosedur', [
-            'title' => 'Prosedur Layanan - Desa Cicangkang Hilir'
-        ]);
+        // Redirect to the landing page's layanan section instead of a separate view
+        return redirect()->to(route('landing-page') . '#layanan');
     }
 
     /**

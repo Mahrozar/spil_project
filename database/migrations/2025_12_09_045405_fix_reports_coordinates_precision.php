@@ -11,13 +11,21 @@ class FixReportsCoordinatesPrecision extends Migration
     {
         // Untuk MySQL/MariaDB
         if (DB::connection()->getDriverName() == 'mysql') {
-            DB::statement('ALTER TABLE reports MODIFY latitude DECIMAL(10, 8)');
-            DB::statement('ALTER TABLE reports MODIFY longitude DECIMAL(11, 8)');
+            if (Schema::hasColumn('reports', 'latitude')) {
+                DB::statement('ALTER TABLE reports MODIFY latitude DECIMAL(10, 8)');
+            }
+            if (Schema::hasColumn('reports', 'longitude')) {
+                DB::statement('ALTER TABLE reports MODIFY longitude DECIMAL(11, 8)');
+            }
         }
         // Untuk PostgreSQL
         elseif (DB::connection()->getDriverName() == 'pgsql') {
-            DB::statement('ALTER TABLE reports ALTER COLUMN latitude TYPE DECIMAL(10, 8)');
-            DB::statement('ALTER TABLE reports ALTER COLUMN longitude TYPE DECIMAL(11, 8)');
+            if (Schema::hasColumn('reports', 'latitude')) {
+                DB::statement('ALTER TABLE reports ALTER COLUMN latitude TYPE DECIMAL(10, 8)');
+            }
+            if (Schema::hasColumn('reports', 'longitude')) {
+                DB::statement('ALTER TABLE reports ALTER COLUMN longitude TYPE DECIMAL(11, 8)');
+            }
         }
         // Untuk SQLite (tidak support ALTER untuk tipe data)
         elseif (DB::connection()->getDriverName() == 'sqlite') {
@@ -29,8 +37,12 @@ class FixReportsCoordinatesPrecision extends Migration
     public function down()
     {
         if (DB::connection()->getDriverName() == 'mysql') {
-            DB::statement('ALTER TABLE reports MODIFY latitude DECIMAL(9, 6)');
-            DB::statement('ALTER TABLE reports MODIFY longitude DECIMAL(9, 6)');
+            if (Schema::hasColumn('reports', 'latitude')) {
+                DB::statement('ALTER TABLE reports MODIFY latitude DECIMAL(9, 6)');
+            }
+            if (Schema::hasColumn('reports', 'longitude')) {
+                DB::statement('ALTER TABLE reports MODIFY longitude DECIMAL(9, 6)');
+            }
         }
         // ... down untuk database lain
     }

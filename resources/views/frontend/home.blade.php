@@ -178,9 +178,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <h3 class="text-xl font-bold text-dark mb-3">Administrasi Kependudukan</h3>
-                        <p class="text-gray-600 mb-4">Pelayanan pembuatan KTP, KK, akta kelahiran, akta kematian, dan dokumen kependudukan lainnya.</p>
-                        <a href="{{ route('layanan.prosedur') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Lihat prosedur</a>
+                        <h3 class="text-xl font-bold text-dark mb-3">Pengaduan Fasilitas Umum</h3>
+                            <p class="text-gray-600 mb-4">Laporkan kerusakan atau keluhan terkait fasilitas umum desa (jalan, lampu, sarana publik) untuk ditindaklanjuti oleh pemerintah desa.</p>
+                            <a href="/pelaporan-fasilitas" class="inline-flex items-center text-primary hover:text-secondary font-medium">Laporkan sekarang</a>
                     </div>
 
                     <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
@@ -194,22 +194,12 @@
                         <a href="{{ route('layanan.surat-online') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Ajukan online</a>
                     </div>
 
-                    <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-                        <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mb-6">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <h3 class="text-xl font-bold text-dark mb-3">UMKM & Ekonomi</h3>
-                        <p class="text-gray-600 mb-4">Pendaftaran usaha, perizinan, bantuan, dan pengembangan ekonomi masyarakat desa.</p>
-                        <a href="{{ route('layanan.dokumen') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Dokumen persyaratan</a>
-                    </div>
+                    <!-- UMKM card removed as requested -->
                 @endif
 
-                 <!-- Statistik Pengajuan (tampil di area Layanan, ringkas: nama, nama surat, status)
-                     - spans both columns and has larger card + taller scroll area -->
-                 <div class="feature-card bg-white p-10 rounded-xl shadow-lg border border-gray-100 md:col-span-2">
-                    <div class="text-center mb-6">
+                 <!-- Statistik Pengajuan (tampil di area Layanan, ringkas: nama, nama surat, status) -->
+                 <div class="bg-white rounded-xl shadow-lg border border-gray-100 md:col-span-2">
+                    <div class="p-6 bg-white rounded-t-xl text-center">
                         <div class="mx-auto inline-flex items-center justify-center bg-indigo-100 text-indigo-600 w-12 h-12 rounded-full mb-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m1 7a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -219,23 +209,22 @@
                         <p class="text-sm text-primary/80">Ringkasan pengajuan Anda (nama, jenis surat, status).</p>
                     </div>
 
-                    @if(!empty($mySubmissions) && count($mySubmissions) > 0)
-                        <div class="overflow-x-auto">
-                            <!-- Search input -->
-                            <div class="mb-4">
-                                <input id="submission-search" type="search" placeholder="Cari nama, jenis surat, atau status..." class="w-full md:w-1/2 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
-                            </div>
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <input id="submission-search" type="search" placeholder="Cari nama, jenis surat, atau status..." class="w-full md:w-1/2 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
+                        </div>
 
-                            <div class="max-h-56 md:max-h-56 overflow-y-auto rounded shadow-sm">
+                        @if(!empty($mySubmissions) && count($mySubmissions) > 0)
+                            <div class="max-h-64 overflow-y-auto rounded shadow-sm">
                                 <table class="w-full table-auto text-sm">
                                     <thead>
-                                        <tr class="text-left text-gray-600 bg-gray-50">
-                                            <th class="px-4 py-3 sticky top-0 bg-gray-50">Nama</th>
-                                            <th class="px-4 py-3 sticky top-0 bg-gray-50">Nama Surat</th>
-                                            <th class="px-4 py-3 sticky top-0 bg-gray-50">Status</th>
+                                        <tr class="text-left text-gray-600 bg-gray-50 sticky top-0">
+                                            <th class="px-4 py-3">Nama</th>
+                                            <th class="px-4 py-3">Nama Surat</th>
+                                            <th class="w-40 px-4 py-3">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-100 bg-white">
+                                    <tbody id="submission-tbody" class="divide-y divide-gray-100 bg-white">
                                         @foreach($mySubmissions as $s)
                                             <tr>
                                                 <td class="px-4 py-3 align-top text-gray-700">{{ $s->nama ?? '-' }}</td>
@@ -248,12 +237,62 @@
                                     </tbody>
                                 </table>
                             </div>
+                        @else
+                            <div class="text-center py-6 text-gray-600">
+                                Belum ada pengajuan yang tersedia.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                <!-- Daftar Pelaporan Fasilitas (public reports) -->
+                <div class="bg-white rounded-xl shadow-lg border border-gray-100 md:col-span-2">
+                    <div class="p-6 bg-white rounded-t-xl text-center">
+                        <div class="mx-auto inline-flex items-center justify-center bg-green-100 text-green-600 w-12 h-12 rounded-full mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h4l3 8 4-16 3 8h4" />
+                            </svg>
                         </div>
-                    @else
-                        <div class="text-center py-6 text-gray-600">
-                            Belum ada pengajuan yang tersedia.
+                        <h3 class="text-lg font-semibold text-primary mb-1">Daftar Pengaduan Fasilitas Umum</h3>
+                        <p class="text-sm text-primary/80">Ringkasan pengaduan fasilitas umum (pelapor, kategori, lokasi, status).</p>
+                    </div>
+
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <input id="report-search" type="search" placeholder="Cari pelapor, kategori, lokasi, atau status..." class="w-full md:w-1/2 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary" />
                         </div>
-                    @endif
+
+                        @if(!empty($myReports) && count($myReports) > 0)
+                            <div class="max-h-64 overflow-y-auto rounded shadow-sm">
+                                <table class="w-full table-auto text-sm">
+                                    <thead>
+                                        <tr class="text-left text-gray-600 bg-gray-50 sticky top-0">
+                                            <th class="px-4 py-3">Pelapor</th>
+                                            <th class="px-4 py-3">Kategori / Tipe</th>
+                                            <th class="px-4 py-3">Lokasi</th>
+                                            <th class="w-36 px-4 py-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="report-tbody" class="divide-y divide-gray-100 bg-white">
+                                        @foreach($myReports as $r)
+                                            <tr>
+                                                <td class="px-4 py-3 align-top text-gray-700">{{ $r->user->name ?? $r->reporter_name ?? 'Anonim' }}</td>
+                                                <td class="px-4 py-3 align-top text-gray-700">{{ $r->facility_label ?? ($r->facility_category . ' / ' . $r->facility_type) }}</td>
+                                                <td class="px-4 py-3 align-top text-gray-700">{{ Str::limit($r->address, 60) }}</td>
+                                                <td class="px-4 py-3 align-top">
+                                                    <span class="{{ $r->status_color ?? 'bg-gray-100 text-gray-800' }} inline-flex items-center px-2 py-1 rounded text-xs">{{ $r->status_label }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-6 text-gray-600">
+                                Belum ada laporan fasilitas yang tersedia.
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>
@@ -501,6 +540,31 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+// Simple client-side filtering for submissions and reports tables
+function setupTableFilter(inputId, tbodyId) {
+    const input = document.getElementById(inputId);
+    const tbody = document.getElementById(tbodyId);
+    if (!input || !tbody) return;
+
+    input.addEventListener('input', function() {
+        const q = input.value.toLowerCase().trim();
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        rows.forEach(r => {
+            const text = r.textContent.toLowerCase();
+            r.style.display = text.includes(q) ? '' : 'none';
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+    setupTableFilter('submission-search', 'submission-tbody');
+    setupTableFilter('report-search', 'report-tbody');
+});
+</script>
+@endpush
 
 @push('scripts')
 <script>
