@@ -180,7 +180,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-dark mb-3">Pengaduan Fasilitas Umum</h3>
                             <p class="text-gray-600 mb-4">Laporkan kerusakan atau keluhan terkait fasilitas umum desa (jalan, lampu, sarana publik) untuk ditindaklanjuti oleh pemerintah desa.</p>
-                            <a href="/pelaporan-fasilitas" class="inline-flex items-center text-primary hover:text-secondary font-medium">Laporkan sekarang</a>
+                            <a href="{{ route('reports.create') }}" class="inline-flex items-center text-primary hover:text-secondary font-medium">Laporkan sekarang</a>
                     </div>
 
                     <div class="feature-card bg-white p-8 rounded-xl shadow-lg border border-gray-100">
