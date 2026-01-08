@@ -594,8 +594,8 @@
         let selectedFacilityType = null;
         let facilityTypes = @json($facilityTypes);
         let defaultLocation = {
-            lat: -6.8885, // Approx Cicangkang Hilir
-            lng: 107.5150
+            lat: -6.958944159165081, // Approx Cicangkang Hilir
+            lng: 107.4058396872854
         };
         // Photo handling - FIXED VERSION
         let photoFiles = {};

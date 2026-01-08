@@ -1,36 +1,27 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    './resources/views/**/*.blade.php',
-    './resources/js/**/*.js',
-    // include css so classes used with @apply in CSS are discovered
-    './resources/css/**/*.css',
-  ],
-  // Always generate these utility classes (useful when classes are only used via @apply)
-  safelist: [
-    'bg-primary',
-    'bg-secondary',
-    'text-primary',
-    'text-white',
-    'bg-primary/5',
-    'bg-white/5'
+    "./resources/**/*.blade.php",
+    "./resources/**/*.js",
+    "./resources/**/*.vue",
   ],
   theme: {
     extend: {
       colors: {
-        primary: { DEFAULT: '#1e40af' },
-        secondary: { DEFAULT: '#3b82f6' },
-        accent: { DEFAULT: '#10b981' },
-        dark: { DEFAULT: '#1f2937' },
-        light: { DEFAULT: '#f8fafc' },
-        brand: {
-          DEFAULT: '#0f766e',
-          700: '#0f766e'
-        }
+        primary: {
+          DEFAULT: '#1E40AF',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+        },
       },
-      fontFamily: {
-        sans: ['ui-sans-serif', 'system-ui', 'Inter', 'sans-serif']
-      }
     },
   },
   plugins: [],

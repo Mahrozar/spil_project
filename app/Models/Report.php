@@ -249,14 +249,14 @@ class Report extends Model
         $lastReport = self::where('report_code', 'like', "{$prefix}-{$year}-%")
             ->orderBy('report_code', 'desc')
             ->first();
-        
+
         if ($lastReport) {
             $lastNumber = intval(substr($lastReport->report_code, -3));
             $newNumber = str_pad($lastNumber + 1, 3, '0', STR_PAD_LEFT);
         } else {
             $newNumber = '001';
         }
-        
+
         return "{$prefix}-{$year}-{$newNumber}";
     }
 
@@ -339,7 +339,7 @@ class Report extends Model
     public function changeStatus($newStatus, $userId = null, $notes = null)
     {
         $oldStatus = $this->status;
-        
+
         // Create history record
         $this->statusHistory()->create([
             'old_status' => $oldStatus,
@@ -347,11 +347,11 @@ class Report extends Model
             'changed_by' => $userId,
             'notes' => $notes,
         ]);
-        
+
         // Update report status
         $this->status = $newStatus;
         $this->save();
-        
+
         // Update user stats if completed
         if ($newStatus === self::STATUS_COMPLETED && $this->assigned_to) {
             $user = User::find($this->assigned_to);
@@ -360,14 +360,14 @@ class Report extends Model
                 $user->decrement('pending_reports_count');
             }
         }
-        
+
         return true;
     }
 
     public function assignTo($userId, $dueDate = null)
     {
         $oldAssignee = $this->assigned_to;
-        
+
         // Update old assignee stats
         if ($oldAssignee) {
             $oldUser = User::find($oldAssignee);
@@ -376,19 +376,103 @@ class Report extends Model
                 $oldUser->decrement('assigned_reports_count');
             }
         }
-        
+
         // Update new assignee
         $this->assigned_to = $userId;
         $this->due_date = $dueDate;
         $this->save();
-        
+
         // Update new assignee stats
         $newUser = User::find($userId);
         if ($newUser) {
             $newUser->increment('assigned_reports_count');
             $newUser->increment('pending_reports_count');
         }
-        
+
         return true;
+    }
+    // Helper methods for labels
+    // Helper methods for labels
+    public function getCategoryLabel()
+    {
+        $labels = [
+            'jalan_jembatan' => 'Jalan & Jembatan',
+            'penerangan_umum' => 'Penerangan Umum',
+            'fasilitas_air' => 'Fasilitas Air',
+            'fasilitas_publik' => 'Fasilitas Publik',
+            'fasilitas_kesehatan' => 'Fasilitas Kesehatan',
+            'fasilitas_pendidikan' => 'Fasilitas Pendidikan',
+            'lainnya' => 'Lainnya'
+        ];
+
+        return $labels[$this->facility_category] ?? $this->facility_category;
+    }
+
+    public function getTypeLabel()
+    {
+        $labels = [
+            'jalan_rusak' => 'Jalan Rusak',
+            'jalan_berlubang' => 'Jalan Berlubang',
+            'jembatan_rusak' => 'Jembatan Rusak',
+            'drainase_tersumbat' => 'Drainase Tersumbat',
+            'trotoar_rusak' => 'Trotoar Rusak',
+            'lampu_jalan_mati' => 'Lampu Jalan Mati',
+            'lampu_rusak' => 'Lampu Rusak',
+            'tiang_lampu_miring' => 'Tiang Lampu Miring',
+            'keran_umum_rusak' => 'Keran Umum Rusak',
+            'pipa_bocor' => 'Pipa Bocor',
+            'saluran_air_tersumbat' => 'Saluran Air Tersumbat',
+            'pos_kamling_rusak' => 'Pos Kamling Rusak',
+            'balai_desa_rusak' => 'Balai Desa Rusak',
+            'taman_rusak' => 'Taman Rusak',
+            'lapangan_rusak' => 'Lapangan Rusak',
+            'puskesdes_rusak' => 'Puskesdes Rusak',
+            'posyandu_rusak' => 'Posyandu Rusak',
+            'sekolah_rusak' => 'Sekolah Rusak',
+            'taman_baca_rusak' => 'Taman Baca Rusak',
+            'lainnya' => 'Lainnya'
+        ];
+
+        return $labels[$this->facility_type] ?? $this->facility_type;
+    }
+
+    public function getStatusLabel()
+    {
+        $labels = [
+            'submitted' => 'Diajukan',
+            'verified' => 'Diverifikasi',
+            'in_progress' => 'Dalam Proses',
+            'completed' => 'Selesai',
+            'rejected' => 'Ditolak',
+            'closed' => 'Ditutup'
+        ];
+
+        return $labels[$this->status] ?? $this->status;
+    }
+
+    public function getStatusBadgeClass()
+    {
+        $classes = [
+            'submitted' => 'bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded',
+            'verified' => 'bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded',
+            'in_progress' => 'bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded',
+            'completed' => 'bg-green-100 text-green-800 text-xs px-2 py-1 rounded',
+            'rejected' => 'bg-red-100 text-red-800 text-xs px-2 py-1 rounded',
+            'closed' => 'bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded'
+        ];
+
+        return $classes[$this->status] ?? 'bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded';
+    }
+
+    public function getPriorityLabel()
+    {
+        $labels = [
+            'low' => 'Rendah',
+            'medium' => 'Sedang',
+            'high' => 'Tinggi',
+            'urgent' => 'Mendesak'
+        ];
+
+        return $labels[$this->priority] ?? $this->priority;
     }
 }

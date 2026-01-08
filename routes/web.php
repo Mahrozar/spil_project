@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NewsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LetterController;
 use App\Http\Controllers\ReportController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\VisitorController;
 
 
+
 // Public landing page (accessible without authentication)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
 // Redirect legacy/shortcut URL to layanan pelaporan
@@ -18,6 +20,8 @@ Route::redirect('/pelaporan-fasilitas', '/layanan/pelaporan-fasilitas');
 // Rute untuk buku tamu (hanya 2 input)
 Route::get('/visitor/form', [VisitorController::class, 'showForm'])->name('visitor.form');
 Route::post('/visitor/store', [VisitorController::class, 'store'])->name('visitor.store');
+// routes/web.php
+Route::get('/heatmap-data', [LandingPageController::class, 'getHeatmapData'])->name('landing.heatmap-data');
 // Route untuk Profil Desa
 Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
@@ -55,6 +59,10 @@ Route::prefix('lapor')->name('reports.')->group(function () {
     Route::post('/status', [PublicReportController::class, 'checkStatus'])->name('check-status.post');
     Route::get('/{code}', [PublicReportController::class, 'show'])->name('show');
     Route::get('/', [PublicReportController::class, 'index'])->name('index');
+});
+Route::prefix('berita')->name('news.')->group(function () {
+    Route::get('/', [NewsController::class, 'index'])->name('index');
+    Route::get('/{slug}', [NewsController::class, 'show'])->name('show');
 });
 
 // Admin Report Routes
@@ -120,7 +128,15 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('/submissions/{submission}', [AdminController::class, 'submissionUpdate'])->name('submissions.update');
     Route::delete('/submissions/{submission}', [AdminController::class, 'submissionDestroy'])->name('submissions.destroy');
 
-    Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports');
+    Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports.index');
+    Route::get('/reports/{report}', [AdminController::class, 'reportShow'])->name('reports.show');
+    Route::get('/reports/{report}/edit', [AdminController::class, 'reportEdit'])->name('reports.edit');
+    Route::put('/reports/{report}', [AdminController::class, 'reportUpdate'])->name('reports.update');
+    Route::delete('/reports/{report}', [AdminController::class, 'reportDestroy'])->name('reports.destroy');
+    Route::post('/reports/{report}/comments', [AdminController::class, 'reportAddComment'])->name('reports.addComment');
+    Route::get('/reports/export', [AdminController::class, 'reportsExport'])->name('reports.export');
+    Route::get('/reports/statistics', [AdminController::class, 'reportsStatistics'])->name('reports.statistics');
+
 
     // Residents management (RT/RW + residents)
     Route::get('/residents', [\App\Http\Controllers\ResidentController::class, 'index'])->name('residents.index');

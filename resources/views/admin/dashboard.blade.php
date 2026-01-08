@@ -1,287 +1,672 @@
 <x-app-layout>
-<div class="max-w-6xl mx-auto py-6 px-4">
-    <!-- Notification: subtle and minimal -->
-    <div class="mb-6">
-        <div id="sys-info" role="status" aria-live="polite" class="rounded-lg bg-white p-4 shadow-sm border-l-4 border-green-500">
-            <div class="flex items-start gap-4">
-                <div class="flex-shrink-0 bg-green-50 rounded-full p-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <div class="text-sm font-semibold text-slate-900">Informasi Sistem</div>
-                            <div class="text-sm text-slate-600">Semua sistem berjalan normal.</div>
+    <x-slot name="title">Dashboard Admin</x-slot>
+    <x-slot name="subtitle">Ringkasan Statistik dan Aktivitas Terkini</x-slot>
+
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        <!-- Notification -->
+        <div class="mb-6">
+            <div id="sys-info" role="status" aria-live="polite"
+                class="rounded-xl bg-gradient-to-r from-green-50 to-emerald-50 p-5 shadow-sm border border-green-100">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-start gap-3">
+                        <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
                         </div>
-                        <div class="ml-4">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-50 text-green-700 text-xs font-medium">● Aktif</span>
+                        <div>
+                            <div class="text-sm font-semibold text-gray-900">Sistem Berjalan Normal</div>
+                            <div class="text-sm text-gray-600 mt-1">
+                                Semua layanan beroperasi dengan baik.
+                                <span class="font-medium">{{ $residentsTotal }}</span> penduduk terdaftar dalam sistem.
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-2 text-sm text-slate-500">Tidak ada pemberitahuan baru. Jika ada gangguan, akan muncul di sini beserta petunjuk tindakan.</div>
-                </div>
-                <div class="ml-3">
-                    <button id="sys-info-close" aria-label="Tutup pemberitahuan" class="inline-flex items-center justify-center h-8 w-8 rounded-md text-slate-500 hover:bg-slate-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <span
+                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                            <span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            Aktif
+                        </span>
+                        <button id="sys-info-close" aria-label="Tutup pemberitahuan"
+                            class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Chart card: centered, minimal legend -->
-    <div class="mb-6">
-        <div class="bg-white rounded-2xl shadow-sm p-5">
-            <div class="flex items-center justify-between mb-4">
+        <!-- Quick Stats Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+            @php
+                $stats = [
+                    [
+                        'title' => 'Total Surat',
+                        'value' => $lettersCount,
+                        'change' => $kpis['surat']['change']['percent'] ?? 0,
+                        'trend' => $kpis['surat']['change']['trend'] ?? 'neutral',
+                        'delta' => $kpis['surat']['change']['delta'] ?? 0,
+                        'icon' =>
+                            'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                        'bgColor' => 'bg-blue-50',
+                        'iconColor' => 'text-blue-600',
+                    ],
+                    [
+                        'title' => 'Total Laporan',
+                        'value' => $reportsCount,
+                        'change' => $kpis['laporan']['change']['percent'] ?? 0,
+                        'trend' => $kpis['laporan']['change']['trend'] ?? 'neutral',
+                        'delta' => $kpis['laporan']['change']['delta'] ?? 0,
+                        'icon' =>
+                            'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                        'bgColor' => 'bg-orange-50',
+                        'iconColor' => 'text-orange-600',
+                    ],
+                    [
+                        'title' => 'Total Penduduk',
+                        'value' => $residentsTotal,
+                        'change' => $kpis['penduduk']['change']['percent'] ?? 0,
+                        'trend' => $kpis['penduduk']['change']['trend'] ?? 'neutral',
+                        'delta' => $kpis['penduduk']['change']['delta'] ?? 0,
+                        'icon' =>
+                            'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z',
+                        'bgColor' => 'bg-green-50',
+                        'iconColor' => 'text-green-600',
+                    ],
+                    [
+                        'title' => 'RT Terdaftar',
+                        'value' => $rtTotal,
+                        'change' => $kpis['rt']['change']['percent'] ?? 0,
+                        'trend' => $kpis['rt']['change']['trend'] ?? 'neutral',
+                        'delta' => $kpis['rt']['change']['delta'] ?? 0,
+                        'icon' =>
+                            'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                        'bgColor' => 'bg-purple-50',
+                        'iconColor' => 'text-purple-600',
+                    ],
+                    [
+                        'title' => 'RW Terdaftar',
+                        'value' => $rwTotal,
+                        'change' => $kpis['rw']['change']['percent'] ?? 0,
+                        'trend' => $kpis['rw']['change']['trend'] ?? 'neutral',
+                        'delta' => $kpis['rw']['change']['delta'] ?? 0,
+                        'icon' =>
+                            'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                        'bgColor' => 'bg-indigo-50',
+                        'iconColor' => 'text-indigo-600',
+                    ],
+                ];
+            @endphp
+
+            @foreach ($stats as $stat)
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-500 truncate">{{ $stat['title'] }}</p>
+                            <p class="text-2xl font-bold text-gray-900 mt-1">{{ number_format($stat['value']) }}</p>
+                            <div class="flex items-center mt-2 space-x-1">
+                                @if ($stat['trend'] === 'up')
+                                    <span class="text-xs text-green-600 font-medium flex items-center">
+                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $stat['change'] }}%
+                                    </span>
+                                    @if ($stat['delta'] != 0)
+                                        <span class="text-xs text-gray-500">
+                                            ({{ $stat['delta'] > 0 ? '+' : '' }}{{ $stat['delta'] }} bulan ini)
+                                        </span>
+                                    @endif
+                                @elseif($stat['trend'] === 'down')
+                                    <span class="text-xs text-red-600 font-medium flex items-center">
+                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $stat['change'] }}%
+                                    </span>
+                                    @if ($stat['delta'] != 0)
+                                        <span class="text-xs text-gray-500">
+                                            ({{ $stat['delta'] }} bulan ini)
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="text-xs text-gray-500">Tidak ada perubahan</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="{{ $stat['bgColor'] }} p-3 rounded-lg ml-3 flex-shrink-0">
+                            <svg class="h-6 w-6 {{ $stat['iconColor'] }}" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="{{ $stat['icon'] }}" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Monthly Activity Chart -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">Aktivitas Bulanan</h2>
+                            <p class="text-sm text-gray-500 mt-1">Statistik Surat & Laporan 12 bulan terakhir</p>
+                        </div>
+                        <div class="flex items-center gap-3 mt-3 sm:mt-0">
+                            <label class="text-sm text-gray-500">Periode:</label>
+                            <select id="presetRange"
+                                class="text-sm border border-gray-300 rounded-lg px-3 py-1.5 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option value="12m" selected>12 Bulan</option>
+                                <option value="6m">6 Bulan</option>
+                                <option value="3m">3 Bulan</option>
+                                <option value="30d">30 Hari</option>
+                                <option value="7d">7 Hari</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="h-80">
+                        <canvas id="monthlyChart"></canvas>
+                    </div>
+
+                    <div class="flex items-center justify-center gap-6 mt-6">
+                        <div class="flex items-center gap-2">
+                            <div class="h-3 w-3 rounded-full bg-blue-500"></div>
+                            <span class="text-sm text-gray-600">Surat</span>
+                            <span class="text-sm font-medium text-gray-900">{{ $lettersCount }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="h-3 w-3 rounded-full bg-orange-500"></div>
+                            <span class="text-sm text-gray-600">Laporan</span>
+                            <span class="text-sm font-medium text-gray-900">{{ $reportsCount }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Distribution Chart -->
+            <div>
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
+                    <div class="mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900">Distribusi Data</h2>
+                        <p class="text-sm text-gray-500 mt-1">Persentase setiap kategori</p>
+                    </div>
+
+                    <div class="h-64 flex items-center justify-center mb-6">
+                        <canvas id="distributionChart"></canvas>
+                    </div>
+
+                    <div class="space-y-3">
+                        @php
+                            $total = $lettersCount + $reportsCount + $residentsTotal + $rtTotal + $rwTotal;
+                            $items = [
+                                [
+                                    'label' => 'Surat',
+                                    'count' => $lettersCount,
+                                    'color' => 'bg-blue-500',
+                                    'bg' => 'bg-blue-50',
+                                    'text' => 'text-blue-700',
+                                ],
+                                [
+                                    'label' => 'Laporan',
+                                    'count' => $reportsCount,
+                                    'color' => 'bg-orange-500',
+                                    'bg' => 'bg-orange-50',
+                                    'text' => 'text-orange-700',
+                                ],
+                                [
+                                    'label' => 'Penduduk',
+                                    'count' => $residentsTotal,
+                                    'color' => 'bg-green-500',
+                                    'bg' => 'bg-green-50',
+                                    'text' => 'text-green-700',
+                                ],
+                                [
+                                    'label' => 'RT',
+                                    'count' => $rtTotal,
+                                    'color' => 'bg-purple-500',
+                                    'bg' => 'bg-purple-50',
+                                    'text' => 'text-purple-700',
+                                ],
+                                [
+                                    'label' => 'RW',
+                                    'count' => $rwTotal,
+                                    'color' => 'bg-indigo-500',
+                                    'bg' => 'bg-indigo-50',
+                                    'text' => 'text-indigo-700',
+                                ],
+                            ];
+                        @endphp
+
+                        @foreach ($items as $item)
+                            @if ($total > 0)
+                                @php
+                                    $percentage = round(($item['count'] / $total) * 100, 1);
+                                    $width = $percentage > 0 ? $percentage : 0.5;
+                                @endphp
+                                <div>
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="h-2 w-2 rounded-full {{ $item['color'] }}"></span>
+                                            <span class="text-sm text-gray-700">{{ $item['label'] }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <span
+                                                class="text-sm font-medium text-gray-900">{{ number_format($item['count']) }}</span>
+                                            <span class="text-xs text-gray-500">{{ $percentage }}%</span>
+                                        </div>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full {{ $item['color'] }} rounded-full"
+                                            style="width: {{ $width }}%"></div>
+                                    </div>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity & Quick Actions -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Recent Activity -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">Aktivitas Terkini</h2>
+                            <p class="text-sm text-gray-500 mt-1">Update terbaru dari sistem</p>
+                        </div>
+                        <a href="{{ route('admin.submissions.index') }}"
+                            class="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                            Lihat Semua →
+                        </a>
+                    </div>
+
+                    <div class="space-y-4">
+                        @forelse($recentActivities as $activity)
+                            <div class="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div class="flex-shrink-0">
+                                    @switch($activity['type'] ?? '')
+                                        @case('surat')
+                                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
+                                        @break
+
+                                        @case('laporan')
+                                            <div class="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
+                                                <svg class="h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                            </div>
+                                        @break
+
+                                        @case('penduduk')
+                                            <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z" />
+                                                </svg>
+                                            </div>
+                                        @break
+
+                                        @case('import')
+                                            <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
+                                                <svg class="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                                                </svg>
+                                            </div>
+                                        @break
+
+                                        @default
+                                            <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
+                                                <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                    @endswitch
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">
+                                        {{ $activity['message'] ?? 'Aktivitas' }}
+                                    </p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {{ $activity['time']->diffForHumans() }}
+                                    </p>
+                                </div>
+                                @if (isset($activity['link']))
+                                    <a href="{{ $activity['link'] }}"
+                                        class="flex-shrink-0 text-blue-600 hover:text-blue-800">
+                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                                            stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </a>
+                                @endif
+                            </div>
+                            @empty
+                                <div class="text-center py-8">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <p class="mt-2 text-sm text-gray-500">Belum ada aktivitas terbaru</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
                 <div>
-                    <h2 class="text-lg font-semibold text-slate-900">Ringkasan Kategori</h2>
-                    <div class="text-xs text-slate-500">Distribusi kategori saat ini</div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <label class="text-sm text-slate-500">Rentang</label>
-                    <select id="presetRange" class="text-sm border rounded px-2 py-1 bg-transparent text-slate-700">
-                        <option value="12m" selected>12 Bulan</option>
-                        <option value="6m">6 Bulan</option>
-                        <option value="3m">3 Bulan</option>
-                        <option value="30d">30 Hari</option>
-                        <option value="7d">7 Hari</option>
-                        <option value="custom">Custom</option>
-                    </select>
+                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
+                        <div class="mb-6">
+                            <h2 class="text-lg font-semibold text-gray-900">Aksi Cepat</h2>
+                            <p class="text-sm text-gray-500 mt-1">Navigasi cepat ke fitur utama</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <a href="{{ route('admin.submissions.index') }}"
+                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
+                                <div
+                                    class="flex-shrink-0 bg-blue-50 group-hover:bg-blue-100 p-3 rounded-lg transition-colors">
+                                    <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 group-hover:text-blue-600">Kelola Surat</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Lihat dan proses pengajuan</p>
+                                </div>
+                            </a>
+
+                            <a href=""
+                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
+                                <div
+                                    class="flex-shrink-0 bg-orange-50 group-hover:bg-orange-100 p-3 rounded-lg transition-colors">
+                                    <svg class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 group-hover:text-orange-600">Lihat Laporan</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Tinjau laporan dari warga</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('admin.residents.index') }}"
+                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
+                                <div
+                                    class="flex-shrink-0 bg-green-50 group-hover:bg-green-100 p-3 rounded-lg transition-colors">
+                                    <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 group-hover:text-green-600">Data Penduduk</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Kelola data kependudukan</p>
+                                </div>
+                            </a>
+
+                            <a href="{{ route('admin.rts.index') }}"
+                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-purple-300 hover:shadow-sm transition-all group">
+                                <div
+                                    class="flex-shrink-0 bg-purple-50 group-hover:bg-purple-100 p-3 rounded-lg transition-colors">
+                                    <svg class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24"
+                                        stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h3 class="font-medium text-gray-900 group-hover:text-purple-600">Data RT</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Kelola data RT</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-6">
-                <div class="flex-1 flex justify-center">
-                    <canvas id="adminChart" class="w-full max-w-[320px] h-auto"></canvas>
-                </div>
-                <div class="w-full lg:w-1/3">
-                    <ul class="space-y-3">
-                        <li class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:#41d3a2"></span>
-                                <span class="text-sm text-slate-700">Surat</span>
-                            </div>
-                            <span id="letters-count" class="text-sm text-slate-500">({{ $lettersCount }})</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:#2f9bff"></span>
-                                <span class="text-sm text-slate-700">Laporan</span>
-                            </div>
-                            <span id="reports-count" class="text-sm text-slate-500">({{ $reportsCount }})</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:#f6b042"></span>
-                                <span class="text-sm text-slate-700">Penduduk</span>
-                            </div>
-                            <span id="residents-count" class="text-sm text-slate-500">({{ $residentsTotal }})</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:#f87171"></span>
-                                <span class="text-sm text-slate-700">RT</span>
-                            </div>
-                            <span id="rt-count" class="text-sm text-slate-500">({{ $rtTotal }})</span>
-                        </li>
-                        <li class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <span class="inline-block h-3 w-3 rounded-full" style="background:#8b5cf6"></span>
-                                <span class="text-sm text-slate-700">RW</span>
-                            </div>
-                            <span id="rw-count" class="text-sm text-slate-500">({{ $rwTotal }})</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+            @push('head')
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                
+            @endpush
 
-    <!-- Summary cards underneath the chart -->
-    @include('admin._kpi_cards')
+            @push('scripts')
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Notification dismissal
+                        const infoEl = document.getElementById('sys-info');
+                        const closeBtn = document.getElementById('sys-info-close');
 
-    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-4">
-        <x-stat-card title="Surat" :value="$lettersCount" :icon="view('components.icon', ['name' => 'eye', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
-
-        <x-stat-card title="Laporan" :value="$reportsCount" :icon="view('components.icon', ['name' => 'pencil', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
-
-        <x-stat-card title="Penduduk" :value="$residentsTotal" :icon="view('components.icon', ['name' => 'users', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
-
-        <x-stat-card title="RT" :value="$rtTotal" :icon="view('components.icon', ['name' => 'users', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
-
-        <x-stat-card title="RW" :value="$rwTotal" :icon="view('components.icon', ['name' => 'users', 'class' => 'w-6 h-6 text-violet-500'])->render()" />
-    </div>
-
-    @include('admin._recent_activity')
-
-    <div class="card">
-        <h3 class="font-semibold mb-3">Aktivitas Bulanan</h3>
-        <p class="text-sm text-slate-500">Grafik menunjukkan jumlah Surat & Laporan selama 12 bulan terakhir.</p>
-    </div>
-
-    @push('head')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    @endpush
-
-    @push('scripts')
-    <script>
-    document.addEventListener('DOMContentLoaded', function(){
-        // Notification dismissal persistence
-        const infoEl = document.getElementById('sys-info');
-        const closeBtn = document.getElementById('sys-info-close');
-        try {
-            const dismissed = localStorage.getItem('admin.sysInfoDismissed');
-            if (dismissed === '1' && infoEl) {
-                infoEl.classList.add('hidden');
-            }
-        } catch(e) { /* ignore storage errors */ }
-
-        if (closeBtn && infoEl) {
-            closeBtn.addEventListener('click', function(){
-                try { localStorage.setItem('admin.sysInfoDismissed', '1'); } catch(e) {}
-                infoEl.classList.add('hidden');
-            });
-        }
-
-        // Chart init — doughnut with left-side legend
-        const ctx = document.getElementById('adminChart');
-        if (!ctx) return;
-
-        const doughnutLabels = ['Surat','Laporan','Penduduk','RT','RW'];
-        const doughnutData = [
-            Number(@json($lettersCount ?? 0)),
-            Number(@json($reportsCount ?? 0)),
-            Number(@json($residentsTotal ?? 0)),
-            Number(@json($rtTotal ?? 0)),
-            Number(@json($rwTotal ?? 0)),
-        ];
-
-        const colors = ['#41d3a2','#2f9bff','#f6b042','#f87171','#8b5cf6'];
-
-        // compute total dynamically from current dataset when needed
-
-        // create chart and keep reference for updates
-        window.adminChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: doughnutLabels,
-                datasets: [{
-                    data: doughnutData,
-                    backgroundColor: colors,
-                    borderColor: '#ffffff',
-                    borderWidth: 2,
-                    hoverOffset: 10
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                aspectRatio: 1,
-                cutout: '60%',
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                const val = ctx.parsed;
-                                const ds = ctx.chart.data.datasets[ctx.datasetIndex].data;
-                                const totalNow = ds.reduce((a,b) => a + b, 0);
-                                const pct = totalNow ? Math.round((val / totalNow) * 100) : 0;
-                                return ctx.label + ': ' + val + ' (' + pct + '%)';
+                        try {
+                            const dismissed = localStorage.getItem('admin.sysInfoDismissed');
+                            if (dismissed === '1' && infoEl) {
+                                infoEl.style.display = 'none';
                             }
+                        } catch (e) {}
+
+                        if (closeBtn && infoEl) {
+                            closeBtn.addEventListener('click', function() {
+                                try {
+                                    localStorage.setItem('admin.sysInfoDismissed', '1');
+                                } catch (e) {}
+                                infoEl.style.display = 'none';
+                            });
                         }
-                    }
-                }
-            }
-        });
 
-        // helper to update legend counts shown in HTML
-        function updateCounts(lettersCount, reportsCount, residentsCount, rtCount, rwCount) {
-            const lettersEl = document.getElementById('letters-count');
-            const reportsEl = document.getElementById('reports-count');
-            const residentsEl = document.getElementById('residents-count');
-            const rtEl = document.getElementById('rt-count');
-            const rwEl = document.getElementById('rw-count');
-            if (lettersEl) lettersEl.textContent = '(' + lettersCount + ')';
-            if (reportsEl) reportsEl.textContent = '(' + reportsCount + ')';
-            if (residentsEl) residentsEl.textContent = '(' + residentsCount + ')';
-            if (rtEl) rtEl.textContent = '(' + rtCount + ')';
-            if (rwEl) rwEl.textContent = '(' + rwCount + ')';
-        }
+                        // Initialize Monthly Activity Chart
+                        const monthlyCtx = document.getElementById('monthlyChart');
+                        if (monthlyCtx) {
+                            window.monthlyChart = new Chart(monthlyCtx, {
+                                type: 'line',
+                                data: {
+                                    labels: @json($labels),
+                                    datasets: [{
+                                            label: 'Surat',
+                                            data: @json($lettersData),
+                                            borderColor: '#3b82f6',
+                                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                            borderWidth: 2,
+                                            fill: true,
+                                            tension: 0.4
+                                        },
+                                        {
+                                            label: 'Laporan',
+                                            data: @json($reportsData),
+                                            borderColor: '#f97316',
+                                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                                            borderWidth: 2,
+                                            fill: true,
+                                            tension: 0.4
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                        tooltip: {
+                                            mode: 'index',
+                                            intersect: false
+                                        }
+                                    },
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            grid: {
+                                                drawBorder: false
+                                            },
+                                            ticks: {
+                                                stepSize: 1,
+                                                callback: function(value) {
+                                                    if (Math.floor(value) === value) {
+                                                        return value;
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        x: {
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
 
-        // fetch data for a given range and update chart
-        async function fetchAndUpdate(from, to) {
-            const q = new URLSearchParams();
-            if (from) q.set('from', from);
-            if (to) q.set('to', to);
-            const url = '/admin/dashboard/data?' + q.toString();
-            try {
-                const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
-                if (!res.ok) throw new Error('Network error');
-                const body = await res.json();
-                // update chart (donut uses category counts, not monthly labels)
-                if (window.adminChart) {
-                    const a = Number(body.lettersCount || 0);
-                    const b = Number(body.reportsCount || 0);
-                    const c = Number(body.residentsCount || 0);
-                    const d = Number(body.rtCount || 0);
-                    const e = Number(body.rwCount || 0);
-                    window.adminChart.data.datasets[0].data = [a, b, c, d, e];
-                    window.adminChart.update();
-                    updateCounts(a, b, c, d, e);
-                }
-            } catch (e) {
-                console.error('Failed to fetch dashboard data', e);
-            }
-        }
+                        // Initialize Distribution Chart (Doughnut)
+                        const distributionCtx = document.getElementById('distributionChart');
+                        if (distributionCtx) {
+                            window.distributionChart = new Chart(distributionCtx, {
+                                type: 'doughnut',
+                                data: {
+                                    labels: ['Surat', 'Laporan', 'Penduduk', 'RT', 'RW'],
+                                    datasets: [{
+                                        data: [
+                                            {{ $lettersCount }},
+                                            {{ $reportsCount }},
+                                            {{ $residentsTotal }},
+                                            {{ $rtTotal }},
+                                            {{ $rwTotal }}
+                                        ],
+                                        backgroundColor: [
+                                            '#3b82f6',
+                                            '#f97316',
+                                            '#10b981',
+                                            '#8b5cf6',
+                                            '#6366f1'
+                                        ],
+                                        borderWidth: 2,
+                                        borderColor: '#ffffff',
+                                        hoverOffset: 15
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    cutout: '65%',
+                                    plugins: {
+                                        legend: {
+                                            display: false
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(context) {
+                                                    const label = context.label || '';
+                                                    const value = context.parsed;
+                                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                                    const percentage = total ? Math.round((value / total) * 100) :
+                                                    0;
+                                                    return `${label}: ${value} (${percentage}%)`;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
 
-        // preset/date control behavior
-        const preset = document.getElementById('presetRange');
-        const fromInput = document.getElementById('fromDate');
-        const toInput = document.getElementById('toDate');
-        const applyBtn = document.getElementById('applyRange');
+                        // Range selector functionality
+                        const presetSelect = document.getElementById('presetRange');
 
-        function showHideCustom(show) {
-            fromInput.classList.toggle('hidden', !show);
-            toInput.classList.toggle('hidden', !show);
-        }
+                        if (presetSelect) {
+                            presetSelect.addEventListener('change', async function() {
+                                const preset = this.value;
+                                let from = '',
+                                    to = '';
 
-        preset.addEventListener('change', function(){
-            if (this.value === 'custom') {
-                showHideCustom(true);
-            } else {
-                showHideCustom(false);
-            }
-        });
+                                const today = new Date();
+                                const start = new Date();
 
-        applyBtn.addEventListener('click', function(){
-            const val = preset.value;
-            let from, to;
-            const today = new Date();
-            if (val === 'custom') {
-                from = fromInput.value;
-                to = toInput.value;
-                if (!from || !to) { alert('Pilih tanggal dari dan sampai'); return; }
-            } else if (val.endsWith('m')) {
-                const months = parseInt(val.replace('m',''));
-                const end = new Date(today.getFullYear(), today.getMonth(), 1);
-                const start = new Date(end.getFullYear(), end.getMonth() - (months - 1), 1);
-                from = start.toISOString().slice(0,10);
-                // set to end of current month
-                const lastDay = new Date(today.getFullYear(), today.getMonth()+1, 0);
-                to = lastDay.toISOString().slice(0,10);
-            } else if (val.endsWith('d')) {
-                const days = parseInt(val.replace('d',''));
-                const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (days - 1));
-                from = start.toISOString().slice(0,10);
-                to = today.toISOString().slice(0,10);
-            }
-            fetchAndUpdate(from, to);
-        });
+                                switch (preset) {
+                                    case '12m':
+                                        start.setMonth(today.getMonth() - 11);
+                                        break;
+                                    case '6m':
+                                        start.setMonth(today.getMonth() - 5);
+                                        break;
+                                    case '3m':
+                                        start.setMonth(today.getMonth() - 2);
+                                        break;
+                                    case '30d':
+                                        start.setDate(today.getDate() - 29);
+                                        break;
+                                    case '7d':
+                                        start.setDate(today.getDate() - 6);
+                                        break;
+                                }
 
-    });
-    </script>
-    @endpush
+                                from = start.toISOString().split('T')[0];
+                                to = today.toISOString().split('T')[0];
 
-</div>
-</x-app-layout>
+                                try {
+                                    const response = await fetch(`/admin/dashboard/data?from=${from}&to=${to}`);
+                                    const data = await response.json();
 
+                                    if (window.monthlyChart) {
+                                        window.monthlyChart.data.labels = data.labels;
+                                        window.monthlyChart.data.datasets[0].data = data.lettersData;
+                                        window.monthlyChart.data.datasets[1].data = data.reportsData;
+                                        window.monthlyChart.update();
+                                    }
+
+                                    // Show loading state
+                                    presetSelect.disabled = true;
+                                    setTimeout(() => {
+                                        presetSelect.disabled = false;
+                                    }, 500);
+
+                                } catch (error) {
+                                    console.error('Error fetching data:', error);
+                                    alert('Gagal memuat data untuk periode yang dipilih');
+                                    presetSelect.disabled = false;
+                                }
+                            });
+                        }
+                    });
+                </script>
+            @endpush
+        </div>
+    </x-app-layout>

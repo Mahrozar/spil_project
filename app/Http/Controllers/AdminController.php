@@ -8,16 +8,18 @@ use App\Models\Report;
 use App\Models\Resident;
 use App\Models\RT;
 use App\Models\RW;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -50,8 +52,9 @@ class AdminController extends Controller
         $rwCur = RW::whereBetween('created_at', [$curStart, $curEnd])->count();
         $rwPrev = RW::whereBetween('created_at', [$prevStart, $prevEnd])->count();
 
-        $percent = function($cur, $prev) {
-            if ($prev <= 0) return $cur > 0 ? 100 : 0;
+        $percent = function ($cur, $prev) {
+            if ($prev <= 0)
+                return $cur > 0 ? 100 : 0;
             return round((($cur - $prev) / max(1, $prev)) * 100, 1);
         };
 
@@ -127,7 +130,8 @@ class AdminController extends Controller
             rsort($importFiles); // newest first
             $count = 0;
             foreach ($importFiles as $f) {
-                if ($count >= 5) break;
+                if ($count >= 5)
+                    break;
                 try {
                     $raw = Storage::get($f);
                     $json = json_decode($raw, true);
@@ -149,7 +153,7 @@ class AdminController extends Controller
         }
 
         // sort by time desc and take top 10
-        usort($events, function($a, $b){
+        usort($events, function ($a, $b) {
             return $b['time']->getTimestamp() <=> $a['time']->getTimestamp();
         });
         $recentActivities = array_slice($events, 0, 10);
@@ -175,7 +179,7 @@ class AdminController extends Controller
     public function dashboardData(Request $request)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             return response()->json(['error' => 'Forbidden'], 403);
         }
 
@@ -255,7 +259,7 @@ class AdminController extends Controller
     public function submissionsIndex()
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -277,7 +281,7 @@ class AdminController extends Controller
     public function submissionShow(LetterSubmission $submission)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -287,7 +291,7 @@ class AdminController extends Controller
     public function submissionEdit(LetterSubmission $submission)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -297,7 +301,7 @@ class AdminController extends Controller
     public function submissionUpdate(Request $request, LetterSubmission $submission)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -312,7 +316,7 @@ class AdminController extends Controller
     public function submissionDestroy(LetterSubmission $submission)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -326,7 +330,7 @@ class AdminController extends Controller
     public function letterShow($letter)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -340,7 +344,7 @@ class AdminController extends Controller
     public function letterEdit($letter)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -351,7 +355,7 @@ class AdminController extends Controller
     public function letterUpdate(Request $request, $letter)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -367,7 +371,7 @@ class AdminController extends Controller
     public function letterDestroy($letter)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
@@ -382,12 +386,12 @@ class AdminController extends Controller
     public function lettersBulkDestroy(Request $request)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
         $ids = $request->input('ids', []);
-        if (! is_array($ids) || empty($ids)) {
+        if (!is_array($ids) || empty($ids)) {
             return redirect()->route('admin.submissions.index')->with('error', 'No submissions selected.');
         }
 
@@ -396,14 +400,375 @@ class AdminController extends Controller
         return redirect()->route('admin.submissions.index')->with('success', 'Selected submissions deleted.');
     }
 
-    public function reportsIndex()
+
+    public function reportsIndex(Request $request)
     {
         $user = auth()->user();
-        if (! $user || ($user->role ?? 'user') !== 'admin') {
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
             abort(403);
         }
 
-        $reports = Report::with('user')->latest()->paginate(20);
-        return view('admin.reports.index', compact('reports'));
+        $query = Report::with(['assignedUser', 'photos'])->latest();
+
+        // Apply filters
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('report_code', 'like', "%{$search}%")
+                    ->orWhere('reporter_name', 'like', "%{$search}%")
+                    ->orWhere('address', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('facility_category')) {
+            $query->where('facility_category', $request->facility_category);
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        $reports = $query->paginate(20)->withQueryString();
+
+        // Get filter options for view
+        $statuses = Report::getStatusLabels();
+        $priorities = Report::getPriorityLabels();
+        $facilityCategories = Report::getFacilityCategories();
+
+        // Hitung statistik untuk card
+        $stats = [
+            'total' => Report::count(),
+            'submitted' => Report::where('status', 'submitted')->count(),
+            'in_progress' => Report::where('status', 'in_progress')->count(),
+            'completed' => Report::where('status', 'completed')->count(),
+        ];
+
+        // Hitung statistik distribusi
+        $priorityDistribution = [
+            'urgent' => Report::where('priority', 'urgent')->count(),
+            'high' => Report::where('priority', 'high')->count(),
+            'medium' => Report::where('priority', 'medium')->count(),
+            'low' => Report::where('priority', 'low')->count(),
+        ];
+
+        // Hitung statistik kategori
+        $categoryDistribution = [];
+        foreach ($facilityCategories as $key => $label) {
+            $categoryDistribution[] = [
+                'label' => $label,
+                'count' => Report::where('facility_category', $key)->count(),
+                'color' => $this->getCategoryColor($key)
+            ];
+        }
+
+        return view('admin.reports.index', compact(
+            'reports',
+            'statuses',
+            'priorities',
+            'facilityCategories',
+            'stats',
+            'priorityDistribution',
+            'categoryDistribution'
+        ));
+    }
+
+    /**
+     * Helper method untuk warna kategori
+     */
+    private function getCategoryColor($categoryKey)
+    {
+        $colors = [
+            'jalan_jembatan' => 'bg-blue-500',
+            'penerangan_umum' => 'bg-green-500',
+            'fasilitas_air' => 'bg-purple-500',
+            'fasilitas_publik' => 'bg-yellow-500',
+            'fasilitas_kesehatan' => 'bg-indigo-500',
+            'fasilitas_pendidikan' => 'bg-pink-500',
+            'lainnya' => 'bg-gray-500',
+        ];
+
+        return $colors[$categoryKey] ?? 'bg-gray-500';
+    }
+
+    /**
+     * Display the specified report.
+     */
+    public function reportShow(Report $report)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $admin = User::where('role', 'admin')
+            ->get();
+
+        return view('admin.reports.show', compact('report', 'admin'));
+    }
+
+    /**
+     * Show the form for editing the specified report.
+     */
+    public function reportEdit(Report $report)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $petugas = User::where('role', 'petugas')
+            ->orWhere('role', 'admin')
+            ->get();
+        $statuses = Report::getStatusLabels();
+        $priorities = Report::getPriorityLabels();
+        $facilityCategories = Report::getFacilityCategories();
+
+        return view('admin.reports.edit', compact(
+            'report',
+            'petugas',
+            'statuses',
+            'priorities',
+            'facilityCategories'
+        ));
+    }
+
+    /**
+     * Update the specified report.
+     */
+    public function reportUpdate(Request $request, Report $report)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'nullable|string|max:200',
+            'description' => 'nullable|string|max:1000',
+            'status' => 'required|in:' . implode(',', array_keys(Report::getStatusLabels())),
+            'priority' => 'required|in:' . implode(',', array_keys(Report::getPriorityLabels())),
+            'assigned_to' => 'nullable|exists:users,id',
+            'due_date' => 'nullable|date',
+            'status_notes' => 'nullable|string|max:500',
+            'is_public' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        DB::beginTransaction();
+        try {
+            // Update report
+            $oldStatus = $report->status;
+            $oldAssignee = $report->assigned_to;
+
+            $report->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'priority' => $request->priority,
+                'assigned_to' => $request->assigned_to,
+                'due_date' => $request->due_date,
+                'is_public' => $request->is_public ?? $report->is_public,
+            ]);
+
+            // Update status if changed
+            if ($request->status !== $oldStatus) {
+                $report->changeStatus(
+                    $request->status,
+                    auth()->id(),
+                    $request->status_notes
+                );
+            }
+
+            // Handle assignment change
+            if ($request->assigned_to != $oldAssignee) {
+                if ($request->assigned_to) {
+                    $report->assignTo($request->assigned_to, $request->due_date);
+                } elseif ($oldAssignee) {
+                    // Remove assignment
+                    $oldUser = User::find($oldAssignee);
+                    if ($oldUser) {
+                        $oldUser->decrement('pending_reports_count');
+                        $oldUser->decrement('assigned_reports_count');
+                    }
+                }
+            }
+
+            DB::commit();
+
+            return redirect()->route('admin.reports.index')
+                ->with('success', 'Laporan berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Remove the specified report.
+     */
+    public function reportDestroy(Report $report)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $report->delete();
+
+        return redirect()->route('admin.reports.index')
+            ->with('success', 'Laporan berhasil dihapus.');
+    }
+
+    /**
+     * Add comment to report.
+     */
+    public function reportAddComment(Request $request, Report $report)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'comment' => 'required|string|max:500',
+            'is_internal' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        \App\Models\ReportComment::create([
+            'report_id' => $report->id,
+            'user_id' => auth()->id(),
+            'comment' => $request->comment,
+            'is_internal' => $request->is_internal ?? false,
+        ]);
+
+        return redirect()->back()
+            ->with('success', 'Komentar berhasil ditambahkan.');
+    }
+
+    /**
+     * Export reports to Excel/CSV.
+     */
+    public function reportsExport(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $reports = Report::query();
+
+        // Apply filters if any
+        if ($request->filled('date_from')) {
+            $reports->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $reports->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('status')) {
+            $reports->where('status', $request->status);
+        }
+
+        $reports = $reports->get();
+
+        // Generate CSV
+        $filename = 'laporan-fasilitas-' . date('Y-m-d') . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($reports) {
+            $file = fopen('php://output', 'w');
+
+            // Header
+            fputcsv($file, [
+                'Kode Laporan',
+                'Jenis Fasilitas',
+                'Lokasi (Lat,Long)',
+                'Alamat',
+                'Pelapor',
+                'Status',
+                'Prioritas',
+                'Ditugaskan ke',
+                'Tanggal Lapor',
+                'Deskripsi',
+            ]);
+
+            // Data
+            foreach ($reports as $report) {
+                fputcsv($file, [
+                    $report->report_code,
+                    $report->facility_label,
+                    $report->latitude . ', ' . $report->longitude,
+                    $report->address,
+                    $report->reporter_name ?: 'Anonim',
+                    $report->status_label,
+                    $report->priority_label,
+                    $report->assignedUser ? $report->assignedUser->name : '-',
+                    $report->created_at->format('d/m/Y H:i'),
+                    $report->description,
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Get reports statistics for dashboard.
+     */
+    public function reportsStatistics()
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        // Monthly statistics
+        $monthlyStats = Report::select(
+            DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+            DB::raw('COUNT(*) as total'),
+            DB::raw('SUM(CASE WHEN status = "completed" THEN 1 ELSE 0 END) as completed'),
+            DB::raw('SUM(CASE WHEN status = "in_progress" THEN 1 ELSE 0 END) as in_progress')
+        )
+            ->where('created_at', '>=', now()->subMonths(6))
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+        // Category statistics
+        $categoryStats = Report::select(
+            'facility_category',
+            DB::raw('COUNT(*) as total')
+        )
+            ->groupBy('facility_category')
+            ->get();
+
+        return response()->json([
+            'monthly_stats' => $monthlyStats,
+            'category_stats' => $categoryStats,
+        ]);
     }
 }
