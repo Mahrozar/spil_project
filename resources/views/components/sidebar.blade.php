@@ -90,6 +90,30 @@
                 <span class="nav-text">Riwayat Import</span>
             </a>
         </div>
+        <!-- Data Administrasi Section -->
+        <div class="nav-section">
+            <div class="section-title">
+                <span>Lain - Lain</span>
+            </div>
+
+            <a href="{{ route('admin.news.index') }}"
+                class="nav-item {{ request()->routeIs('admin.news.*') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="nav-text">Berita</span>
+            </a>
+
+            <a href="{{ route('admin.galleries.index') }}"
+                class="nav-item {{ request()->routeIs('admin.galeri.*') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span class="nav-text">Galeri</span>
+            </a>
+        </div>
 
         <!-- Pengaturan Section -->
         @if (auth()->check() && (auth()->user()->role ?? null) === 'admin')

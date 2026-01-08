@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Registrasi Admin - SIDeKa Desa Cicangkang Hilir')
+@section('title', 'Registrasi Admin - SPIL Desa Cicangkang Hilir')
 
 @push('styles')
 <style>
@@ -81,7 +81,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h1 class="text-2xl font-bold">SIDeKa</h1>
+                                    <h1 class="text-2xl font-bold">SPIL</h1>
                                     <p class="text-sm opacity-90">Desa Cicangkang Hilir</p>
                                 </div>
                             </div>

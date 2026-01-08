@@ -28,8 +28,8 @@
         }
 
         /* ============================================
-                       HEATMAP CONTAINER & LAYOUT
-                    ============================================ */
+                                   HEATMAP CONTAINER & LAYOUT
+                                ============================================ */
         #heatmap-container {
             height: 500px;
             border-radius: 12px;
@@ -63,8 +63,8 @@
         }
 
         /* ============================================
-                       HEATMAP LEGEND STYLES
-                    ============================================ */
+                                   HEATMAP LEGEND STYLES
+                                ============================================ */
         .heatmap-legend {
             position: absolute;
             bottom: 20px;
@@ -107,8 +107,8 @@
         }
 
         /* ============================================
-                       HEATMAP CONTROLS STYLES
-                    ============================================ */
+                                   HEATMAP CONTROLS STYLES
+                                ============================================ */
         .heatmap-controls {
             position: absolute;
             top: 20px;
@@ -194,8 +194,8 @@
         }
 
         /* ============================================
-                       RESPONSIVE DESIGN
-                    ============================================ */
+                                   RESPONSIVE DESIGN
+                                ============================================ */
         @media (max-width: 768px) {
             #heatmap-container {
                 height: 400px;
@@ -247,8 +247,8 @@
         }
 
         /* ============================================
-                       ERROR STATES
-                    ============================================ */
+                                   ERROR STATES
+                                ============================================ */
         .heatmap-error {
             position: absolute;
             top: 0;
@@ -273,8 +273,8 @@
         }
 
         /* ============================================
-                       NO DATA STATE
-                    ============================================ */
+                                   NO DATA STATE
+                                ============================================ */
         .heatmap-no-data {
             position: absolute;
             top: 0;
@@ -664,7 +664,7 @@
                             class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300">
                             <!-- Thumbnail -->
                             <div class="h-48 overflow-hidden">
-                                <img src="{{ $item->thumbnail_url }}" alt="{{ $item->title }}"
+                                <img src="{{ $item->thumbnail }}" alt="{{ $item->title }}"
                                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300">
                             </div>
 
@@ -744,30 +744,68 @@
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                @if (!empty($galeri) && count($galeri) > 0)
-                    @foreach ($galeri as $g)
-                        <div class="h-48 bg-gray-100 rounded-lg overflow-hidden">
-                            <img src="{{ $g }}" alt="Galeri" class="w-full h-full object-cover" />
-                        </div>
+                @if (count($galeri) > 0)
+                    @foreach ($galeri as $item)
+                        @php
+                            // Pastikan $item adalah array
+                            $item = is_array($item) ? $item : [];
+                            $link = $item['link'] ?? '#';
+                            $image = $item['image'] ?? asset('images/default-gallery.jpg');
+                            $title = $item['title'] ?? 'Galeri Desa';
+                            $category = $item['category'] ?? null;
+                        @endphp
+                        <a href="{{ $link }}"
+                            class="h-48 bg-gray-100 rounded-lg overflow-hidden group cursor-pointer relative block">
+                            <img src="{{ $image }}" alt="{{ $title }}"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+
+                            @if ($title)
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                    <p class="text-white text-sm font-medium">{{ $title }}</p>
+                                </div>
+                            @endif
+
+                            <!-- Category Badge -->
+                            @if ($category)
+                                <div class="absolute top-2 left-2">
+                                    <span class="px-2 py-1 bg-primary text-white text-xs rounded-full opacity-90">
+                                        {{ ucfirst($category) }}
+                                    </span>
+                                </div>
+                            @endif
+                        </a>
                     @endforeach
                 @else
-                    <div class="h-48 bg-blue-200 rounded-lg"></div>
-                    <div class="h-48 bg-green-200 rounded-lg"></div>
-                    <div class="h-48 bg-yellow-200 rounded-lg"></div>
-                    <div class="h-48 bg-purple-200 rounded-lg"></div>
+                    <!-- Placeholder jika tidak ada gambar -->
+                    <div class="h-48 bg-blue-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500">Belum ada gambar</span>
+                    </div>
+                    <div class="h-48 bg-green-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500">Belum ada gambar</span>
+                    </div>
+                    <div class="h-48 bg-yellow-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500">Belum ada gambar</span>
+                    </div>
+                    <div class="h-48 bg-purple-200 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-500">Belum ada gambar</span>
+                    </div>
                 @endif
             </div>
 
-            <div class="text-center mt-8">
-                <a href="#" class="text-primary hover:text-secondary font-medium inline-flex items-center">
-                    Lihat galeri lengkap
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                        </path>
-                    </svg>
-                </a>
-            </div>
+            @if (count($galeri) > 0)
+                <div class="text-center mt-8">
+                    <a href="{{ route('gallery.index') }}"
+                        class="text-primary hover:text-secondary font-medium inline-flex items-center">
+                        Lihat galeri lengkap
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                            </path>
+                        </svg>
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 

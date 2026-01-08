@@ -10,16 +10,15 @@ use App\Http\Controllers\LayananDesaController;
 use App\Http\Controllers\LandingPageController;
 use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\VisitorController;
-
-
+use App\Http\Controllers\GalleryController;
 
 // Public landing page (accessible without authentication)
 Route::get('/', [LandingPageController::class, 'index'])->name('landing-page');
-// Redirect legacy/shortcut URL to layanan pelaporan
-Route::redirect('/pelaporan-fasilitas', '/layanan/pelaporan-fasilitas');
 // Rute untuk buku tamu (hanya 2 input)
 Route::get('/visitor/form', [VisitorController::class, 'showForm'])->name('visitor.form');
 Route::post('/visitor/store', [VisitorController::class, 'store'])->name('visitor.store');
+// Redirect legacy/shortcut URL to layanan pelaporan
+Route::redirect('/pelaporan-fasilitas', '/layanan/pelaporan-fasilitas');
 // routes/web.php
 Route::get('/heatmap-data', [LandingPageController::class, 'getHeatmapData'])->name('landing.heatmap-data');
 // Route untuk Profil Desa
@@ -27,16 +26,14 @@ Route::prefix('profil')->group(function () {
     Route::get('/visi-misi', [ProfilDesaController::class, 'visiMisi'])->name('profil.visi-misi');
     Route::get('/sejarah', [ProfilDesaController::class, 'sejarah'])->name('profil.sejarah');
     Route::get('/struktur', [ProfilDesaController::class, 'struktur'])->name('profil.struktur');
-    Route::get('/gambaran', function () { return view('profileDesa.gambaran'); })->name('profil.gambaran');
+    Route::get('/gambaran', function () {
+        return view('profileDesa.gambaran');
+    })->name('profil.gambaran');
 });
 
 // Route untuk Layanan Desa
 Route::prefix('layanan')->group(function () {
-    // Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
-    // Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
-    // Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
-    // Route::post('/surat-online', [LayananDesaController::class, 'submitSurat'])->name('layanan.submit-surat');
-    
+
     Route::get('/prosedur', [LayananDesaController::class, 'prosedur'])->name('layanan.prosedur');
     Route::get('/dokumen', [LayananDesaController::class, 'dokumen'])->name('layanan.dokumen');
     Route::get('/surat-online', [LayananDesaController::class, 'suratOnline'])->name('layanan.surat-online');
@@ -49,7 +46,7 @@ Route::prefix('layanan')->group(function () {
     Route::post('/pelaporan-fasilitas', [ReportController::class, 'store'])->name('layanan.pelaporan-fasilitas.submit');
 });
 Route::get('/demo', [LandingPageController::class, 'demo'])->name('demo');
-Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kontak.kirim'); 
+Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kontak.kirim');
 
 // Public Report Routes
 Route::prefix('lapor')->name('reports.')->group(function () {
@@ -64,6 +61,9 @@ Route::prefix('berita')->name('news.')->group(function () {
     Route::get('/', [NewsController::class, 'index'])->name('index');
     Route::get('/{slug}', [NewsController::class, 'show'])->name('show');
 });
+// Routes untuk galeri publik
+Route::get('/galeri', [GalleryController::class, 'index'])->name('gallery.index');
+Route::get('/galeri/{id}', [GalleryController::class, 'show'])->name('gallery.show');
 
 // Admin Report Routes
 Route::middleware(['auth', 'can:manage-reports'])->prefix('admin')->name('admin.')->group(function () {
@@ -88,12 +88,7 @@ Route::middleware(['auth', 'can:manage-reports'])->prefix('admin')->name('admin.
 // });
 
 // Include authentication routes provided by Breeze (login, register, etc.)
-require __DIR__.'/auth.php';
-
-// Default dashboard route used by Breeze after login.
-Route::middleware('auth')->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+require __DIR__ . '/auth.php';
 
 // Authenticated user routes
 Route::middleware('auth')->group(function () {
@@ -137,6 +132,29 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/reports/export', [AdminController::class, 'reportsExport'])->name('reports.export');
     Route::get('/reports/statistics', [AdminController::class, 'reportsStatistics'])->name('reports.statistics');
 
+    // Gallery Routes
+    Route::get('/galleries', [AdminController::class, 'galleriesIndex'])->name('galleries.index');
+    Route::get('/galleries/create', [AdminController::class, 'galleryCreate'])->name('galleries.create');
+    Route::post('/galleries', [AdminController::class, 'galleryStore'])->name('galleries.store');
+    Route::get('/galleries/{gallery}', [AdminController::class, 'galleryShow'])->name('galleries.show');
+    Route::get('/galleries/{gallery}/edit', [AdminController::class, 'galleryEdit'])->name('galleries.edit');
+    Route::put('/galleries/{gallery}', [AdminController::class, 'galleryUpdate'])->name('galleries.update');
+    Route::delete('/galleries/{gallery}', [AdminController::class, 'galleryDestroy'])->name('galleries.destroy');
+    Route::post('/galleries/bulk-destroy', [AdminController::class, 'galleriesBulkDestroy'])->name('galleries.bulkDestroy');
+    Route::patch('/galleries/{gallery}/toggle-active', [AdminController::class, 'galleryToggleActive'])->name('galleries.toggle-active');
+
+
+    // News Routes
+    Route::get('/news', [AdminController::class, 'newsIndex'])->name('news.index');
+    Route::get('/news/create', [AdminController::class, 'newsCreate'])->name('news.create');
+    Route::post('/news', [AdminController::class, 'newsStore'])->name('news.store');
+    Route::get('/news/{news}', [AdminController::class, 'newsShow'])->name('news.show');
+    Route::get('/news/{news}/edit', [AdminController::class, 'newsEdit'])->name('news.edit');
+    Route::put('/news/{news}', [AdminController::class, 'newsUpdate'])->name('news.update');
+    Route::delete('/news/{news}', [AdminController::class, 'newsDestroy'])->name('news.destroy');
+    Route::post('/news/bulk-destroy', [AdminController::class, 'newsBulkDestroy'])->name('news.bulkDestroy');
+    Route::patch('/news/{news}/toggle-publish', [AdminController::class, 'newsTogglePublish'])->name('news.toggle-publish');
+
 
     // Residents management (RT/RW + residents)
     Route::get('/residents', [\App\Http\Controllers\ResidentController::class, 'index'])->name('residents.index');
@@ -157,7 +175,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::get('/households', [\App\Http\Controllers\Admin\HouseholdController::class, 'index'])->name('households.index');
     Route::post('/households/assign-head', [\App\Http\Controllers\Admin\HouseholdController::class, 'assignHead'])->name('households.assignHead');
     Route::post('/households/update-kk', [\App\Http\Controllers\Admin\HouseholdController::class, 'updateKk'])->name('households.updateKk');
-    
+
     // RW (neighbourhood) CRUD
     Route::get('/rws', [\App\Http\Controllers\RWController::class, 'index'])->name('rws.index');
     Route::get('/rws/create', [\App\Http\Controllers\RWController::class, 'create'])->name('rws.create');
@@ -188,7 +206,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 if (app()->environment('local')) {
     Route::get('/dev/login-as-admin', function () {
         $admin = \App\Models\User::where('role', 'admin')->first();
-        if (! $admin) {
+        if (!$admin) {
             return response('No admin user found', 404);
         }
         \Illuminate\Support\Facades\Auth::loginUsingId($admin->id);
@@ -199,11 +217,11 @@ if (app()->environment('local')) {
     Route::get('/_debug-user', function (\Illuminate\Http\Request $request) {
         return response()->json([
             'auth_check' => auth()->check(),
-            'user' => auth()->user() ? auth()->user()->only(['id','name','email','role']) : null,
+            'user' => auth()->user() ? auth()->user()->only(['id', 'name', 'email', 'role']) : null,
             'session_id' => session()->getId(),
             'cookies' => $request->cookies->all(),
             'app_url' => config('app.url'),
         ]);
     });
-    
+
 }

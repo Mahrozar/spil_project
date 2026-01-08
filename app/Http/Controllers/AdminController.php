@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\News;
+use App\Models\Gallery;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -770,5 +773,622 @@ class AdminController extends Controller
             'monthly_stats' => $monthlyStats,
             'category_stats' => $categoryStats,
         ]);
+    }
+    public function newsIndex(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $query = News::with('author')->latest();
+
+        // Search
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            if ($request->status === 'published') {
+                $query->where('is_published', true);
+            } elseif ($request->status === 'draft') {
+                $query->where('is_published', false);
+            }
+        }
+
+        $news = $query->paginate(20)->withQueryString();
+
+        $stats = [
+            'total' => News::count(),
+            'published' => News::where('is_published', true)->count(),
+            'draft' => News::where('is_published', false)->count(),
+            'monthly' => News::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->count(),
+        ];
+
+        return view('admin.news.index', compact('news', 'stats'));
+    }
+
+    /**
+     * Show the form for creating a new news.
+     */
+    public function newsCreate()
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $authors = User::whereIn('role', ['admin', 'petugas'])->get();
+
+        return view('admin.news.create', compact('authors'));
+    }
+
+    /**
+     * Store a newly created news in storage.
+     */
+    public function newsStore(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'required|string|max:200',
+            'excerpt' => 'nullable|string|max:500',
+            'content' => 'required|string',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'published_at' => 'nullable|date',
+            'is_published' => 'boolean',
+            'author_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $data = $request->only(['title', 'excerpt', 'content', 'published_at', 'is_published', 'author_id']);
+            $data['slug'] = Str::slug($request->title);
+
+            // Set default values
+            $data['is_published'] = $request->boolean('is_published');
+            $data['published_at'] = $data['is_published'] ? ($request->published_at ?? now()) : null;
+
+            // Handle thumbnail upload
+            if ($request->hasFile('thumbnail')) {
+                $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
+                $data['thumbnail'] = $path;
+            }
+
+            News::create($data);
+
+            return redirect()->route('admin.news.index')
+                ->with('success', 'Berita berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Display the specified news.
+     */
+    public function newsShow(News $news)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        return view('admin.news.show', compact('news'));
+    }
+
+    /**
+     * Show the form for editing the specified news.
+     */
+    public function newsEdit(News $news)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $authors = User::whereIn('role', ['admin', 'petugas'])->get();
+
+        return view('admin.news.edit', compact('news', 'authors'));
+    }
+
+    /**
+     * Update the specified news in storage.
+     */
+    public function newsUpdate(Request $request, News $news)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'required|string|max:200',
+            'excerpt' => 'nullable|string|max:500',
+            'content' => 'required|string',
+            'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'published_at' => 'nullable|date',
+            'is_published' => 'boolean',
+            'author_id' => 'required|exists:users,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $data = $request->only(['title', 'excerpt', 'content', 'published_at', 'is_published', 'author_id']);
+
+            // Update slug if title changed
+            if ($news->title !== $request->title) {
+                $data['slug'] = Str::slug($request->title);
+            }
+
+            $data['is_published'] = $request->boolean('is_published');
+            if ($data['is_published'] && !$data['published_at']) {
+                $data['published_at'] = now();
+            }
+
+            // Handle thumbnail upload
+            if ($request->hasFile('thumbnail')) {
+                // Delete old thumbnail
+                if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                    Storage::disk('public')->delete($news->thumbnail);
+                }
+
+                $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
+                $data['thumbnail'] = $path;
+            }
+
+            $news->update($data);
+
+            return redirect()->route('admin.news.index')
+                ->with('success', 'Berita berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Remove the specified news from storage.
+     */
+    public function newsDestroy(News $news)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        try {
+            // Delete thumbnail if exists
+            if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                Storage::disk('public')->delete($news->thumbnail);
+            }
+
+            $news->delete();
+
+            return redirect()->route('admin.news.index')
+                ->with('success', 'Berita berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk delete news.
+     */
+    public function newsBulkDestroy(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()->route('admin.news.index')->with('error', 'Tidak ada berita yang dipilih.');
+        }
+
+        try {
+            $newsItems = News::whereIn('id', $ids)->get();
+
+            foreach ($newsItems as $news) {
+                // Delete thumbnails
+                if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                    Storage::disk('public')->delete($news->thumbnail);
+                }
+            }
+
+            News::whereIn('id', $ids)->delete();
+
+            return redirect()->route('admin.news.index')->with('success', 'Berita yang dipilih berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Toggle publish status.
+     */
+    public function newsTogglePublish(News $news)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        try {
+            $news->update([
+                'is_published' => !$news->is_published,
+                'published_at' => $news->is_published ? null : now(),
+            ]);
+
+            $status = $news->is_published ? 'dipublikasikan' : 'disimpan sebagai draft';
+            return redirect()->back()->with('success', "Berita berhasil {$status}.");
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+    public function galleriesIndex(Request $request) // UBAH NAMA METHOD INI
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $query = Gallery::latest();
+
+        // Search
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->status === 'active');
+        }
+
+        // Filter by category
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        $galleries = $query->paginate(24)->withQueryString();
+
+        $stats = [
+            'total' => Gallery::count(),
+            'photos' => Gallery::where('type', 'photo')->count(),
+            'videos' => Gallery::where('type', 'video')->count(),
+            'active' => Gallery::where('is_active', true)->count(),
+            'categories' => Gallery::distinct('category')->whereNotNull('category')->pluck('category')->toArray(),
+        ];
+
+        return view('admin.galleries.index', compact('galleries', 'stats'));
+    }
+
+    /**
+     * Show the form for creating a new gallery.
+     */
+    public function galleryCreate()
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $categories = Gallery::distinct('category')->whereNotNull('category')->pluck('category');
+
+        return view('admin.galleries.create', compact('categories'));
+    }
+
+    /**
+     * Store a newly created gallery in storage.
+     */
+    public function galleryStore(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        // Debug: Log request data
+        \Log::info('Gallery Store Request:', $request->all());
+        \Log::info('Files:', $request->file() ?: []);
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string|max:1000',
+            'type' => 'required|in:photo,video',
+            'image' => 'required_if:type,photo|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'video_url' => 'required_if:type,video|nullable|url',
+            'category' => 'nullable|string|max:100',
+            'order' => 'nullable|integer|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            \Log::error('Validation failed:', $validator->errors()->toArray());
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Validasi gagal: ' . implode(', ', $validator->errors()->all()));
+        }
+
+        DB::beginTransaction();
+        try {
+            $data = $request->only(['title', 'description', 'type', 'video_url', 'category', 'order']);
+            $data['is_active'] = $request->boolean('is_active', true);
+
+            // Set default order jika kosong
+            if (empty($data['order'])) {
+                $data['order'] = 0;
+            }
+
+            // Handle image upload for photos
+            if ($request->type === 'photo' && $request->hasFile('image')) {
+                \Log::info('Processing photo upload');
+
+                // Validasi file image
+                if (!$request->file('image')->isValid()) {
+                    throw new \Exception('File gambar tidak valid');
+                }
+
+                $path = $request->file('image')->store('galleries/photos', 'public');
+                $data['image_path'] = $path;
+                \Log::info('Image stored at: ' . $path);
+            } else if ($request->type === 'photo') {
+                // Jika type photo tapi tidak ada file
+                throw new \Exception('File gambar diperlukan untuk tipe foto');
+            }
+
+            // Untuk video, pastikan video_url ada
+            if ($request->type === 'video') {
+                if (empty($data['video_url'])) {
+                    throw new \Exception('URL video diperlukan untuk tipe video');
+                }
+                $data['image_path'] = null; // Pastikan image_path null untuk video
+            }
+
+            \Log::info('Creating gallery with data:', $data);
+            $gallery = Gallery::create($data);
+            \Log::info('Gallery created with ID: ' . $gallery->id);
+
+            DB::commit();
+
+            return redirect()->route('admin.galleries.index')
+                ->with('success', 'Item galeri berhasil ditambahkan.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Error creating gallery: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Display the specified gallery.
+     */
+    public function galleryShow(Gallery $gallery)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        // Get related galleries
+        $related = Gallery::where('id', '!=', $gallery->id)
+            ->where(function ($query) use ($gallery) {
+                $query->where('category', $gallery->category)
+                    ->orWhere('type', $gallery->type);
+            })
+            ->active()
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('admin.galleries.show', compact('gallery', 'related'));
+    }
+
+    /**
+     * Show the form for editing the specified gallery.
+     */
+    public function galleryEdit(Gallery $gallery)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $categories = Gallery::distinct('category')->whereNotNull('category')->pluck('category');
+
+        return view('admin.galleries.edit', compact('gallery', 'categories'));
+    }
+
+    /**
+     * Update the specified gallery in storage.
+     */
+    public function galleryUpdate(Request $request, Gallery $gallery)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $validator = \Validator::make($request->all(), [
+            'title' => 'required|string|max:200',
+            'description' => 'nullable|string|max:1000',
+            'type' => 'required|in:photo,video',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'video_url' => 'required_if:type,video|nullable|url',
+            'category' => 'nullable|string|max:100',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        try {
+            $data = $request->only(['title', 'description', 'type', 'video_url', 'category', 'order']);
+            $data['is_active'] = $request->boolean('is_active');
+
+            // Handle image upload for photos
+            if ($request->type === 'photo' && $request->hasFile('image')) {
+                // Delete old image
+                if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
+                    Storage::disk('public')->delete($gallery->image_path);
+                }
+
+                $path = $request->file('image')->store('galleries/photos', 'public');
+                $data['image_path'] = $path;
+            }
+
+            // If changing type from photo to video, remove image
+            if ($request->type === 'video' && $gallery->type === 'photo') {
+                if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
+                    Storage::disk('public')->delete($gallery->image_path);
+                }
+                $data['image_path'] = null;
+            }
+
+            $gallery->update($data);
+
+            return redirect()->route('admin.galleries.show', $gallery)
+                ->with('success', 'Item galeri berhasil diperbarui.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
+    /**
+     * Remove the specified gallery from storage.
+     */
+    public function galleryDestroy(Gallery $gallery)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        try {
+            // Delete image if exists
+            if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
+                Storage::disk('public')->delete($gallery->image_path);
+            }
+
+            $gallery->delete();
+
+            return redirect()->route('admin.galleries.index')
+                ->with('success', 'Item galeri berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk delete galleries.
+     */
+    public function galleriesBulkDestroy(Request $request)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        $ids = $request->input('ids', []);
+        if (!is_array($ids) || empty($ids)) {
+            return redirect()->route('admin.galleries.index')->with('error', 'Tidak ada item yang dipilih.');
+        }
+
+        try {
+            $galleries = Gallery::whereIn('id', $ids)->get();
+
+            foreach ($galleries as $gallery) {
+                // Delete images
+                if ($gallery->image_path && Storage::disk('public')->exists($gallery->image_path)) {
+                    Storage::disk('public')->delete($gallery->image_path);
+                }
+            }
+
+            Gallery::whereIn('id', $ids)->delete();
+
+            return redirect()->route('admin.galleries.index')->with('success', 'Item yang dipilih berhasil dihapus.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Toggle active status.
+     */
+    public function galleryToggleActive(Gallery $gallery)
+    {
+        $user = auth()->user();
+        if (!$user || ($user->role ?? 'user') !== 'admin') {
+            abort(403);
+        }
+
+        try {
+            $gallery->update([
+                'is_active' => !$gallery->is_active
+            ]);
+
+            $status = $gallery->is_active ? 'diaktifkan' : 'dinonaktifkan';
+            return redirect()->back()->with('success', "Item galeri berhasil {$status}.");
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }
