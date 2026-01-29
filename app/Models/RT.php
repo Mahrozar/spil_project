@@ -9,20 +9,17 @@ class RT extends Model
 {
     use HasFactory;
 
-    // table name is 'rts' (migration uses 'rts'),
-    // Eloquent's default pluralization for class 'RT' would be 'r_t_s',
-    // so we explicitly set the table name here.
     protected $table = 'rts';
 
-    protected $fillable = ['rw_id', 'name', 'leader_name', 'phone', 'centroid_lat', 'centroid_lng'];
+    protected $fillable = ['rw_id', 'name', 'leader_name', 'phone'];
 
     public function rw()
     {
-        return $this->belongsTo(RW::class);
+        return $this->belongsTo(RW::class, 'rw_id');
     }
 
     public function residents()
     {
-        return $this->hasMany(Resident::class);
+        return $this->hasMany(Resident::class, 'rt_id');
     }
 }

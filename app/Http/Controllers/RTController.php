@@ -11,8 +11,12 @@ class RTController extends Controller
     public function index()
     {
         $this->authorize('viewAny', RT::class);
-        $rts = RT::with('rw')->latest()->paginate(20);
-        return view('admin.rts.index', compact('rts'));
+        $rts = RT::with(['rw', 'residents'])
+                ->withCount('residents')
+                ->latest()
+                ->paginate(15);
+        $totalRTs = RT::count();
+        return view('admin.rts.index', compact('rts', 'totalRTs'));
     }
 
     public function create()
@@ -29,16 +33,19 @@ class RTController extends Controller
             'rw_id' => 'required|exists:rws,id',
             'name' => 'required|string|max:255',
             'leader_name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:20',
         ]);
+        
         RT::create($data);
-        return redirect()->route('admin.rts.index')->with('success', 'RT created.');
+        return redirect()->route('admin.rts.index')
+            ->with('success', 'RT berhasil ditambahkan.');
     }
 
     public function show(RT $rt)
     {
         $this->authorize('view', $rt);
-        $rt->load('residents');
+        $rt->load(['rw', 'residents']);
+        $rt->loadCount('residents');
         return view('admin.rts.show', compact('rt'));
     }
 
@@ -56,16 +63,19 @@ class RTController extends Controller
             'rw_id' => 'required|exists:rws,id',
             'name' => 'required|string|max:255',
             'leader_name' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:50',
+            'phone' => 'nullable|string|max:20',
         ]);
+        
         $rt->update($data);
-        return redirect()->route('admin.rts.index')->with('success', 'RT updated.');
+        return redirect()->route('admin.rts.index')
+            ->with('success', 'RT berhasil diperbarui.');
     }
 
     public function destroy(RT $rt)
     {
         $this->authorize('delete', $rt);
         $rt->delete();
-        return redirect()->route('admin.rts.index')->with('success', 'RT deleted.');
+        return redirect()->route('admin.rts.index')
+            ->with('success', 'RT berhasil dihapus.');
     }
 }

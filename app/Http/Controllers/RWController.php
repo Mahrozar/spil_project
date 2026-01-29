@@ -10,8 +10,11 @@ class RWController extends Controller
     public function index()
     {
         $this->authorize('viewAny', RW::class);
-        $rws = RW::latest()->paginate(20);
-        return view('admin.rws.index', compact('rws'));
+        $rws = RW::withCount(['rts', 'residents'])
+                ->latest()
+                ->paginate(10);
+        $totalRWs = RW::count();
+        return view('admin.rws.index', compact('rws', 'totalRWs'));
     }
 
     public function create()
@@ -25,15 +28,20 @@ class RWController extends Controller
         $this->authorize('create', RW::class);
         $data = $request->validate([
             'name' => 'required|string|max:255',
+            'ketua_rw' => 'nullable|string|max:255',
+            'no_hp_ketua_rw' => 'nullable|string|max:20',
         ]);
+        
         RW::create($data);
-        return redirect()->route('admin.rws.index')->with('success', 'RW created.');
+        return redirect()->route('admin.rws.index')
+            ->with('success', 'RW berhasil ditambahkan.');
     }
 
     public function show(RW $rw)
     {
         $this->authorize('view', $rw);
-        $rw->load('rts');
+        $rw->load(['rts', 'rts.residents']);
+        $rw->loadCount(['rts', 'residents']);
         return view('admin.rws.show', compact('rw'));
     }
 
@@ -46,15 +54,22 @@ class RWController extends Controller
     public function update(Request $request, RW $rw)
     {
         $this->authorize('update', $rw);
-        $data = $request->validate(['name' => 'required|string|max:255']);
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'ketua_rw' => 'nullable|string|max:255',
+            'no_hp_ketua_rw' => 'nullable|string|max:20',
+        ]);
+        
         $rw->update($data);
-        return redirect()->route('admin.rws.index')->with('success', 'RW updated.');
+        return redirect()->route('admin.rws.index')
+            ->with('success', 'RW berhasil diperbarui.');
     }
 
     public function destroy(RW $rw)
     {
         $this->authorize('delete', $rw);
         $rw->delete();
-        return redirect()->route('admin.rws.index')->with('success', 'RW deleted.');
+        return redirect()->route('admin.rws.index')
+            ->with('success', 'RW berhasil dihapus.');
     }
 }

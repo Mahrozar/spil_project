@@ -14,8 +14,6 @@ return new class extends Migration
             $table->string('name');
             $table->string('leader_name')->nullable();
             $table->string('phone')->nullable();
-            $table->decimal('centroid_lat', 10, 7)->nullable();
-            $table->decimal('centroid_lng', 10, 7)->nullable();
             $table->timestamps();
         });
     }

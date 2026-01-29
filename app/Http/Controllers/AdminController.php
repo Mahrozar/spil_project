@@ -497,6 +497,145 @@ class AdminController extends Controller
 
         return $colors[$categoryKey] ?? 'bg-gray-500';
     }
+    public function reportsCreate()
+    {
+        // Generate report code
+        $reportCode = Report::generateReportCode();
+
+        // Get all users for assignment (simple version)
+        $users = User::orderBy('name')->get(['id', 'name', 'email']);
+
+        return view('admin.reports.create', [
+            'reportCode' => $reportCode,
+            'users' => $users,
+            'facilityCategories' => Report::getFacilityCategories(),
+            'facilityTypes' => Report::getFacilityTypes(),
+            'statusLabels' => Report::getStatusLabels(),
+            'priorityLabels' => Report::getPriorityLabels(),
+        ]);
+    }
+
+    /**
+     * Store a newly created report in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function reportsStore(Request $request)
+    {
+        // Validate the request
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'facility_category' => 'required|string|in:' . implode(',', array_keys(Report::getFacilityCategories())),
+            'facility_type' => 'required|string',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
+            'address' => 'required|string|max:500',
+            'dusun' => 'nullable|string|max:100',
+            'rt' => 'nullable|string|max:10',
+            'rw' => 'nullable|string|max:10',
+            'reporter_name' => 'required|string|max:255',
+            'reporter_phone' => 'nullable|string|max:20',
+            'reporter_email' => 'nullable|email|max:255',
+            'is_anonymous' => 'boolean',
+            'status' => 'required|string|in:' . implode(',', array_keys(Report::getStatusLabels())),
+            'priority' => 'required|string|in:' . implode(',', array_keys(Report::getPriorityLabels())),
+            'assigned_to' => 'nullable|exists:users,id',
+            'due_date' => 'nullable|date|after_or_equal:today',
+            'photos.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'is_public' => 'boolean',
+        ]);
+
+        // Generate report code if not provided
+        $reportCode = $request->input('report_code', Report::generateReportCode());
+
+        // Handle anonymous reporting
+        $isAnonymous = $request->boolean('is_anonymous', false);
+        $isPublic = $request->boolean('is_public', true);
+
+        // Get user agent and IP address
+        $userAgent = $request->header('User-Agent');
+        $ipAddress = $request->ip();
+
+        DB::beginTransaction();
+        try {
+            // Create the report
+            $report = Report::create([
+                'report_code' => $reportCode,
+                'title' => $validated['title'],
+                'description' => $validated['description'],
+                'facility_category' => $validated['facility_category'],
+                'facility_type' => $validated['facility_type'],
+                'latitude' => $validated['latitude'] ?? null,
+                'longitude' => $validated['longitude'] ?? null,
+                'address' => $validated['address'],
+                'dusun' => $validated['dusun'] ?? null,
+                'rt' => $validated['rt'] ?? null,
+                'rw' => $validated['rw'] ?? null,
+                'reporter_name' => $validated['reporter_name'],
+                'reporter_phone' => $validated['reporter_phone'] ?? null,
+                'reporter_email' => $validated['reporter_email'] ?? null,
+                'is_anonymous' => $isAnonymous,
+                'status' => $validated['status'],
+                'priority' => $validated['priority'],
+                'assigned_to' => $validated['assigned_to'] ?? null,
+                'due_date' => $validated['due_date'] ?? null,
+                'ip_address' => $ipAddress,
+                'user_agent' => $userAgent,
+                'is_public' => $isPublic,
+                'user_id' => auth()->id(), // User yang membuat laporan (admin)
+            ]);
+
+            // Handle photo uploads
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $photo) {
+                    if ($photo->isValid()) {
+                        // Generate unique filename
+                        $filename = Str::uuid() . '.' . $photo->getClientOriginalExtension();
+
+                        // Store photo in storage
+                        $path = $photo->storeAs('reports/photos', $filename, 'public');
+
+                        // Create photo record
+                        $report->photos()->create([
+                            'photo_path' => $path,
+                            'original_name' => $photo->getClientOriginalName(),
+                            'mime_type' => $photo->getMimeType(),
+                            'size' => $photo->getSize(),
+                            'order' => $index + 1,
+                            'is_before' => true, // Default to "before" photo
+                        ]);
+                    }
+                }
+            }
+
+            // Create initial status history
+            $report->statusHistory()->create([
+                'old_status' => null,
+                'new_status' => $report->status,
+                'changed_by' => auth()->id(),
+                'notes' => 'Laporan dibuat',
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('admin.reports.show', $report)
+                ->with('success', 'Laporan berhasil dibuat dengan nomor: ' . $report->report_code);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            // Log the error
+            \Log::error('Failed to create report: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->except(['photos'])
+            ]);
+
+            return back()->withInput()
+                ->with('error', 'Terjadi kesalahan saat menyimpan laporan. Silakan coba lagi.');
+        }
+    }
 
     /**
      * Display the specified report.
@@ -841,6 +980,13 @@ class AdminController extends Controller
             abort(403);
         }
 
+        // Debug: Cek apakah file sampai ke server
+        \Log::info('File upload attempt:', [
+            'hasFile' => $request->hasFile('thumbnail'),
+            'file' => $request->file('thumbnail'),
+            'allFiles' => $request->allFiles()
+        ]);
+
         $validator = \Validator::make($request->all(), [
             'title' => 'required|string|max:200',
             'excerpt' => 'nullable|string|max:500',
@@ -852,6 +998,7 @@ class AdminController extends Controller
         ]);
 
         if ($validator->fails()) {
+            \Log::error('Validation failed:', $validator->errors()->toArray());
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -865,18 +1012,58 @@ class AdminController extends Controller
             $data['is_published'] = $request->boolean('is_published');
             $data['published_at'] = $data['is_published'] ? ($request->published_at ?? now()) : null;
 
+            // Debug thumbnail
+            \Log::info('Before thumbnail upload:', [
+                'hasFile' => $request->hasFile('thumbnail'),
+                'file_size' => $request->file('thumbnail') ? $request->file('thumbnail')->getSize() : 0,
+                'file_mime' => $request->file('thumbnail') ? $request->file('thumbnail')->getMimeType() : null,
+            ]);
+
             // Handle thumbnail upload
-            if ($request->hasFile('thumbnail')) {
-                $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
-                $data['thumbnail'] = $path;
+            if ($request->hasFile('thumbnail') && $request->file('thumbnail')->isValid()) {
+                try {
+                    // Buat direktori jika belum ada
+                    if (!\Storage::disk('public')->exists('news/thumbnails')) {
+                        \Storage::disk('public')->makeDirectory('news/thumbnails');
+                    }
+
+                    // Upload file
+                    $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
+                    $data['thumbnail'] = $path;
+
+                    \Log::info('Thumbnail uploaded successfully:', [
+                        'path' => $path,
+                        'full_path' => storage_path('app/public/' . $path),
+                        'url' => asset('storage/' . $path)
+                    ]);
+                } catch (\Exception $uploadError) {
+                    \Log::error('Upload error:', ['error' => $uploadError->getMessage()]);
+                    return redirect()->back()
+                        ->with('error', 'Gagal mengupload thumbnail: ' . $uploadError->getMessage())
+                        ->withInput();
+                }
+            } else {
+                \Log::info('No valid thumbnail file uploaded');
             }
 
-            News::create($data);
+            \Log::info('Creating news with data:', $data);
+            $news = News::create($data);
+
+            \Log::info('News created successfully:', [
+                'id' => $news->id,
+                'title' => $news->title,
+                'thumbnail' => $news->thumbnail
+            ]);
 
             return redirect()->route('admin.news.index')
                 ->with('success', 'Berita berhasil ditambahkan.');
 
         } catch (\Exception $e) {
+            \Log::error('News creation error:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
                 ->withInput();
@@ -901,14 +1088,16 @@ class AdminController extends Controller
      */
     public function newsEdit(News $news)
     {
-        $user = auth()->user();
-        if (!$user || ($user->role ?? 'user') !== 'admin') {
-            abort(403);
-        }
+        // Get all authors (users with role author, editor, or admin)
+        $authors = User::whereIn('role', ['author', 'editor', 'admin', 'superadmin'])
+            ->select('id', 'name', 'role')
+            ->orderBy('name')
+            ->get();
 
-        $authors = User::whereIn('role', ['admin', 'petugas'])->get();
-
-        return view('admin.news.edit', compact('news', 'authors'));
+        return view('admin.news.edit', [
+            'news' => $news,
+            'authors' => $authors
+        ]);
     }
 
     /**
@@ -916,61 +1105,81 @@ class AdminController extends Controller
      */
     public function newsUpdate(Request $request, News $news)
     {
-        $user = auth()->user();
-        if (!$user || ($user->role ?? 'user') !== 'admin') {
-            abort(403);
-        }
-
-        $validator = \Validator::make($request->all(), [
-            'title' => 'required|string|max:200',
+        // Validate the request
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
             'excerpt' => 'nullable|string|max:500',
-            'content' => 'required|string',
+            'content' => 'required|string|min:10',
             'thumbnail' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'published_at' => 'nullable|date',
-            'is_published' => 'boolean',
+            'existing_thumbnail' => 'nullable|string',
             'author_id' => 'required|exists:users,id',
+            'published_at' => 'nullable|date',
+            'is_published' => 'boolean'
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
+        // Handle thumbnail update/removal
+        if ($request->hasFile('thumbnail')) {
+            // Delete old thumbnail if exists
+            if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                Storage::disk('public')->delete($news->thumbnail);
+            }
+
+            // Upload new thumbnail
+            $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
+            $validated['thumbnail'] = $path;
+        } elseif ($request->filled('existing_thumbnail')) {
+            // Keep existing thumbnail
+            $validated['thumbnail'] = $request->existing_thumbnail;
+        } elseif (!$request->filled('existing_thumbnail') && !$request->hasFile('thumbnail')) {
+            // Remove thumbnail if user cleared it
+            if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
+                Storage::disk('public')->delete($news->thumbnail);
+            }
+            $validated['thumbnail'] = null;
+        } else {
+            // No thumbnail provided, keep current if exists
+            $validated['thumbnail'] = $news->thumbnail;
         }
 
-        try {
-            $data = $request->only(['title', 'excerpt', 'content', 'published_at', 'is_published', 'author_id']);
-
-            // Update slug if title changed
-            if ($news->title !== $request->title) {
-                $data['slug'] = Str::slug($request->title);
-            }
-
-            $data['is_published'] = $request->boolean('is_published');
-            if ($data['is_published'] && !$data['published_at']) {
-                $data['published_at'] = now();
-            }
-
-            // Handle thumbnail upload
-            if ($request->hasFile('thumbnail')) {
-                // Delete old thumbnail
-                if ($news->thumbnail && Storage::disk('public')->exists($news->thumbnail)) {
-                    Storage::disk('public')->delete($news->thumbnail);
-                }
-
-                $path = $request->file('thumbnail')->store('news/thumbnails', 'public');
-                $data['thumbnail'] = $path;
-            }
-
-            $news->update($data);
-
-            return redirect()->route('admin.news.index')
-                ->with('success', 'Berita berhasil diperbarui.');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
-                ->withInput();
+        // Generate slug from title if changed
+        if ($news->title !== $validated['title']) {
+            $validated['slug'] = $this->generateUniqueSlug($validated['title'], $news->id);
         }
+
+        // Set published_at if is_published is true but no date provided
+        if ($validated['is_published'] && empty($validated['published_at'])) {
+            $validated['published_at'] = now();
+        } elseif (!$validated['is_published'] && $news->is_published) {
+            // If unpublishing, keep the original published_at
+            $validated['published_at'] = $news->published_at;
+        }
+
+        // Update the news
+        $news->update($validated);
+
+        // Redirect with success message
+        return redirect()
+            ->route('admin.news.index')
+            ->with('success', 'Berita berhasil diperbarui.');
+    }
+    private function generateUniqueSlug($title, $newsId = null)
+    {
+        $slug = Str::slug($title);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (
+            News::where('slug', $slug)
+                ->when($newsId, function ($query) use ($newsId) {
+                    return $query->where('id', '!=', $newsId);
+                })
+                ->exists()
+        ) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
     }
 
     /**
@@ -1129,20 +1338,30 @@ class AdminController extends Controller
             abort(403);
         }
 
-        // Debug: Log request data
         \Log::info('Gallery Store Request:', $request->all());
         \Log::info('Files:', $request->file() ?: []);
 
+        // Buat validator manual untuk fleksibilitas lebih
         $validator = \Validator::make($request->all(), [
             'title' => 'required|string|max:200',
             'description' => 'nullable|string|max:1000',
             'type' => 'required|in:photo,video',
-            'image' => 'required_if:type,photo|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'video_url' => 'required_if:type,video|nullable|url',
             'category' => 'nullable|string|max:100',
             'order' => 'nullable|integer|min:0',
             'is_active' => 'boolean',
         ]);
+
+        // Tambahkan conditional validation
+        if ($request->type === 'photo') {
+            $validator->addRules([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            ]);
+        } else if ($request->type === 'video') {
+            $validator->addRules([
+                'video_url' => 'required|url',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            ]);
+        }
 
         if ($validator->fails()) {
             \Log::error('Validation failed:', $validator->errors()->toArray());
@@ -1162,29 +1381,30 @@ class AdminController extends Controller
                 $data['order'] = 0;
             }
 
-            // Handle image upload for photos
-            if ($request->type === 'photo' && $request->hasFile('image')) {
-                \Log::info('Processing photo upload');
-
-                // Validasi file image
-                if (!$request->file('image')->isValid()) {
-                    throw new \Exception('File gambar tidak valid');
+            // Handle image upload untuk foto
+            if ($request->type === 'photo') {
+                if (!$request->hasFile('image') || !$request->file('image')->isValid()) {
+                    throw new \Exception('File gambar diperlukan untuk tipe foto dan harus valid');
                 }
 
                 $path = $request->file('image')->store('galleries/photos', 'public');
                 $data['image_path'] = $path;
-                \Log::info('Image stored at: ' . $path);
-            } else if ($request->type === 'photo') {
-                // Jika type photo tapi tidak ada file
-                throw new \Exception('File gambar diperlukan untuk tipe foto');
+                \Log::info('Photo stored at: ' . $path);
             }
-
-            // Untuk video, pastikan video_url ada
-            if ($request->type === 'video') {
+            // Handle untuk video
+            else if ($request->type === 'video') {
                 if (empty($data['video_url'])) {
                     throw new \Exception('URL video diperlukan untuk tipe video');
                 }
-                $data['image_path'] = null; // Pastikan image_path null untuk video
+
+                // Jika ada thumbnail custom yang diupload untuk video
+                if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                    $path = $request->file('image')->store('galleries/video-thumbnails', 'public');
+                    $data['image_path'] = $path;
+                    \Log::info('Video thumbnail stored at: ' . $path);
+                } else {
+                    $data['image_path'] = null;
+                }
             }
 
             \Log::info('Creating gallery with data:', $data);

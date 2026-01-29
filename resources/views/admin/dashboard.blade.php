@@ -1,7 +1,10 @@
-<x-app-layout>
-    <x-slot name="title">Dashboard Admin</x-slot>
-    <x-slot name="subtitle">Ringkasan Statistik dan Aktivitas Terkini</x-slot>
+@extends('layouts.app') {{-- Sesuaikan dengan nama file layout Anda --}}
 
+@section('title', 'Dashboard Admin')
+
+@section('subtitle', 'Ringkasan Statistik dan Aktivitas Terkini')
+
+@section('content')
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <!-- Notification -->
         <div class="mb-6">
@@ -10,11 +13,7 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="flex items-start gap-3">
                         <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                            <i class="fas fa-check-circle text-green-600 text-lg"></i>
                         </div>
                         <div>
                             <div class="text-sm font-semibold text-gray-900">Sistem Berjalan Normal</div>
@@ -32,11 +31,7 @@
                         </span>
                         <button id="sys-info-close" aria-label="Tutup pemberitahuan"
                             class="inline-flex items-center justify-center h-8 w-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>
@@ -53,8 +48,7 @@
                         'change' => $kpis['surat']['change']['percent'] ?? 0,
                         'trend' => $kpis['surat']['change']['trend'] ?? 'neutral',
                         'delta' => $kpis['surat']['change']['delta'] ?? 0,
-                        'icon' =>
-                            'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                        'icon' => 'fas fa-envelope',
                         'bgColor' => 'bg-blue-50',
                         'iconColor' => 'text-blue-600',
                     ],
@@ -64,8 +58,7 @@
                         'change' => $kpis['laporan']['change']['percent'] ?? 0,
                         'trend' => $kpis['laporan']['change']['trend'] ?? 'neutral',
                         'delta' => $kpis['laporan']['change']['delta'] ?? 0,
-                        'icon' =>
-                            'M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+                        'icon' => 'fas fa-file-alt',
                         'bgColor' => 'bg-orange-50',
                         'iconColor' => 'text-orange-600',
                     ],
@@ -75,8 +68,7 @@
                         'change' => $kpis['penduduk']['change']['percent'] ?? 0,
                         'trend' => $kpis['penduduk']['change']['trend'] ?? 'neutral',
                         'delta' => $kpis['penduduk']['change']['delta'] ?? 0,
-                        'icon' =>
-                            'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z',
+                        'icon' => 'fas fa-users',
                         'bgColor' => 'bg-green-50',
                         'iconColor' => 'text-green-600',
                     ],
@@ -86,8 +78,7 @@
                         'change' => $kpis['rt']['change']['percent'] ?? 0,
                         'trend' => $kpis['rt']['change']['trend'] ?? 'neutral',
                         'delta' => $kpis['rt']['change']['delta'] ?? 0,
-                        'icon' =>
-                            'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                        'icon' => 'fas fa-home',
                         'bgColor' => 'bg-purple-50',
                         'iconColor' => 'text-purple-600',
                     ],
@@ -97,8 +88,7 @@
                         'change' => $kpis['rw']['change']['percent'] ?? 0,
                         'trend' => $kpis['rw']['change']['trend'] ?? 'neutral',
                         'delta' => $kpis['rw']['change']['delta'] ?? 0,
-                        'icon' =>
-                            'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
+                        'icon' => 'fas fa-building',
                         'bgColor' => 'bg-indigo-50',
                         'iconColor' => 'text-indigo-600',
                     ],
@@ -114,11 +104,7 @@
                             <div class="flex items-center mt-2 space-x-1">
                                 @if ($stat['trend'] === 'up')
                                     <span class="text-xs text-green-600 font-medium flex items-center">
-                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z"
-                                                clip-rule="evenodd" />
-                                        </svg>
+                                        <i class="fas fa-arrow-up mr-0.5 text-xs"></i>
                                         {{ $stat['change'] }}%
                                     </span>
                                     @if ($stat['delta'] != 0)
@@ -128,11 +114,7 @@
                                     @endif
                                 @elseif($stat['trend'] === 'down')
                                     <span class="text-xs text-red-600 font-medium flex items-center">
-                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd"
-                                                d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z"
-                                                clip-rule="evenodd" />
-                                        </svg>
+                                        <i class="fas fa-arrow-down mr-0.5 text-xs"></i>
                                         {{ $stat['change'] }}%
                                     </span>
                                     @if ($stat['delta'] != 0)
@@ -146,11 +128,7 @@
                             </div>
                         </div>
                         <div class="{{ $stat['bgColor'] }} p-3 rounded-lg ml-3 flex-shrink-0">
-                            <svg class="h-6 w-6 {{ $stat['iconColor'] }}" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="{{ $stat['icon'] }}" />
-                            </svg>
+                            <i class="{{ $stat['icon'] }} {{ $stat['iconColor'] }} text-lg"></i>
                         </div>
                     </div>
                 </div>
@@ -306,51 +284,31 @@
                                     @switch($activity['type'] ?? '')
                                         @case('surat')
                                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                                <svg class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
+                                                <i class="fas fa-envelope text-blue-600 text-sm"></i>
                                             </div>
                                         @break
 
                                         @case('laporan')
                                             <div class="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
-                                                <svg class="h-4 w-4 text-orange-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                </svg>
+                                                <i class="fas fa-file-alt text-orange-600 text-sm"></i>
                                             </div>
                                         @break
 
                                         @case('penduduk')
                                             <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
-                                                <svg class="h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z" />
-                                                </svg>
+                                                <i class="fas fa-users text-green-600 text-sm"></i>
                                             </div>
                                         @break
 
                                         @case('import')
                                             <div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center">
-                                                <svg class="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                                                </svg>
+                                                <i class="fas fa-file-import text-purple-600 text-sm"></i>
                                             </div>
                                         @break
 
                                         @default
                                             <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                                                <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24"
-                                                    stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
+                                                <i class="fas fa-info-circle text-gray-600 text-sm"></i>
                                             </div>
                                     @endswitch
                                 </div>
@@ -365,308 +323,281 @@
                                 @if (isset($activity['link']))
                                     <a href="{{ $activity['link'] }}"
                                         class="flex-shrink-0 text-blue-600 hover:text-blue-800">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 5l7 7-7 7" />
-                                        </svg>
+                                        <i class="fas fa-chevron-right"></i>
                                     </a>
                                 @endif
                             </div>
-                            @empty
-                                <div class="text-center py-8">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    <p class="mt-2 text-sm text-gray-500">Belum ada aktivitas terbaru</p>
-                                </div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div>
-                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
-                        <div class="mb-6">
-                            <h2 class="text-lg font-semibold text-gray-900">Aksi Cepat</h2>
-                            <p class="text-sm text-gray-500 mt-1">Navigasi cepat ke fitur utama</p>
-                        </div>
-
-                        <div class="space-y-4">
-                            <a href="{{ route('admin.submissions.index') }}"
-                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
-                                <div
-                                    class="flex-shrink-0 bg-blue-50 group-hover:bg-blue-100 p-3 rounded-lg transition-colors">
-                                    <svg class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium text-gray-900 group-hover:text-blue-600">Kelola Surat</h3>
-                                    <p class="text-sm text-gray-500 mt-1">Lihat dan proses pengajuan</p>
-                                </div>
-                            </a>
-
-                            <a href=""
-                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
-                                <div
-                                    class="flex-shrink-0 bg-orange-50 group-hover:bg-orange-100 p-3 rounded-lg transition-colors">
-                                    <svg class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium text-gray-900 group-hover:text-orange-600">Lihat Laporan</h3>
-                                    <p class="text-sm text-gray-500 mt-1">Tinjau laporan dari warga</p>
-                                </div>
-                            </a>
-
-                            <a href="{{ route('admin.residents.index') }}"
-                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
-                                <div
-                                    class="flex-shrink-0 bg-green-50 group-hover:bg-green-100 p-3 rounded-lg transition-colors">
-                                    <svg class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 3.747a3.5 3.5 0 01-4.95 0l-4.95-4.95a3.5 3.5 0 014.95-4.95l4.95 4.95a3.5 3.5 0 010 4.95z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium text-gray-900 group-hover:text-green-600">Data Penduduk</h3>
-                                    <p class="text-sm text-gray-500 mt-1">Kelola data kependudukan</p>
-                                </div>
-                            </a>
-
-                            <a href="{{ route('admin.rts.index') }}"
-                                class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-purple-300 hover:shadow-sm transition-all group">
-                                <div
-                                    class="flex-shrink-0 bg-purple-50 group-hover:bg-purple-100 p-3 rounded-lg transition-colors">
-                                    <svg class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24"
-                                        stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h3 class="font-medium text-gray-900 group-hover:text-purple-600">Data RT</h3>
-                                    <p class="text-sm text-gray-500 mt-1">Kelola data RT</p>
-                                </div>
-                            </a>
-                        </div>
+                        @empty
+                            <div class="text-center py-8">
+                                <i class="fas fa-envelope mx-auto h-12 w-12 text-gray-400"></i>
+                                <p class="mt-2 text-sm text-gray-500">Belum ada aktivitas terbaru</p>
+                            </div>
+                        @endforelse
                     </div>
                 </div>
             </div>
 
-            @push('head')
-                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-                
-            @endpush
+            <!-- Quick Actions -->
+            <div>
+                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 h-full">
+                    <div class="mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900">Aksi Cepat</h2>
+                        <p class="text-sm text-gray-500 mt-1">Navigasi cepat ke fitur utama</p>
+                    </div>
 
-            @push('scripts')
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Notification dismissal
-                        const infoEl = document.getElementById('sys-info');
-                        const closeBtn = document.getElementById('sys-info-close');
+                    <div class="space-y-4">
+                        <a href="{{ route('admin.submissions.index') }}"
+                            class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-sm transition-all group">
+                            <div class="flex-shrink-0 bg-blue-50 group-hover:bg-blue-100 p-3 rounded-lg transition-colors">
+                                <i class="fas fa-envelope text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900 group-hover:text-blue-600">Kelola Surat</h3>
+                                <p class="text-sm text-gray-500 mt-1">Lihat dan proses pengajuan</p>
+                            </div>
+                        </a>
 
-                        try {
-                            const dismissed = localStorage.getItem('admin.sysInfoDismissed');
-                            if (dismissed === '1' && infoEl) {
-                                infoEl.style.display = 'none';
-                            }
-                        } catch (e) {}
+                        <a href=""
+                            class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-orange-300 hover:shadow-sm transition-all group">
+                            <div class="flex-shrink-0 bg-orange-50 group-hover:bg-orange-100 p-3 rounded-lg transition-colors">
+                                <i class="fas fa-file-alt text-orange-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900 group-hover:text-orange-600">Lihat Laporan</h3>
+                                <p class="text-sm text-gray-500 mt-1">Tinjau laporan dari warga</p>
+                            </div>
+                        </a>
 
-                        if (closeBtn && infoEl) {
-                            closeBtn.addEventListener('click', function() {
-                                try {
-                                    localStorage.setItem('admin.sysInfoDismissed', '1');
-                                } catch (e) {}
-                                infoEl.style.display = 'none';
-                            });
-                        }
+                        <a href="{{ route('admin.residents.index') }}"
+                            class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-green-300 hover:shadow-sm transition-all group">
+                            <div class="flex-shrink-0 bg-green-50 group-hover:bg-green-100 p-3 rounded-lg transition-colors">
+                                <i class="fas fa-users text-green-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900 group-hover:text-green-600">Data Penduduk</h3>
+                                <p class="text-sm text-gray-500 mt-1">Kelola data kependudukan</p>
+                            </div>
+                        </a>
 
-                        // Initialize Monthly Activity Chart
-                        const monthlyCtx = document.getElementById('monthlyChart');
-                        if (monthlyCtx) {
-                            window.monthlyChart = new Chart(monthlyCtx, {
-                                type: 'line',
-                                data: {
-                                    labels: @json($labels),
-                                    datasets: [{
-                                            label: 'Surat',
-                                            data: @json($lettersData),
-                                            borderColor: '#3b82f6',
-                                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                            borderWidth: 2,
-                                            fill: true,
-                                            tension: 0.4
-                                        },
-                                        {
-                                            label: 'Laporan',
-                                            data: @json($reportsData),
-                                            borderColor: '#f97316',
-                                            backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                                            borderWidth: 2,
-                                            fill: true,
-                                            tension: 0.4
-                                        }
-                                    ]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        },
-                                        tooltip: {
-                                            mode: 'index',
-                                            intersect: false
-                                        }
-                                    },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            grid: {
-                                                drawBorder: false
-                                            },
-                                            ticks: {
-                                                stepSize: 1,
-                                                callback: function(value) {
-                                                    if (Math.floor(value) === value) {
-                                                        return value;
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        x: {
-                                            grid: {
-                                                display: false
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-
-                        // Initialize Distribution Chart (Doughnut)
-                        const distributionCtx = document.getElementById('distributionChart');
-                        if (distributionCtx) {
-                            window.distributionChart = new Chart(distributionCtx, {
-                                type: 'doughnut',
-                                data: {
-                                    labels: ['Surat', 'Laporan', 'Penduduk', 'RT', 'RW'],
-                                    datasets: [{
-                                        data: [
-                                            {{ $lettersCount }},
-                                            {{ $reportsCount }},
-                                            {{ $residentsTotal }},
-                                            {{ $rtTotal }},
-                                            {{ $rwTotal }}
-                                        ],
-                                        backgroundColor: [
-                                            '#3b82f6',
-                                            '#f97316',
-                                            '#10b981',
-                                            '#8b5cf6',
-                                            '#6366f1'
-                                        ],
-                                        borderWidth: 2,
-                                        borderColor: '#ffffff',
-                                        hoverOffset: 15
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    cutout: '65%',
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        },
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    const label = context.label || '';
-                                                    const value = context.parsed;
-                                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                                    const percentage = total ? Math.round((value / total) * 100) :
-                                                    0;
-                                                    return `${label}: ${value} (${percentage}%)`;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        }
-
-                        // Range selector functionality
-                        const presetSelect = document.getElementById('presetRange');
-
-                        if (presetSelect) {
-                            presetSelect.addEventListener('change', async function() {
-                                const preset = this.value;
-                                let from = '',
-                                    to = '';
-
-                                const today = new Date();
-                                const start = new Date();
-
-                                switch (preset) {
-                                    case '12m':
-                                        start.setMonth(today.getMonth() - 11);
-                                        break;
-                                    case '6m':
-                                        start.setMonth(today.getMonth() - 5);
-                                        break;
-                                    case '3m':
-                                        start.setMonth(today.getMonth() - 2);
-                                        break;
-                                    case '30d':
-                                        start.setDate(today.getDate() - 29);
-                                        break;
-                                    case '7d':
-                                        start.setDate(today.getDate() - 6);
-                                        break;
-                                }
-
-                                from = start.toISOString().split('T')[0];
-                                to = today.toISOString().split('T')[0];
-
-                                try {
-                                    const response = await fetch(`/admin/dashboard/data?from=${from}&to=${to}`);
-                                    const data = await response.json();
-
-                                    if (window.monthlyChart) {
-                                        window.monthlyChart.data.labels = data.labels;
-                                        window.monthlyChart.data.datasets[0].data = data.lettersData;
-                                        window.monthlyChart.data.datasets[1].data = data.reportsData;
-                                        window.monthlyChart.update();
-                                    }
-
-                                    // Show loading state
-                                    presetSelect.disabled = true;
-                                    setTimeout(() => {
-                                        presetSelect.disabled = false;
-                                    }, 500);
-
-                                } catch (error) {
-                                    console.error('Error fetching data:', error);
-                                    alert('Gagal memuat data untuk periode yang dipilih');
-                                    presetSelect.disabled = false;
-                                }
-                            });
-                        }
-                    });
-                </script>
-            @endpush
+                        <a href="{{ route('admin.rts.index') }}"
+                            class="flex items-center gap-3 p-4 rounded-xl border border-gray-100 hover:border-purple-300 hover:shadow-sm transition-all group">
+                            <div class="flex-shrink-0 bg-purple-50 group-hover:bg-purple-100 p-3 rounded-lg transition-colors">
+                                <i class="fas fa-home text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium text-gray-900 group-hover:text-purple-600">Data RT</h3>
+                                <p class="text-sm text-gray-500 mt-1">Kelola data RT</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </x-app-layout>
+    </div>
+@endsection
+
+@push('head')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Notification dismissal
+            const infoEl = document.getElementById('sys-info');
+            const closeBtn = document.getElementById('sys-info-close');
+
+            try {
+                const dismissed = localStorage.getItem('admin.sysInfoDismissed');
+                if (dismissed === '1' && infoEl) {
+                    infoEl.style.display = 'none';
+                }
+            } catch (e) {}
+
+            if (closeBtn && infoEl) {
+                closeBtn.addEventListener('click', function() {
+                    try {
+                        localStorage.setItem('admin.sysInfoDismissed', '1');
+                    } catch (e) {}
+                    infoEl.style.display = 'none';
+                });
+            }
+
+            // Initialize Monthly Activity Chart
+            const monthlyCtx = document.getElementById('monthlyChart');
+            if (monthlyCtx) {
+                window.monthlyChart = new Chart(monthlyCtx, {
+                    type: 'line',
+                    data: {
+                        labels: @json($labels),
+                        datasets: [{
+                                label: 'Surat',
+                                data: @json($lettersData),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            },
+                            {
+                                label: 'Laporan',
+                                data: @json($reportsData),
+                                borderColor: '#f97316',
+                                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: function(value) {
+                                        if (Math.floor(value) === value) {
+                                            return value;
+                                        }
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Distribution Chart (Doughnut)
+            const distributionCtx = document.getElementById('distributionChart');
+            if (distributionCtx) {
+                window.distributionChart = new Chart(distributionCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Surat', 'Laporan', 'Penduduk', 'RT', 'RW'],
+                        datasets: [{
+                            data: [
+                                {{ $lettersCount }},
+                                {{ $reportsCount }},
+                                {{ $residentsTotal }},
+                                {{ $rtTotal }},
+                                {{ $rwTotal }}
+                            ],
+                            backgroundColor: [
+                                '#3b82f6',
+                                '#f97316',
+                                '#10b981',
+                                '#8b5cf6',
+                                '#6366f1'
+                            ],
+                            borderWidth: 2,
+                            borderColor: '#ffffff',
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const label = context.label || '';
+                                        const value = context.parsed;
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = total ? Math.round((value / total) * 100) :
+                                            0;
+                                        return `${label}: ${value} (${percentage}%)`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Range selector functionality
+            const presetSelect = document.getElementById('presetRange');
+
+            if (presetSelect) {
+                presetSelect.addEventListener('change', async function() {
+                    const preset = this.value;
+                    let from = '',
+                        to = '';
+
+                    const today = new Date();
+                    const start = new Date();
+
+                    switch (preset) {
+                        case '12m':
+                            start.setMonth(today.getMonth() - 11);
+                            break;
+                        case '6m':
+                            start.setMonth(today.getMonth() - 5);
+                            break;
+                        case '3m':
+                            start.setMonth(today.getMonth() - 2);
+                            break;
+                        case '30d':
+                            start.setDate(today.getDate() - 29);
+                            break;
+                        case '7d':
+                            start.setDate(today.getDate() - 6);
+                            break;
+                    }
+
+                    from = start.toISOString().split('T')[0];
+                    to = today.toISOString().split('T')[0];
+
+                    try {
+                        const response = await fetch(`/admin/dashboard/data?from=${from}&to=${to}`);
+                        const data = await response.json();
+
+                        if (window.monthlyChart) {
+                            window.monthlyChart.data.labels = data.labels;
+                            window.monthlyChart.data.datasets[0].data = data.lettersData;
+                            window.monthlyChart.data.datasets[1].data = data.reportsData;
+                            window.monthlyChart.update();
+                        }
+
+                        // Show loading state
+                        presetSelect.disabled = true;
+                        setTimeout(() => {
+                            presetSelect.disabled = false;
+                        }, 500);
+
+                    } catch (error) {
+                        console.error('Error fetching data:', error);
+                        alert('Gagal memuat data untuk periode yang dipilih');
+                        presetSelect.disabled = false;
+                    }
+                });
+            }
+        });
+    </script>
+@endpush

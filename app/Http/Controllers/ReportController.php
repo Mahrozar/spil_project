@@ -17,92 +17,46 @@ class ReportController extends Controller
     /**
      * Display a listing of reports (Admin).
      */
-    public function index(Request $request)
-    {
-        // Check if user can manage reports
-        if (!auth()->user()->canManageReports()) {
-            return redirect()->route('home')->with('error', 'Anda tidak memiliki akses.');
-        }
-
-        $query = Report::with(['assignedUser', 'photos']);
-
-        // Apply filters
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('priority')) {
-            $query->where('priority', $request->priority);
-        }
-
-        if ($request->filled('facility_category')) {
-            $query->where('facility_category', $request->facility_category);
-        }
-
-        if ($request->filled('assigned_to')) {
-            $query->where('assigned_to', $request->assigned_to);
-        }
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('report_code', 'like', "%{$search}%")
-                    ->orWhere('title', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('reporter_name', 'like', "%{$search}%");
-            });
-        }
-
-        // Date range filter
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->date_from);
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->date_to);
-        }
-
-        // Order by
-        $orderBy = $request->get('order_by', 'created_at');
-        $orderDirection = $request->get('order_direction', 'desc');
-        $query->orderBy($orderBy, $orderDirection);
-
-        $reports = $query->paginate(20)->withQueryString();
-
-        // Get filter options
-        $petugas = User::petugas()->get();
-        $statuses = Report::getStatusLabels();
-        $priorities = Report::getPriorityLabels();
-        $facilityCategories = Report::getFacilityCategories();
-
-        // Statistics
-        $stats = [
-            'total' => Report::count(),
-            'submitted' => Report::where('status', 'submitted')->count(),
-            'in_progress' => Report::where('status', 'in_progress')->count(),
-            'completed' => Report::where('status', 'completed')->count(),
-            'overdue' => Report::overdue()->count(),
-        ];
-
-        return view('admin.reports.index', compact(
-            'reports',
-            'petugas',
-            'statuses',
-            'priorities',
-            'facilityCategories',
-            'stats'
-        ));
-    }
-
-    /**
-     * Show the form for creating a new report (Public).
-     */
     public function create()
     {
         $facilityCategories = Report::getFacilityCategories();
         $facilityTypes = Report::getFacilityTypes();
+        
+        return view('layanan.reports.create', compact('facilityCategories', 'facilityTypes'));
+    }
 
-        return view('reports.create', compact('facilityCategories', 'facilityTypes'));
+    /**
+     * Show report status.
+     */
+    public function show($code)
+    {
+        $report = Report::where('report_code', $code)->firstOrFail();
+        
+        if (!$report->is_public) {
+            abort(404);
+        }
+
+        return view('layanan.reports.show', compact('report'));
+    }
+
+    /**
+     * Check report status.
+     */
+    public function checkStatus(Request $request)
+    {
+        $request->validate([
+            'report_code' => 'required|string',
+        ]);
+
+        $report = Report::where('report_code', $request->report_code)->first();
+
+        if (!$report) {
+            return redirect()->back()
+                ->with('error', 'Kode laporan tidak ditemukan.')
+                ->withInput();
+        }
+
+        return view('layanan.reports.show', compact('report'));
     }
 
     /**
@@ -215,20 +169,6 @@ class ReportController extends Controller
         }
     }
 
-    /**
-     * Display the specified report (Public).
-     */
-    public function show($code)
-    {
-        $report = Report::where('report_code', $code)->firstOrFail();
-
-        // Only show public reports or reports where user is authorized
-        if (!$report->is_public && !auth()->check()) {
-            abort(404);
-        }
-
-        return view('reports.show', compact('report'));
-    }
 
     /**
      * Show the form for editing the specified report (Admin).

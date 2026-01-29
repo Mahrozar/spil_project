@@ -1,377 +1,511 @@
-<x-app-layout>
-    <x-slot name="title">Detail Laporan #{{ $report->report_code }}</x-slot>
-    <x-slot name="subtitle">{{ $report->title ?? 'Laporan Fasilitas' }}</x-slot>
+@extends('layouts.app')
 
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <!-- Breadcrumb -->
-        <div class="mb-6">
-            <nav class="flex" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    <li>
-                        <a href="{{ route('admin.reports.index') }}" class="text-gray-500 hover:text-gray-700">
-                            Laporan Fasilitas
-                        </a>
-                    </li>
-                    <li aria-current="page">
-                        <div class="flex items-center">
-                            <svg class="w-3 h-3 text-gray-400 mx-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                            </svg>
-                            <span class="text-gray-900 font-medium">Detail Laporan</span>
-                        </div>
-                    </li>
-                </ol>
-            </nav>
-        </div>
+@section('title', 'Detail Laporan #' . $report->report_code)
+@section('breadcrumb')
+    <!-- Breadcrumb -->
+    <nav class="mb-6" aria-label="Breadcrumb">
+        <ol class="flex items-center space-x-2 text-sm">
+            <li>
+                <a href="{{ route('admin.dashboard') }}" class="text-gray-400 hover:text-gray-600">
+                    Dashboard
+                </a>
+            </li>
+            <li class="flex items-center">
+                <i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i>
+                <a href="{{ route('admin.reports.index') }}" class="text-gray-400 hover:text-gray-600">
+                    Laporan Fasilitas
+                </a>
+            </li>
+            <li class="flex items-center">
+                <i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i>
+                <span class="text-gray-600 font-medium">#{{ $report->report_code }}</span>
+            </li>
+        </ol>
+    </nav>
+@endsection
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Main Content -->
-            <div class="lg:col-span-2">
-                <!-- Report Details Card -->
-                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mb-6">
-                    <div class="flex items-start justify-between mb-6">
-                        <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <h2 class="text-xl font-bold text-gray-900">#{{ $report->report_code }}</h2>
-                                <span class="{{ $report->getStatusBadgeClass() }} text-sm">
-                                    {{ $report->getStatusLabel() }}
-                                </span>
-                                @if($report->priority)
-                                    <span class="text-xs px-2 py-0.5 rounded {{ 
-                                        $report->priority == 'urgent' ? 'bg-red-100 text-red-800' :
-                                        ($report->priority == 'high' ? 'bg-orange-100 text-orange-800' :
-                                        ($report->priority == 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                        'bg-gray-100 text-gray-800'))
-                                    }}">
-                                        {{ $report->getPriorityLabel() }}
-                                    </span>
-                                @endif
-                            </div>
-                            <p class="text-gray-600">{{ $report->title ?? 'Laporan fasilitas umum' }}</p>
-                        </div>
+@section('content')
+    <div class="admin-content-area">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 mb-2">
+                            {{ $report->title ?? 'Laporan Fasilitas' }}
+                        </h1>
                         <div class="flex items-center gap-2">
-                            <a href="{{ route('admin.reports.edit', $report) }}" 
-                               class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                                Edit
-                            </a>
-                            <a href="{{ route('admin.reports.index') }}" 
-                               class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm">
-                                Kembali
-                            </a>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- Left Column -->
-                        <div>
-                            <div class="mb-4">
-                                <h3 class="text-sm font-medium text-gray-500 mb-2">Informasi Pelapor</h3>
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                        </svg>
-                                        <span class="text-gray-900">{{ $report->reporter_name ?? ($report->user->name ?? 'Anonim') }}</span>
-                                        @if($report->is_anonymous)
-                                            <span class="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded">Anonim</span>
-                                        @endif
-                                    </div>
-                                    @if($report->reporter_phone)
-                                        <div class="flex items-center gap-2">
-                                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                                            </svg>
-                                            <span class="text-gray-900">{{ $report->reporter_phone }}</span>
-                                        </div>
-                                    @endif
-                                    @if($report->reporter_email)
-                                        <div class="flex items-center gap-2">
-                                            <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                                            </svg>
-                                            <span class="text-gray-900">{{ $report->reporter_email }}</span>
-                                        </div>
-                                    @endif
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                        </svg>
-                                        <span class="text-gray-900">{{ $report->created_at->format('d/m/Y H:i') }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <h3 class="text-sm font-medium text-gray-500 mb-2">Kategori Fasilitas</h3>
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                                        </svg>
-                                        <span class="text-gray-900">{{ $report->getCategoryLabel() }}</span>
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
-                                        </svg>
-                                        <span class="text-gray-900">{{ $report->getTypeLabel() }}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            @if($report->assigned_to)
-                                <div class="mb-4">
-                                    <h3 class="text-sm font-medium text-gray-500 mb-2">Petugas Penanggung Jawab</h3>
-                                    <div class="flex items-center gap-3">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span class="text-blue-600 font-medium">
-                                                {{ strtoupper(substr($report->assignedUser->name ?? 'P', 0, 1)) }}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <div class="text-gray-900">{{ $report->assignedUser->name ?? '-' }}</div>
-                                            <div class="text-sm text-gray-500">{{ $report->assignedUser->email ?? '' }}</div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <span class="text-gray-600">
+                                <i class="fas fa-hashtag mr-1"></i> #{{ $report->report_code }}
+                            </span>
+                            <span class="{{ $report->getStatusBadgeClass() }} text-sm px-2 py-0.5 rounded-full">
+                                {{ $report->getStatusLabel() }}
+                            </span>
+                            @if ($report->priority)
+                                <span
+                                    class="text-xs px-2 py-0.5 rounded-full {{ $report->priority == 'urgent'
+                                        ? 'bg-red-100 text-red-800 border border-red-200'
+                                        : ($report->priority == 'high'
+                                            ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                                            : ($report->priority == 'medium'
+                                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                                : 'bg-gray-100 text-gray-800 border border-gray-200')) }}">
+                                    <i class="fas fa-flag mr-1 text-xs"></i>
+                                    {{ $report->getPriorityLabel() }}
+                                </span>
                             @endif
                         </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('admin.reports.edit', $report) }}"
+                            class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i class="fas fa-edit mr-2"></i>
+                            Edit Laporan
+                        </a>
+                        <a href="{{ route('admin.reports.index') }}"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            <i class="fas fa-arrow-left mr-2"></i>
+                            Kembali
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Right Column -->
-                        <div>
-                            <div class="mb-4">
-                                <h3 class="text-sm font-medium text-gray-500 mb-2">Lokasi</h3>
-                                <div class="space-y-2">
-                                    <div class="flex items-start gap-2">
-                                        <svg class="h-4 w-4 text-gray-400 mt-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        </svg>
-                                        <div>
-                                            <div class="text-gray-900">{{ $report->address }}</div>
-                                            <div class="text-sm text-gray-500">
-                                                Dusun {{ $report->dusun ?? '-' }}, 
-                                                RT {{ $report->rt ?? '-' }} / RW {{ $report->rw ?? '-' }}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Main Content -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Informasi Laporan -->
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                            <h3 class="text-lg font-medium text-gray-900">
+                                <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+                                Informasi Detail Laporan
+                            </h3>
+                        </div>
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Left Column -->
+                                <div class="space-y-6">
+                                    <!-- Informasi Pelapor -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="text-sm font-medium text-gray-500 mb-3 flex items-center">
+                                            <i class="fas fa-user mr-2 text-gray-400"></i>
+                                            INFORMASI PELAPOR
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center">
+                                                <div class="w-8 text-gray-500">
+                                                    <i class="fas fa-user-circle"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm font-medium text-gray-900">
+                                                        {{ $report->reporter_name ?? ($report->user->name ?? 'Anonim') }}
+                                                    </div>
+                                                    @if ($report->is_anonymous)
+                                                        <span
+                                                            class="text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded mt-1 inline-block">
+                                                            <i class="fas fa-user-secret mr-1 text-xs"></i>
+                                                            Anonim
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                            @if ($report->reporter_phone)
+                                                <div class="flex items-center">
+                                                    <div class="w-8 text-gray-500">
+                                                        <i class="fas fa-phone"></i>
+                                                    </div>
+                                                    <div class="text-sm text-gray-900">
+                                                        <a href="tel:{{ $report->reporter_phone }}"
+                                                            class="hover:text-blue-600">
+                                                            {{ $report->reporter_phone }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if ($report->reporter_email)
+                                                <div class="flex items-center">
+                                                    <div class="w-8 text-gray-500">
+                                                        <i class="fas fa-envelope"></i>
+                                                    </div>
+                                                    <div class="text-sm text-gray-900">
+                                                        <a href="mailto:{{ $report->reporter_email }}"
+                                                            class="hover:text-blue-600">
+                                                            {{ $report->reporter_email }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <div class="flex items-center">
+                                                <div class="w-8 text-gray-500">
+                                                    <i class="far fa-clock"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm text-gray-900">
+                                                        {{ $report->created_at->format('d/m/Y H:i') }}</div>
+                                                    <div class="text-xs text-gray-500">
+                                                        {{ $report->created_at->diffForHumans() }}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    @if($report->latitude && $report->longitude)
-                                        <a href="{{ $report->map_url }}" 
-                                           target="_blank"
-                                           class="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 text-sm">
-                                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
-                                            </svg>
-                                            Lihat di Peta
-                                        </a>
-                                    @endif
+
+                                    <!-- Informasi Fasilitas -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="text-sm font-medium text-gray-500 mb-3 flex items-center">
+                                            <i class="fas fa-building mr-2 text-gray-400"></i>
+                                            INFORMASI FASILITAS
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-center">
+                                                <div class="w-8 text-gray-500">
+                                                    <i class="fas fa-tag"></i>
+                                                </div>
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ $report->getCategoryLabel() }}
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center">
+                                                <div class="w-8 text-gray-500">
+                                                    <i class="fas fa-clipboard-list"></i>
+                                                </div>
+                                                <div class="text-sm font-medium text-gray-900">
+                                                    {{ $report->getTypeLabel() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column -->
+                                <div class="space-y-6">
+                                    <!-- Lokasi -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="text-sm font-medium text-gray-500 mb-3 flex items-center">
+                                            <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                                            LOKASI LAPORAN
+                                        </h4>
+                                        <div class="space-y-3">
+                                            <div class="flex items-start">
+                                                <div class="w-8 text-gray-500 mt-1">
+                                                    <i class="fas fa-map-pin"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="text-sm text-gray-900 mb-1">{{ $report->address }}</div>
+                                                    <div class="text-xs text-gray-500">
+                                                        Dusun {{ $report->dusun ?? '-' }},
+                                                        RT {{ $report->rt ?? '-' }} / RW {{ $report->rw ?? '-' }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @if ($report->latitude && $report->longitude)
+                                                <a href="{{ $report->map_url }}" target="_blank"
+                                                    class="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm mt-2">
+                                                    <i class="fas fa-external-link-alt mr-2 text-xs"></i>
+                                                    Lihat di Peta
+                                                </a>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <!-- Timelines & Info -->
+                                    <div class="bg-gray-50 p-4 rounded-lg">
+                                        <h4 class="text-sm font-medium text-gray-500 mb-3 flex items-center">
+                                            <i class="fas fa-calendar-alt mr-2 text-gray-400"></i>
+                                            TIMELINE & INFO
+                                        </h4>
+                                        <div class="space-y-3">
+                                            @if ($report->due_date)
+                                                <div class="flex items-center">
+                                                    <div class="w-8 text-gray-500">
+                                                        <i class="far fa-calendar-times"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm text-gray-900">
+                                                            {{ $report->due_date->format('d/m/Y') }}</div>
+                                                        @if ($report->due_date->isPast() && !in_array($report->status, ['completed', 'closed', 'rejected']))
+                                                            <span
+                                                                class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded mt-1 inline-block">
+                                                                <i class="fas fa-exclamation-triangle mr-1 text-xs"></i>
+                                                                Terlambat
+                                                            </span>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            @if ($report->assigned_to)
+                                                <div class="flex items-center">
+                                                    <div class="w-8 text-gray-500">
+                                                        <i class="fas fa-user-tie"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-medium text-gray-900">
+                                                            {{ $report->assignedUser->name ?? '-' }}
+                                                        </div>
+                                                        <div class="text-xs text-gray-500">
+                                                            Petugas Penanggung Jawab
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            @if($report->due_date)
-                                <div class="mb-4">
-                                    <h3 class="text-sm font-medium text-gray-500 mb-2">Batas Waktu</h3>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        <span class="text-gray-900">{{ $report->due_date->format('d/m/Y') }}</span>
-                                        @if($report->due_date->isPast() && !in_array($report->status, ['completed', 'closed', 'rejected']))
-                                            <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded">Terlambat</span>
-                                        @endif
-                                    </div>
-                                </div>
-                            @endif
-
-                            <div class="mb-4">
-                                <h3 class="text-sm font-medium text-gray-500 mb-2">Informasi Tambahan</h3>
-                                <div class="text-sm text-gray-700">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        IP Address: {{ $report->ip_address ?? '-' }}
-                                    </div>
-                                    <div class="flex items-center gap-2">
-                                        <svg class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
-                                        </svg>
-                                        Device: {{ Str::limit($report->user_agent, 50) }}
-                                    </div>
+                            <!-- Deskripsi -->
+                            <div class="mt-6 pt-6 border-t border-gray-200">
+                                <h4 class="text-sm font-medium text-gray-500 mb-3 flex items-center">
+                                    <i class="fas fa-align-left mr-2 text-gray-400"></i>
+                                    DESKRIPSI LAPORAN
+                                </h4>
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <p class="text-gray-700 whitespace-pre-line">
+                                        {{ $report->description ?? 'Tidak ada deskripsi' }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Description -->
-                    <div class="mt-6">
-                        <h3 class="text-sm font-medium text-gray-500 mb-2">Deskripsi Laporan</h3>
-                        <div class="bg-gray-50 rounded-lg p-4">
-                            <p class="text-gray-700 whitespace-pre-line">{{ $report->description ?? 'Tidak ada deskripsi' }}</p>
+                    <!-- Foto Laporan -->
+                    @if ($report->photos->count() > 0)
+                        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                                    <i class="fas fa-images mr-2 text-blue-500"></i>
+                                    Foto Laporan
+                                </h3>
+                            </div>
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    @foreach ($report->photos as $photo)
+                                        <div
+                                            class="relative group rounded-lg overflow-hidden shadow-sm border border-gray-200">
+                                            <img src="{{ Storage::url($photo->photo_path) }}"
+                                                alt="Foto laporan {{ $loop->iteration }}"
+                                                class="w-full h-48 object-cover hover:scale-105 transition-transform duration-300">
+
+                                            <div class="absolute top-2 left-2">
+                                                @if ($photo->is_before)
+                                                    <span
+                                                        class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded flex items-center">
+                                                        <i class="fas fa-history mr-1 text-xs"></i>
+                                                        Sebelum
+                                                    </span>
+                                                @else
+                                                    <span
+                                                        class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded flex items-center">
+                                                        <i class="fas fa-check-circle mr-1 text-xs"></i>
+                                                        Sesudah
+                                                    </span>
+                                                @endif
+                                            </div>
+
+                                            <a href="{{ Storage::url($photo->photo_path) }}" target="_blank"
+                                                class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
+                                                <div class="bg-white p-3 rounded-full shadow-lg">
+                                                    <i class="fas fa-expand-alt text-gray-800 text-lg"></i>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @endif
+
+                    <!-- Riwayat Status -->
+                    @if ($report->statusHistory->count() > 0)
+                        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                            <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                                <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                                    <i class="fas fa-history mr-2 text-blue-500"></i>
+                                    Riwayat Status
+                                </h3>
+                            </div>
+                            <div class="px-4 py-5 sm:p-6">
+                                <div class="space-y-4">
+                                    @foreach ($report->statusHistory as $history)
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 mr-3">
+                                                <div
+                                                    class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                                                    <i class="fas fa-exchange-alt text-blue-600 text-sm"></i>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1 min-w-0 pb-4 border-b border-gray-100 last:border-b-0">
+                                                <div class="flex items-center justify-between mb-1">
+                                                    <span class="text-sm font-medium text-gray-900">
+                                                        {{ \App\Models\Report::getStatusLabels()[$history->new_status] ?? $history->new_status }}
+                                                    </span>
+                                                    <span
+                                                        class="text-xs text-gray-500">{{ $history->created_at->diffForHumans() }}</span>
+                                                </div>
+                                                @if ($history->notes)
+                                                    <p class="text-sm text-gray-600 mt-1">{{ $history->notes }}</p>
+                                                @endif
+                                                @if ($history->changedBy)
+                                                    <p class="text-xs text-gray-500 mt-2">
+                                                        <i class="fas fa-user-edit mr-1"></i>
+                                                        Oleh: {{ $history->changedBy->name ?? 'Sistem' }}
+                                                    </p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
-                <!-- Photos Section -->
-                @if($report->photos->count() > 0)
-                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Foto Laporan</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                            @foreach($report->photos as $photo)
-                                <div class="relative group">
-                                    <img src="{{ Storage::url($photo->photo_path) }}" 
-                                         alt="Foto laporan {{ $loop->iteration }}"
-                                         class="w-full h-48 object-cover rounded-lg shadow-sm">
-                                    @if($photo->is_before)
-                                        <span class="absolute top-2 left-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                                            Sebelum
-                                        </span>
-                                    @else
-                                        <span class="absolute top-2 left-2 bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                                            Sesudah
-                                        </span>
-                                    @endif
-                                    <a href="{{ Storage::url($photo->photo_path) }}" 
-                                       target="_blank"
-                                       class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
-                                        <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"/>
-                                        </svg>
-                                    </a>
+                <!-- Sidebar - Update Status -->
+                <div>
+                    <div class="bg-white shadow overflow-hidden sm:rounded-lg sticky top-6">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 bg-blue-50">
+                            <h3 class="text-lg font-medium text-gray-900 flex items-center">
+                                <i class="fas fa-sync-alt mr-2 text-blue-500"></i>
+                                Update Status
+                            </h3>
+                        </div>
+                        <div class="px-4 py-5 sm:p-6">
+                            <form action="{{ route('admin.reports.update', $report) }}" method="POST">
+                                @csrf
+                                @method('PUT')
+
+                                <div class="space-y-4">
+                                    <!-- Status -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <i class="fas fa-flag mr-2 text-gray-400"></i>
+                                            Status
+                                        </label>
+                                        <select name="status" required
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                                            @foreach (\App\Models\Report::getStatusLabels() as $key => $label)
+                                                <option value="{{ $key }}"
+                                                    {{ $report->status == $key ? 'selected' : '' }} class="py-2">
+                                                    {{ $label }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Prioritas -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2 text-gray-400"></i>
+                                            Prioritas
+                                        </label>
+                                        <select name="priority"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                                            @foreach (\App\Models\Report::getPriorityLabels() as $key => $label)
+                                                <option value="{{ $key }}"
+                                                    {{ $report->priority == $key ? 'selected' : '' }} class="py-2">
+                                                    {{ $label }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Petugas -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <i class="fas fa-user-tie mr-2 text-gray-400"></i>
+                                            Tugaskan Kepada
+                                        </label>
+                                        <select name="assigned_to"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                                            <option value="">-- Pilih Petugas --</option>
+                                            @foreach ($petugas ?? [] as $user)
+                                                <option value="{{ $user->id }}"
+                                                    {{ $report->assigned_to == $user->id ? 'selected' : '' }}>
+                                                    {{ $user->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <!-- Batas Waktu -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
+                                            Batas Waktu
+                                        </label>
+                                        <input type="date" name="due_date"
+                                            value="{{ $report->due_date ? $report->due_date->format('Y-m-d') : '' }}"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                                    </div>
+
+                                    <!-- Catatan -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                                            <i class="fas fa-sticky-note mr-2 text-gray-400"></i>
+                                            Catatan
+                                        </label>
+                                        <textarea name="status_notes" rows="3" placeholder="Tambahkan catatan perubahan status (opsional)"
+                                            class="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"></textarea>
+                                    </div>
+
+                                    <!-- Submit Button -->
+                                    <div class="pt-2">
+                                        <button type="submit"
+                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center">
+                                            <i class="fas fa-save mr-2"></i>
+                                            Simpan Perubahan
+                                        </button>
+                                    </div>
                                 </div>
-                            @endforeach
+                            </form>
                         </div>
                     </div>
-                @endif
 
-                <!-- Status History -->
-                @if($report->statusHistory->count() > 0)
-                    <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 mb-6">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Riwayat Status</h3>
-                        <div class="space-y-4">
-                            @foreach($report->statusHistory as $history)
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0">
-                                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center">
-                                            <svg class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                                                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                            </svg>
-                                        </div>
+                    <!-- Informasi Teknis -->
+                    <div class="mt-6 bg-white shadow overflow-hidden sm:rounded-lg">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                            <h3 class="text-sm font-medium text-gray-900 flex items-center">
+                                <i class="fas fa-terminal mr-2 text-gray-400"></i>
+                                Informasi Teknis
+                            </h3>
+                        </div>
+                        <div class="px-4 py-4 sm:p-6">
+                            <div class="space-y-2 text-sm">
+                                <div class="flex items-center">
+                                    <div class="w-5 text-gray-400">
+                                        <i class="fas fa-laptop"></i>
                                     </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="text-sm font-medium text-gray-900">
-                                                {{ \App\Models\Report::getStatusLabels()[$history->new_status] ?? $history->new_status }}
-                                            </span>
-                                            <span class="text-xs text-gray-500">{{ $history->created_at->diffForHumans() }}</span>
-                                        </div>
-                                        @if($history->notes)
-                                            <p class="text-sm text-gray-600">{{ $history->notes }}</p>
-                                        @endif
-                                        @if($history->changedBy)
-                                            <p class="text-xs text-gray-500 mt-1">
-                                                Oleh: {{ $history->changedBy->name ?? 'Sistem' }}
-                                            </p>
-                                        @endif
+                                    <div class="text-gray-600 truncate">
+                                        {{ Str::limit($report->user_agent, 40) }}
                                     </div>
                                 </div>
-                            @endforeach
+                                <div class="flex items-center">
+                                    <div class="w-5 text-gray-400">
+                                        <i class="fas fa-network-wired"></i>
+                                    </div>
+                                    <div class="text-gray-600">
+                                        IP: {{ $report->ip_address ?? '-' }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                @endif
-            </div>
-
-            <!-- Sidebar - Hanya Status Update Form -->
-            <div>
-                <!-- Status Update Form -->
-                <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Ubah Status</h3>
-                    <form action="{{ route('admin.reports.update', $report) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Status Baru</label>
-                                <select name="status" required
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    @foreach(\App\Models\Report::getStatusLabels() as $key => $label)
-                                        <option value="{{ $key }}" {{ $report->status == $key ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Prioritas</label>
-                                <select name="priority" 
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    @foreach(\App\Models\Report::getPriorityLabels() as $key => $label)
-                                        <option value="{{ $key }}" {{ $report->priority == $key ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Catatan</label>
-                                <textarea name="status_notes" 
-                                          rows="3"
-                                          placeholder="Tambahkan catatan perubahan status (opsional)"
-                                          class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Tugaskan Kepada</label>
-                                <select name="assigned_to"
-                                        class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                    <option value="">-- Pilih Petugas --</option>
-                                    @foreach($petugas ?? [] as $user)
-                                        <option value="{{ $user->id }}" {{ $report->assigned_to == $user->id ? 'selected' : '' }}>
-                                            {{ $user->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Batas Waktu</label>
-                                <input type="date" 
-                                       name="due_date"
-                                       value="{{ $report->due_date ? $report->due_date->format('Y-m-d') : '' }}"
-                                       class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                            </div>
-
-                            <div>
-                                <button type="submit" 
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Simpan Perubahan
-                                </button>
-                            </div>
-                        </div>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
-</x-app-layout>
+@endsection
+
+@push('styles')
+    <style>
+        .sticky {
+            position: -webkit-sticky;
+            position: sticky;
+        }
+    </style>
+@endpush

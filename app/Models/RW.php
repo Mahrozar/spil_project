@@ -9,20 +9,22 @@ class RW extends Model
 {
     use HasFactory;
 
-    // table name is 'rws' (migration uses 'rws'),
-    // Eloquent's default pluralization for class 'RW' would be 'r_w_s',
-    // so we explicitly set the table name here.
     protected $table = 'rws';
 
-    protected $fillable = ['name'];
+    protected $fillable = [
+        'name',
+        'ketua_rw',
+        'no_hp_ketua_rw'
+    ];
 
+    // Jika foreign key adalah 'rw_id'
     public function rts()
     {
-        return $this->hasMany(RT::class);
+        return $this->hasMany(RT::class, 'rw_id');
     }
 
     public function residents()
     {
-        return $this->hasMany(Resident::class);
+        return $this->hasMany(Resident::class, 'rw_id');
     }
 }

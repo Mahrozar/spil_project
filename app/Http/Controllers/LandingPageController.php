@@ -9,7 +9,8 @@ use App\Models\RW;
 use App\Models\Setting;
 use App\Models\LetterSubmission;
 use App\Models\Report;
-use Illuminate\Support\Str;
+use App\Models\News;
+use App\Models\Gallery; // Pastikan ini sudah ada
 
 class LandingPageController extends Controller
 {
@@ -33,10 +34,15 @@ class LandingPageController extends Controller
         $profil_title = Setting::get('home.profil_title', 'Profil Desa Cicangkang Hilir');
         $profil_text = Setting::get('home.profil_text', "Desa Cicangkang Hilir merupakan salah satu desa di Kecamatan Cipongkor, Kabupaten Bandung Barat. Desa ini memiliki potensi alam yang indah dengan masyarakat yang ramah dan gotong royong.");
         $layanan = json_decode(Setting::get('home.layanan', '[]'), true) ?: [];
-        $berita = json_decode(Setting::get('home.berita', '[]'), true) ?: [];
-        $galeri = json_decode(Setting::get('home.galeri', '[]'), true) ?: [];
+        
+        // Ambil data galeri dari database - GANTI INI
+        $galeri = Gallery::active()
+            ->photos()
+            ->ordered()
+            ->limit(8) // Ambil 8 gambar pertama
+            ->get(); // Ini mengembalikan Collection, bukan array
 
-        // Data for tables and heatmap
+        // Data untuk tables dan heatmap
         $mySubmissions = LetterSubmission::orderBy('created_at', 'desc')->get();
 
         $myReports = Report::with('user')
@@ -75,8 +81,9 @@ class LandingPageController extends Controller
                 ];
             }
         }
+
         // Ambil berita terbaru
-        $berita = \App\Models\News::where('is_published', true)
+        $berita = News::where('is_published', true)
             ->where('published_at', '<=', now())
             ->orderBy('published_at', 'desc')
             ->take(6)
@@ -92,7 +99,7 @@ class LandingPageController extends Controller
             'profil_text',
             'layanan',
             'berita',
-            'galeri',
+            'galeri', // Ini sudah Collection
             'mySubmissions',
             'myReports',
             'heatmapData'

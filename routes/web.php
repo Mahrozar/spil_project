@@ -8,7 +8,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProfilDesaController;
 use App\Http\Controllers\LayananDesaController;
 use App\Http\Controllers\LandingPageController;
-use App\Http\Controllers\PublicReportController;
 use App\Http\Controllers\VisitorController;
 use App\Http\Controllers\GalleryController;
 
@@ -50,44 +49,22 @@ Route::post('/kontak', [LandingPageController::class, 'kirimPesan'])->name('kont
 
 // Public Report Routes
 Route::prefix('lapor')->name('reports.')->group(function () {
-    Route::get('/buat', [PublicReportController::class, 'create'])->name('create');
+    Route::get('/buat', [ReportController::class, 'create'])->name('create');
     Route::post('/buat', [ReportController::class, 'store'])->name('store');
-    Route::get('/status', [PublicReportController::class, 'checkStatus'])->name('check-status');
-    Route::post('/status', [PublicReportController::class, 'checkStatus'])->name('check-status.post');
-    Route::get('/{code}', [PublicReportController::class, 'show'])->name('show');
-    Route::get('/', [PublicReportController::class, 'index'])->name('index');
+    Route::get('/status', [ReportController::class, 'checkStatus'])->name('check-status');
+    Route::post('/status', [ReportController::class, 'checkStatus'])->name('check-status.post');
+    Route::get('/{code}', [ReportController::class, 'show'])->name('show');
+    Route::get('/', [ReportController::class, 'index'])->name('index');
 });
 Route::prefix('berita')->name('news.')->group(function () {
     Route::get('/', [NewsController::class, 'index'])->name('index');
     Route::get('/{slug}', [NewsController::class, 'show'])->name('show');
 });
-// Routes untuk galeri publik
-Route::get('/galeri', [GalleryController::class, 'index'])->name('gallery.index');
-Route::get('/galeri/{id}', [GalleryController::class, 'show'])->name('gallery.show');
-
-// Admin Report Routes
-Route::middleware(['auth', 'can:manage-reports'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('reports', ReportController::class)->except(['create', 'store']);
-    Route::post('reports/{report}/comment', [ReportController::class, 'addComment'])->name('reports.comment');
-    Route::post('reports/{report}/photos', [ReportController::class, 'uploadPhotos'])->name('reports.photos');
-    Route::get('reports/statistics', [ReportController::class, 'statistics'])->name('reports.statistics');
-    Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+Route::prefix('gallery')->name('gallery.')->group(function () {
+Route::get('/', [GalleryController::class, 'index'])->name('index');
+Route::get('/{id}', [GalleryController::class, 'show'])->name('show');
 });
 
-// Route::get('/', function () {
-//     if (auth()->check()) {
-//         $user = auth()->user();
-//         if (($user->role ?? null) === 'admin') {
-//             return redirect()->route('admin.dashboard');
-//         }
-
-//         return redirect()->route('dashboard');
-//     }
-
-//     return redirect()->route('login');
-// });
-
-// Include authentication routes provided by Breeze (login, register, etc.)
 require __DIR__ . '/auth.php';
 
 // Authenticated user routes
@@ -124,6 +101,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::delete('/submissions/{submission}', [AdminController::class, 'submissionDestroy'])->name('submissions.destroy');
 
     Route::get('/reports', [AdminController::class, 'reportsIndex'])->name('reports.index');
+    Route::get('/reports/create', [AdminController::class, 'reportsCreate'])->name('reports.create');
+    Route::post('/reports', [AdminController::class, 'reportsStore'])->name('reports.store');
     Route::get('/reports/{report}', [AdminController::class, 'reportShow'])->name('reports.show');
     Route::get('/reports/{report}/edit', [AdminController::class, 'reportEdit'])->name('reports.edit');
     Route::put('/reports/{report}', [AdminController::class, 'reportUpdate'])->name('reports.update');
@@ -141,6 +120,7 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('/galleries/{gallery}', [AdminController::class, 'galleryUpdate'])->name('galleries.update');
     Route::delete('/galleries/{gallery}', [AdminController::class, 'galleryDestroy'])->name('galleries.destroy');
     Route::post('/galleries/bulk-destroy', [AdminController::class, 'galleriesBulkDestroy'])->name('galleries.bulkDestroy');
+    Route::post('/galleries/bulk-action', [AdminController::class, 'galleriesBulkAction'])->name('galleries.bulkAction');
     Route::patch('/galleries/{gallery}/toggle-active', [AdminController::class, 'galleryToggleActive'])->name('galleries.toggle-active');
 
 
@@ -153,6 +133,8 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     Route::put('/news/{news}', [AdminController::class, 'newsUpdate'])->name('news.update');
     Route::delete('/news/{news}', [AdminController::class, 'newsDestroy'])->name('news.destroy');
     Route::post('/news/bulk-destroy', [AdminController::class, 'newsBulkDestroy'])->name('news.bulkDestroy');
+    Route::post('/news/bulk-publish', [AdminController::class, 'newsBulkPublish'])->name('news.bulkPublish');
+    Route::post('/news/bulk-unpublish', [AdminController::class, 'newsBulkUnpublish'])->name('news.bulkUnpublish');
     Route::patch('/news/{news}/toggle-publish', [AdminController::class, 'newsTogglePublish'])->name('news.toggle-publish');
 
 

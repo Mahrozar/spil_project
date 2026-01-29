@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .auth-background {
-        background: linear-gradient(rgba(30, 64, 175, 0.05), rgba(30, 64, 175, 0.1)), url('https://images.unsplash.com/photo-1545569341-9eb8b30979d9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+        background: linear-gradient(rgba(30, 64, 175, 0.05), rgba(30, 64, 175, 0.1)), url('{{ asset('storage/foto/foto2.jpeg') }}');
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -78,12 +78,12 @@
                                 </div>
                                 <div>
                                     <h1 class="text-2xl font-bold">SPIL</h1>
-                                    <p class="text-sm opacity-90">Desa Cicangkang Hilir</p>
+                                    <p class="text-sm opacity-90">Desa Cicangkang Hilir, kecamatan Cipongkor, Kabupaten Bandung Barat</p>
                                 </div>
                             </div>
                             
                             <!-- Welcome Message -->
-                            <h2 class="text-3xl font-bold mb-6">Sistem Pelayanan Informasi Linkurangan</h2>
+                            <h2 class="text-3xl font-bold mb-6">Sistem Pelayanan Informasi Lingkungan</h2>
                             <p class="text-lg mb-8 opacity-90">
                                 Akses sistem administrasi desa untuk mengelola data kependudukan, surat menyurat, dan pembangunan desa secara digital.
                             </p>

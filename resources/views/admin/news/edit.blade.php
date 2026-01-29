@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Berita Baru')
+@section('title', 'Edit Berita - ' . $news->title)
 @section('breadcrumb')
     <!-- Breadcrumb -->
     <nav class="mb-6" aria-label="Breadcrumb">
@@ -18,7 +18,7 @@
             </li>
             <li class="flex items-center">
                 <i class="fas fa-chevron-right text-gray-400 text-xs mx-2"></i>
-                <span class="text-gray-600 font-medium">Tambah Baru</span>
+                <span class="text-gray-600 font-medium">Edit: {{ Str::limit($news->title, 30) }}</span>
             </li>
         </ol>
     </nav>
@@ -33,11 +33,28 @@
             <div class="mb-8">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
-                        <h1 class="text-2xl font-bold text-gray-900">Tambah Berita Baru</h1>
-                        <p class="text-gray-600 mt-1">Isi formulir untuk menambahkan berita baru</p>
+                        <h1 class="text-2xl font-bold text-gray-900">Edit Berita</h1>
+                        <p class="text-gray-600 mt-1">Perbarui informasi berita</p>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span
+                                class="inline-flex items-center px-2 py-1 rounded text-xs font-medium 
+                            {{ $news->is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                <i class="fas fa-{{ $news->is_published ? 'globe' : 'save' }} mr-1 text-xs"></i>
+                                {{ $news->is_published ? 'Dipublikasikan' : 'Draft' }}
+                            </span>
+                            <span class="text-xs text-gray-500">
+                                <i class="far fa-clock mr-1"></i>
+                                {{ $news->created_at->format('d M Y') }}
+                            </span>
+                        </div>
                     </div>
 
                     <div class="flex gap-3">
+                        <a href="{{ route('admin.news.show', $news) }}"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
+                            <i class="fas fa-eye mr-2"></i>
+                            Lihat
+                        </a>
                         <a href="{{ route('admin.news.index') }}"
                             class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors">
                             <i class="fas fa-arrow-left mr-2"></i>
@@ -49,9 +66,10 @@
 
             <!-- Form Container -->
             <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
-                <form id="newsForm" method="POST" action="{{ route('admin.news.store') }}" enctype="multipart/form-data"
-                    class="divide-y divide-gray-200">
+                <form id="newsForm" method="POST" action="{{ route('admin.news.update', $news) }}"
+                    enctype="multipart/form-data" class="divide-y divide-gray-200">
                     @csrf
+                    @method('PUT')
 
                     <div class="px-4 py-5 sm:p-6 space-y-6">
                         <!-- Title -->
@@ -60,7 +78,8 @@
                                 <i class="fas fa-heading mr-2 text-blue-500"></i>
                                 Judul Berita <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" required
+                            <input type="text" id="title" name="title" value="{{ old('title', $news->title) }}"
+                                required
                                 class="block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
                                 placeholder="Masukkan judul berita yang menarik">
                             @error('title')
@@ -76,10 +95,11 @@
                             </label>
                             <textarea id="excerpt" name="excerpt" rows="3"
                                 class="block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors"
-                                placeholder="Ringkasan singkat berita (akan ditampilkan di halaman daftar)">{{ old('excerpt') }}</textarea>
+                                placeholder="Ringkasan singkat berita (akan ditampilkan di halaman daftar)">{{ old('excerpt', $news->excerpt) }}</textarea>
                             <div class="flex justify-between mt-1">
                                 <p class="text-xs text-gray-500">Maksimal 500 karakter</p>
-                                <p id="excerptCounter" class="text-xs text-gray-500">0/500</p>
+                                <p id="excerptCounter" class="text-xs text-gray-500">
+                                    {{ Str::length(old('excerpt', $news->excerpt)) }}/500</p>
                             </div>
                             @error('excerpt')
                                 <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
@@ -95,64 +115,65 @@
 
                             <!-- Rich Text Editor Toolbar -->
                             <div class="mb-2 border border-gray-300 rounded-t-lg bg-gray-50 p-2 flex flex-wrap gap-2">
-                                <button type="button" onclick="formatText('bold')" class="p-2 rounded hover:bg-gray-200"
-                                    title="Bold">
+                                <button type="button" onclick="formatText('bold')"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Bold">
                                     <i class="fas fa-bold"></i>
                                 </button>
-                                <button type="button" onclick="formatText('italic')" class="p-2 rounded hover:bg-gray-200"
-                                    title="Italic">
+                                <button type="button" onclick="formatText('italic')"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Italic">
                                     <i class="fas fa-italic"></i>
                                 </button>
                                 <button type="button" onclick="formatText('underline')"
-                                    class="p-2 rounded hover:bg-gray-200" title="Underline">
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Underline">
                                     <i class="fas fa-underline"></i>
                                 </button>
                                 <div class="w-px h-6 bg-gray-300"></div>
-                                <button type="button" onclick="insertHeading(1)" class="p-2 rounded hover:bg-gray-200"
-                                    title="Heading 1">
+                                <button type="button" onclick="insertHeading(1)"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Heading 1">
                                     <i class="fas fa-heading text-sm"></i> 1
                                 </button>
-                                <button type="button" onclick="insertHeading(2)" class="p-2 rounded hover:bg-gray-200"
-                                    title="Heading 2">
+                                <button type="button" onclick="insertHeading(2)"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Heading 2">
                                     <i class="fas fa-heading text-sm"></i> 2
                                 </button>
-                                <button type="button" onclick="insertHeading(3)" class="p-2 rounded hover:bg-gray-200"
-                                    title="Heading 3">
+                                <button type="button" onclick="insertHeading(3)"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Heading 3">
                                     <i class="fas fa-heading text-sm"></i> 3
                                 </button>
                                 <div class="w-px h-6 bg-gray-300"></div>
-                                <button type="button" onclick="insertList('ordered')" class="p-2 rounded hover:bg-gray-200"
-                                    title="Ordered List">
+                                <button type="button" onclick="insertList('ordered')"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Ordered List">
                                     <i class="fas fa-list-ol"></i>
                                 </button>
                                 <button type="button" onclick="insertList('unordered')"
-                                    class="p-2 rounded hover:bg-gray-200" title="Unordered List">
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Unordered List">
                                     <i class="fas fa-list-ul"></i>
                                 </button>
                                 <div class="w-px h-6 bg-gray-300"></div>
-                                <button type="button" onclick="insertLink()" class="p-2 rounded hover:bg-gray-200"
-                                    title="Insert Link">
+                                <button type="button" onclick="insertLink()"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Insert Link">
                                     <i class="fas fa-link"></i>
                                 </button>
-                                <button type="button" onclick="insertImage()" class="p-2 rounded hover:bg-gray-200"
-                                    title="Insert Image">
+                                <button type="button" onclick="insertImage()"
+                                    class="p-2 rounded hover:bg-gray-200 transition-colors" title="Insert Image">
                                     <i class="fas fa-image"></i>
                                 </button>
                                 <button type="button" onclick="clearFormatting()"
-                                    class="p-2 rounded hover:bg-gray-200 text-red-500" title="Clear Formatting">
+                                    class="p-2 rounded hover:bg-gray-200 text-red-500 transition-colors"
+                                    title="Clear Formatting">
                                     <i class="fas fa-eraser"></i>
                                 </button>
                             </div>
 
-                            <!-- Content Textarea (Enhanced) -->
+                            <!-- Content Textarea -->
                             <textarea id="content" name="content" rows="15"
                                 class="block w-full border border-gray-300 border-t-0 rounded-b-lg shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition-colors resize-none"
-                                placeholder="Tulis konten berita Anda di sini...">{{ old('content') }}</textarea>
+                                placeholder="Tulis konten berita Anda di sini...">{{ old('content', $news->content) }}</textarea>
 
                             <!-- Character Count -->
                             <div class="flex justify-between mt-1">
                                 <p class="text-xs text-gray-500">Tulis konten berita dengan baik</p>
-                                <p id="contentCounter" class="text-xs text-gray-500">0 karakter</p>
+                                <p id="contentCounter" class="text-xs text-gray-500">0 karakter, 0 kata</p>
                             </div>
 
                             @error('content')
@@ -173,8 +194,13 @@
                                         <div class="space-y-3">
                                             <i class="fas fa-cloud-upload-alt text-4xl text-gray-400"></i>
                                             <div>
-                                                <p class="text-sm font-medium text-gray-700" id="uploadText">Upload
-                                                    thumbnail</p>
+                                                <p class="text-sm font-medium text-gray-700" id="uploadText">
+                                                    @if ($news->thumbnail)
+                                                        Thumbnail sudah diupload
+                                                    @else
+                                                        Upload thumbnail
+                                                    @endif
+                                                </p>
                                                 <p class="text-xs text-gray-500 mt-1">Klik atau drag & drop untuk memilih
                                                     file</p>
                                             </div>
@@ -182,16 +208,21 @@
                                                 class="hidden">
 
                                             <!-- Hidden input untuk menyimpan path gambar lama -->
-                                            @if (isset($news) && $news->thumbnail)
-                                                <input type="hidden" id="existing_thumbnail" name="existing_thumbnail"
-                                                    value="{{ $news->thumbnail }}">
-                                            @endif
+                                            <input type="hidden" id="existing_thumbnail" name="existing_thumbnail"
+                                                value="{{ $news->thumbnail }}">
 
                                             <button type="button" onclick="document.getElementById('thumbnail').click()"
                                                 class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
                                                 <i class="fas fa-image mr-2"></i>
-                                                Pilih Gambar
+                                                {{ $news->thumbnail ? 'Ganti Gambar' : 'Pilih Gambar' }}
                                             </button>
+                                            @if ($news->thumbnail)
+                                                <button type="button" onclick="removeThumbnail()"
+                                                    class="ml-2 inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors">
+                                                    <i class="fas fa-trash-alt mr-2"></i>
+                                                    Hapus
+                                                </button>
+                                            @endif
                                             <p class="text-xs text-gray-500">Ukuran maksimal 2MB. Format: JPG, PNG, GIF</p>
                                         </div>
                                     </div>
@@ -207,7 +238,7 @@
                                         <div id="imagePreviewContainer" class="relative">
                                             <!-- Placeholder -->
                                             <div id="previewPlaceholder"
-                                                class="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
+                                                class="aspect-video bg-gray-200 rounded-lg flex items-center justify-center {{ $news->thumbnail ? 'hidden' : '' }}">
                                                 <div class="text-center">
                                                     <i class="fas fa-image text-3xl text-gray-400 mb-2"></i>
                                                     <p class="text-sm text-gray-500">Belum ada thumbnail</p>
@@ -215,8 +246,13 @@
                                             </div>
 
                                             <!-- Image Preview -->
-                                            <img id="imagePreview" src="" alt="Preview"
-                                                class="hidden w-full h-48 object-cover rounded-lg">
+                                            @if ($news->thumbnail)
+                                                <img id="imagePreview" src="{{ $news->thumbnail_url }}" alt="Preview"
+                                                    class="w-full h-48 object-cover rounded-lg">
+                                            @else
+                                                <img id="imagePreview" src="" alt="Preview"
+                                                    class="hidden w-full h-48 object-cover rounded-lg">
+                                            @endif
                                         </div>
                                         <p class="text-xs text-gray-500 mt-3">Thumbnail akan ditampilkan di halaman daftar
                                             berita</p>
@@ -238,7 +274,7 @@
                                     <option value="">Pilih Penulis</option>
                                     @foreach ($authors as $author)
                                         <option value="{{ $author->id }}"
-                                            {{ old('author_id') == $author->id ? 'selected' : '' }}>
+                                            {{ old('author_id', $news->author_id) == $author->id ? 'selected' : '' }}>
                                             {{ $author->name }} ({{ $author->role }})
                                         </option>
                                     @endforeach
@@ -255,7 +291,7 @@
                                     Tanggal Publikasi
                                 </label>
                                 <input type="datetime-local" id="published_at" name="published_at"
-                                    value="{{ old('published_at') }}"
+                                    value="{{ old('published_at', $news->published_at ? $news->published_at->format('Y-m-d\TH:i') : '') }}"
                                     class="block w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                                 <p class="text-xs text-gray-500 mt-1">Kosongkan untuk menggunakan tanggal saat ini</p>
                                 @error('published_at')
@@ -270,30 +306,31 @@
                                 <div class="flex items-center space-x-4">
                                     <div class="flex items-center">
                                         <input type="checkbox" name="is_published" value="1" id="is_published"
-                                            {{ old('is_published') ? 'checked' : '' }} class="sr-only">
+                                            {{ old('is_published', $news->is_published) ? 'checked' : '' }}
+                                            class="sr-only">
                                         <div id="toggleButton"
-                                            class="w-14 h-7 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer transition-colors">
+                                            class="w-14 h-7 flex items-center {{ $news->is_published ? 'bg-blue-600' : 'bg-gray-300' }} rounded-full p-1 cursor-pointer transition-colors">
                                             <div id="toggleDot"
-                                                class="bg-white w-5 h-5 rounded-full shadow-md transform transition-transform">
+                                                class="bg-white w-5 h-5 rounded-full shadow-md transform transition-transform {{ $news->is_published ? 'translate-x-7' : '' }}">
                                             </div>
                                         </div>
                                     </div>
                                     <div>
                                         <label for="is_published"
                                             class="text-sm font-medium text-gray-900 cursor-pointer">
-                                            Publikasikan Sekarang
+                                            Status Publikasi
                                         </label>
                                         <p class="text-xs text-gray-600 mt-1">
-                                            Jika dimatikan, berita akan disimpan sebagai draft
+                                            Aktifkan untuk mempublikasikan berita
                                         </p>
                                     </div>
                                 </div>
 
                                 <div id="publishStatus" class="text-sm text-gray-600">
-                                    @if (old('is_published'))
+                                    @if ($news->is_published)
                                         <span class="inline-flex items-center text-green-600">
                                             <i class="fas fa-globe mr-2"></i>
-                                            Akan dipublikasikan
+                                            Dipublikasikan
                                         </span>
                                     @else
                                         <span class="inline-flex items-center text-yellow-600">
@@ -302,6 +339,18 @@
                                         </span>
                                     @endif
                                 </div>
+                            </div>
+                        </div>
+
+                        <!-- Last Updated Info -->
+                        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="fas fa-history mr-2 text-gray-400"></i>
+                                <span>Terakhir diperbarui: {{ $news->updated_at->format('d M Y H:i') }}
+                                    @if ($news->author)
+                                        oleh {{ $news->author->name }}
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -325,8 +374,8 @@
                                 </button>
                                 <button type="submit"
                                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
-                                    <i class="fas fa-paper-plane mr-2"></i>
-                                    Simpan & Terbitkan
+                                    <i class="fas fa-sync-alt mr-2"></i>
+                                    Perbarui Berita
                                 </button>
                             </div>
                         </div>
@@ -339,27 +388,27 @@
                 <div class="flex items-start">
                     <i class="fas fa-lightbulb text-blue-500 text-xl mr-3 mt-1"></i>
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-2">Tips Menulis Berita yang Baik</h3>
+                        <h3 class="text-lg font-medium text-gray-900 mb-2">Tips Edit Berita yang Baik</h3>
                         <ul class="space-y-2 text-gray-600">
                             <li class="flex items-start">
                                 <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
-                                <span>Gunakan judul yang menarik dan informatif</span>
+                                <span>Periksa dan perbaiki kesalahan penulisan</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
-                                <span>Buat ringkasan yang jelas dan padat</span>
+                                <span>Update informasi yang sudah tidak relevan</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
-                                <span>Gunakan gambar thumbnail yang relevan dan berkualitas</span>
+                                <span>Tambahkan informasi baru jika diperlukan</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
-                                <span>Struktur konten dengan paragraf yang jelas</span>
+                                <span>Perbarui thumbnail jika diperlukan</span>
                             </li>
                             <li class="flex items-start">
                                 <i class="fas fa-check text-green-500 mr-2 mt-1 text-xs"></i>
-                                <span>Gunakan fitur format teks untuk mempercantik tampilan</span>
+                                <span>Preview sebelum menyimpan perubahan</span>
                             </li>
                         </ul>
                     </div>
@@ -442,6 +491,24 @@
 
 @push('scripts')
     <script>
+        // Initialize content counter
+        function updateContentCounter() {
+            const content = document.getElementById('content').value;
+            const counter = document.getElementById('contentCounter');
+            const charCount = content.length;
+            const wordCount = content.trim().split(/\s+/).filter(word => word.length > 0).length;
+
+            counter.textContent = `${charCount} karakter, ${wordCount} kata`;
+
+            if (charCount > 5000) {
+                counter.classList.add('text-green-600');
+                counter.classList.remove('text-gray-500');
+            } else {
+                counter.classList.remove('text-green-600');
+                counter.classList.add('text-gray-500');
+            }
+        }
+
         // Text formatting functions
         function formatText(command) {
             const textarea = document.getElementById('content');
@@ -541,24 +608,6 @@
             updateContentCounter();
         }
 
-        // Character counter for content
-        function updateContentCounter() {
-            const content = document.getElementById('content').value;
-            const counter = document.getElementById('contentCounter');
-            const charCount = content.length;
-            const wordCount = content.trim().split(/\s+/).filter(word => word.length > 0).length;
-
-            counter.textContent = `${charCount} karakter, ${wordCount} kata`;
-
-            if (charCount > 5000) {
-                counter.classList.add('text-green-600');
-                counter.classList.remove('text-gray-500');
-            } else {
-                counter.classList.remove('text-green-600');
-                counter.classList.add('text-gray-500');
-            }
-        }
-
         // Image preview functionality
         document.getElementById('thumbnail').addEventListener('change', function(event) {
             const file = event.target.files[0];
@@ -587,7 +636,7 @@
                 reader.onload = function(e) {
                     imagePreview.src = e.target.result;
                     imagePreview.classList.remove('hidden');
-                    previewPlaceholder.classList.add('hidden');
+                    if (previewPlaceholder) previewPlaceholder.classList.add('hidden');
                     uploadText.textContent = file.name;
                     uploadText.classList.add('text-green-600');
                     uploadArea.classList.add('border-green-400', 'bg-green-50');
@@ -596,38 +645,85 @@
             }
         });
 
+        // Remove thumbnail functionality
+        function removeThumbnail() {
+            if (confirm('Apakah Anda yakin ingin menghapus thumbnail ini?')) {
+                // Hide the image preview
+                const imagePreview = document.getElementById('imagePreview');
+                const previewPlaceholder = document.getElementById('previewPlaceholder');
+                const uploadText = document.getElementById('uploadText');
+                const uploadArea = document.getElementById('uploadArea');
+                const existingThumbnailInput = document.getElementById('existing_thumbnail');
+                const thumbnailInput = document.getElementById('thumbnail');
+
+                imagePreview.classList.add('hidden');
+                if (previewPlaceholder) previewPlaceholder.classList.remove('hidden');
+                uploadText.textContent = 'Upload thumbnail';
+                uploadText.classList.remove('text-green-600');
+                uploadArea.classList.remove('border-green-400', 'bg-green-50');
+
+                // Clear the existing thumbnail value
+                if (existingThumbnailInput) {
+                    existingThumbnailInput.value = '';
+                }
+
+                // Clear the file input
+                if (thumbnailInput) {
+                    thumbnailInput.value = '';
+                }
+
+                // Change button text
+                const uploadButton = uploadArea.querySelector('button');
+                if (uploadButton) {
+                    uploadButton.innerHTML = '<i class="fas fa-image mr-2"></i>Pilih Gambar';
+                }
+
+                // Remove remove button
+                const removeButton = uploadArea.querySelector('button.bg-red-600');
+                if (removeButton) {
+                    removeButton.remove();
+                }
+
+                showNotification('Thumbnail berhasil dihapus', 'success');
+            }
+        }
+
         // Drag and drop functionality
         const uploadArea = document.getElementById('uploadArea');
         const thumbnailInput = document.getElementById('thumbnail');
 
-        uploadArea.addEventListener('dragover', function(e) {
-            e.preventDefault();
-            uploadArea.classList.add('border-blue-400', 'bg-blue-50');
-        });
+        if (uploadArea && thumbnailInput) {
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('border-blue-400', 'bg-blue-50');
+            });
 
-        uploadArea.addEventListener('dragleave', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
-        });
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+            });
 
-        uploadArea.addEventListener('drop', function(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('border-blue-400', 'bg-blue-50');
 
-            if (e.dataTransfer.files.length) {
-                thumbnailInput.files = e.dataTransfer.files;
-                const event = new Event('change', {
-                    bubbles: true
-                });
-                thumbnailInput.dispatchEvent(event);
-            }
-        });
+                if (e.dataTransfer.files.length) {
+                    thumbnailInput.files = e.dataTransfer.files;
+                    const event = new Event('change', {
+                        bubbles: true
+                    });
+                    thumbnailInput.dispatchEvent(event);
+                }
+            });
+        }
 
         // Excerpt character counter
         const excerptTextarea = document.getElementById('excerpt');
         const excerptCounter = document.getElementById('excerptCounter');
 
         function updateExcerptCounter() {
+            if (!excerptTextarea || !excerptCounter) return;
+
             const length = excerptTextarea.value.length;
             excerptCounter.textContent = `${length}/500`;
 
@@ -640,8 +736,10 @@
             }
         }
 
-        excerptTextarea.addEventListener('input', updateExcerptCounter);
-        updateExcerptCounter(); // Initial count
+        if (excerptTextarea && excerptCounter) {
+            excerptTextarea.addEventListener('input', updateExcerptCounter);
+            updateExcerptCounter(); // Initial count
+        }
 
         // Publish toggle functionality
         const publishCheckbox = document.getElementById('is_published');
@@ -650,13 +748,15 @@
         const publishStatus = document.getElementById('publishStatus');
 
         function updatePublishToggle() {
+            if (!publishCheckbox || !toggleButton || !toggleDot || !publishStatus) return;
+
             if (publishCheckbox.checked) {
                 toggleButton.classList.add('is-active');
                 toggleDot.classList.add('is-active');
                 publishStatus.innerHTML = `
                 <span class="inline-flex items-center text-green-600">
                     <i class="fas fa-globe mr-2"></i>
-                    Akan dipublikasikan
+                    Dipublikasikan
                 </span>
             `;
             } else {
@@ -671,62 +771,72 @@
             }
         }
 
-        toggleButton.addEventListener('click', function() {
-            publishCheckbox.checked = !publishCheckbox.checked;
-            updatePublishToggle();
-        });
+        if (toggleButton && publishCheckbox) {
+            toggleButton.addEventListener('click', function() {
+                publishCheckbox.checked = !publishCheckbox.checked;
+                updatePublishToggle();
+            });
+        }
 
-        publishCheckbox.addEventListener('change', updatePublishToggle);
+        if (publishCheckbox) {
+            publishCheckbox.addEventListener('change', updatePublishToggle);
+        }
         updatePublishToggle(); // Initial state
 
         // Save draft button
-        document.getElementById('saveDraftBtn').addEventListener('click', function() {
-            publishCheckbox.checked = false;
-            updatePublishToggle();
-            document.getElementById('newsForm').submit();
-        });
+        const saveDraftBtn = document.getElementById('saveDraftBtn');
+        if (saveDraftBtn) {
+            saveDraftBtn.addEventListener('click', function() {
+                if (publishCheckbox) publishCheckbox.checked = false;
+                updatePublishToggle();
+                document.getElementById('newsForm').submit();
+            });
+        }
 
         // Form validation
-        document.getElementById('newsForm').addEventListener('submit', function(e) {
-            // Validate required fields
-            const title = document.getElementById('title').value.trim();
-            const content = document.getElementById('content').value.trim();
-            const author = document.getElementById('author_id').value;
-            const excerpt = excerptTextarea.value;
+        const newsForm = document.getElementById('newsForm');
+        if (newsForm) {
+            newsForm.addEventListener('submit', function(e) {
+                // Validate required fields
+                const title = document.getElementById('title')?.value.trim();
+                const content = document.getElementById('content')?.value.trim();
+                const author = document.getElementById('author_id')?.value;
+                const excerpt = excerptTextarea?.value;
 
-            let isValid = true;
-            let errorMessage = '';
+                let isValid = true;
+                let errorMessage = '';
 
-            if (!title) {
-                errorMessage = 'Judul berita harus diisi!';
-                document.getElementById('title').focus();
-                isValid = false;
-            } else if (content.length < 10) {
-                errorMessage = 'Konten berita terlalu pendek! Minimal 10 karakter.';
-                document.getElementById('content').focus();
-                isValid = false;
-            } else if (!author) {
-                errorMessage = 'Penulis harus dipilih!';
-                document.getElementById('author_id').focus();
-                isValid = false;
-            } else if (excerpt.length > 500) {
-                errorMessage = 'Ringkasan terlalu panjang! Maksimal 500 karakter.';
-                excerptTextarea.focus();
-                isValid = false;
-            }
-
-            if (!isValid) {
-                e.preventDefault();
-                showNotification(errorMessage, 'error');
-            } else {
-                // Show loading state
-                const submitBtn = this.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
-                    submitBtn.disabled = true;
+                if (!title) {
+                    errorMessage = 'Judul berita harus diisi!';
+                    document.getElementById('title').focus();
+                    isValid = false;
+                } else if (content && content.length < 10) {
+                    errorMessage = 'Konten berita terlalu pendek! Minimal 10 karakter.';
+                    document.getElementById('content').focus();
+                    isValid = false;
+                } else if (!author) {
+                    errorMessage = 'Penulis harus dipilih!';
+                    document.getElementById('author_id').focus();
+                    isValid = false;
+                } else if (excerpt && excerpt.length > 500) {
+                    errorMessage = 'Ringkasan terlalu panjang! Maksimal 500 karakter.';
+                    excerptTextarea.focus();
+                    isValid = false;
                 }
-            }
-        });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    showNotification(errorMessage, 'error');
+                } else {
+                    // Show loading state
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
+                        submitBtn.disabled = true;
+                    }
+                }
+            });
+        }
 
         // Notification function
         function showNotification(message, type = 'info') {
@@ -767,61 +877,29 @@
             }, 3000);
         }
 
-        // Content counter update
-        document.getElementById('content').addEventListener('input', updateContentCounter);
-        updateContentCounter(); // Initial count
-
-        // Auto-save draft
-        let autoSaveTimer;
-
-        function autoSaveDraft() {
-            const title = document.getElementById('title').value;
-            const excerpt = document.getElementById('excerpt').value;
-            const content = document.getElementById('content').value;
-
-            if (title || excerpt || content.length > 50) {
-                localStorage.setItem('newsDraft', JSON.stringify({
-                    title,
-                    excerpt,
-                    content,
-                    timestamp: new Date().toISOString()
-                }));
-            }
-        }
-
-        // Set up auto-save (every 30 seconds)
-        setInterval(autoSaveDraft, 30000);
-
-        // Load draft on page load
+        // Initialize content counter on load
         document.addEventListener('DOMContentLoaded', function() {
-            const savedDraft = localStorage.getItem('newsDraft');
-            if (savedDraft) {
-                try {
-                    const draft = JSON.parse(savedDraft);
-                    const shouldLoad = confirm(
-                        `Ada draft berita yang tersimpan dari ${new Date(draft.timestamp).toLocaleTimeString()}. Muat sekarang?`
-                        );
+            updateContentCounter();
 
-                    if (shouldLoad) {
-                        document.getElementById('title').value = draft.title || '';
-                        document.getElementById('excerpt').value = draft.excerpt || '';
-                        document.getElementById('content').value = draft.content || '';
-                        updateExcerptCounter();
-                        updateContentCounter();
-                        showNotification('Draft berhasil dimuat', 'success');
-                    }
-                } catch (e) {
-                    console.error('Error loading draft:', e);
-                    localStorage.removeItem('newsDraft');
+            // Content counter update
+            const contentTextarea = document.getElementById('content');
+            if (contentTextarea) {
+                contentTextarea.addEventListener('input', updateContentCounter);
+            }
+
+            // Warn before leaving if unsaved changes
+            window.addEventListener('beforeunload', function(e) {
+                const title = document.getElementById('title')?.value;
+                const originalTitle = '{{ $news->title }}';
+                const content = document.getElementById('content')?.value;
+                const originalContent = '{{ $news->content }}';
+
+                if ((title && title !== originalTitle) || (content && content !== originalContent)) {
+                    e.preventDefault();
+                    e.returnValue =
+                        'Anda memiliki perubahan yang belum disimpan. Apakah Anda yakin ingin meninggalkan halaman?';
                 }
-            }
-        });
-
-        // Clear draft on successful form submission
-        window.addEventListener('beforeunload', function() {
-            if (document.querySelector('form').checkValidity()) {
-                localStorage.removeItem('newsDraft');
-            }
+            });
         });
     </script>
 @endpush
