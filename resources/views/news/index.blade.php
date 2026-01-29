@@ -105,7 +105,7 @@
                        class="news-card bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                         <!-- Thumbnail -->
                         <div class="h-56 overflow-hidden">
-                            <img src="{{ $item->thumbnail ? asset('storage/' . $item->thumbnail) : 'https://via.placeholder.com/400x300/cccccc/ffffff?text=No+Image' }}" 
+                            <img src="{{ $item->thumbnail }}" 
                                  alt="{{ $item->title }}"
                                  class="w-full h-full object-cover">
                         </div>
